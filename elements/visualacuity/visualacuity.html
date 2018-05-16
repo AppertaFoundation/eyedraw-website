@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="visualacuity.js" type="text/javascript"></script>
+		    
+    <!--   This script handles the drawings for the page   -->
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        function init()
+        {
+        	// Populate select elements
+        	changeOptions("Snellen Metre");
+        }
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element handles the entry and display of visual acuity readings. The units are determined by specialty, and for the purposes of this demonstration can be changed by selecting from the drop down menu in the settings section.</p>
+			<p>There are two entries for each eye (and for both eyes if this option is selected). There is an optional text box to enter any relevant notes, such as 'Forgot glasses', or 'Corrected with +10 and a pinhole'.</p>
+			<p>If <a href="http://bjo.bmj.com/content/92/2/241.abstract">COMPlog</a> is being used to measure and record visual acuity, then the automated link will mean the acuity element is pre-populated with values taken from COMPlog.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Settings section -->
+		<div class="section" style="height:130px;" align="left">
+			<h4>Settings:</h4>
+			<table cellspacing="0" width="620" >
+				<tbody>				
+					<tr>
+						<td align="left" width="60%"><p class="complable" >Units:</p></td>
+						<td align="left" width="40%">
+							<select style="width: auto;" onchange="changeOptions(this.value);">
+								<option>Snellen Metre</option>
+								<option>Snellen Foot</option>
+								<option>ETDRS letters</option>
+								<option>logMAR</option>
+								<option>Decimal</option>
+							</select>
+				        </td>
+					</tr>
+					<tr>
+						<td align="left"><p class="complable" >Show VA for Both eyes open:</p></td>
+						<td align="left">
+							<input class="checkbox" type="checkbox" id="chk_pxe" onchange="showBothEyes(this.checked);"/>
+				        </td>
+					</tr>
+					<tr>
+						<td align="left"><p class="complable" >Show notes:</p></td>
+						<td align="left">
+							<input class="checkbox" type="checkbox" id="chk_nts" onchange="showNotes(this.checked);"/>
+				        </td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<!-- Edit mode section -->
+		<div id="editSectionDiv" class="section" style="height:150px;" align="left">
+			<h4>Edit mode:</h4>
+				
+			<!-- Right eye -->
+			<div style ="width: 540px; height: 114px; float:left;">
+				<p>Right Visual Acuity:</p>
+				
+				<span class="vaLable">Initial:</span>
+				<span class="vaLable">Wearing:</span>				
+				<span class="vaLable">Corrected:</span>
+				<span class="vaLable">Method:</span>
+				<span id="r_aid_lable" class="vaLable" style="display:none;">Correction:</span><br />
+				<select id="rva_in" class="vaSelect" onchange="setCorrected(this.selectedIndex, 'rva_cr');">
+				</select>
+				<select id="r_in_aid" class="vaSelect">
+					<option selected="TRUE">Unaided</option>
+					<option>Glasses</option>
+					<option>Contact lens</option>
+				</select>
+				<select id="rva_cr" class="vaSelect">
+				</select>
+				<select id="r_cr_aid" class="vaSelect">
+					<option selected="TRUE">Pinhole</option>
+					<option>Refraction</option>
+				</select><br />
+				<textarea id="r_notes" class="vaNotes"></textarea>
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width: 540px; height: 114px; float:left;">
+				<p>Left Visual Acuity:</p>
+				
+				<span class="vaLable">Initial:</span>
+				<span class="vaLable">Wearing:</span>				
+				<span class="vaLable">Corrected:</span>
+				<span class="vaLable">Method:</span>
+				<span id="l_aid_lable" class="vaLable" style="display:none;">Correction:</span><br />
+				<select id="lva_in" class="vaSelect" onchange="setCorrected(this.selectedIndex, 'lva_cr');">
+				</select>
+				<select id="l_in_aid" class="vaSelect">
+					<option selected="TRUE">Unaided</option>
+					<option>Glasses</option>
+					<option>Contact lens</option>
+				</select>
+				<select id="lva_cr" class="vaSelect">
+				</select>
+				<select id="l_cr_aid" class="vaSelect">
+					<option selected="TRUE">Pinhole</option>
+					<option>Refraction</option>
+				</select>
+				<textarea id="l_notes" class="vaNotes"></textarea>
+			</div>
+						
+			<!-- Both eyes -->
+			<div id="botheyesdiv" style = "width:1090px; float: left; display:none;">
+				<p>Both Eyes:</p>
+
+				<div style = "margin-left: 274px;">				
+					<span class="vaLable">Initial:</span>
+					<span class="vaLable">Wearing:</span>				
+					<span class="vaLable">Corrected:</span>
+					<span class="vaLable">Method:</span>
+					<span id="b_aid_lable" class="vaLable" style="display:none;">Correction:</span><br />
+					<select id="bva_in" class="vaSelect" onchange="setCorrected(this.selectedIndex, 'bva_cr');">
+					</select>
+					<select id="b_in_aid" class="vaSelect">
+						<option selected="TRUE">Unaided</option>
+						<option>Glasses</option>
+						<option>Contact lens</option>
+					</select>
+					<select id="bva_cr" class="vaSelect">
+					</select>
+					<select id="b_cr_aid" class="vaSelect">
+						<option selected="TRUE">Pinhole</option>
+						<option>Refraction</option>
+					</select>
+					<textarea id="b_notes" class="vaNotes"></textarea>
+				</div>
+			</div>
+
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:100px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<!-- Right eye -->
+			<div style ="width:540px; float:left;">
+				<p>Right visual acuity:</p>
+				<p>6/36 with glasses, 6/9 with pinhole</p>
+			</div>
+			
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left visual acuity:</p>
+				<p>3/60 unaided, 6/6 with refraction (Aphakic - used +10 lens and a pinhole)</p>				
+			</div>				
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

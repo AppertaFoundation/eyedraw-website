@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_General.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_VitreoRetinal.js" type="text/javascript"></script>	 
+    <script type="text/javascript">
+    
+        // Assign a global variable for each drawingEdit on the page
+        var drawingEdit;
+        var drawingDisplay;
+                                        
+        function init()
+        {
+            // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            
+            // Preload any images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+            
+            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
+            drawingEdit.onLoaded = function()
+            {
+                drawingEdit.addDoodle('Fundus');
+                drawingEdit.deselectDoodles();
+            }
+            
+            // Get reference to the drawingEdit canvas
+            var canvasDisplay = document.getElementById('canvasDisplay');
+            
+            // Create a drawing
+            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS', false);
+            
+            // Preload any images
+            drawingDisplay.preLoadImagesFrom('../../graphics/');
+            
+            // Wait for drawing object to be ready before adding objects or drawingEdits
+            drawingDisplay.onLoaded = function()
+            {
+                drawingDisplay.addDoodle('Fundus');
+                drawingDisplay.addDoodle('RRD');
+                drawingDisplay.addDoodle('UTear');
+                drawingDisplay.deselectDoodles();          
+                drawingDisplay.drawAllDoodles();
+            }
+        }
+        
+        // Clears edit drawing and resets template
+        function resetEdit()
+        {
+        	drawingEdit.deleteAllDoodles();
+            drawingEdit.deselectDoodles();          
+            drawingEdit.drawAllDoodles();
+            
+            // Clear diagnosis menu and text area
+            document.getElementById('diagnosisSelect').selectedIndex = 0;
+            document.getElementById('posteriorsegment').value = "";
+        }
+        
+        function addToReport()
+        {
+        	// Get text from the drawingEdit and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('posteriorsegment');
+			
+			// ***TEMP***
+			repText.value = "";
+			
+			// If text there already, make it lower case and add a comma before
+			if (repText.value.length > 0)
+			{
+				text = ", " + text.toLowerCase();
+			}
+
+			// Add to existing text in text area
+			repText.value += text;
+			
+			// Get diagnostic code
+			var code = drawingEdit.diagnosis();
+		
+			if (code > 0)
+			{
+				// Set principal eye and diagnosis select values
+				document.getElementById("diagnosisSelect").value = code;
+			}
+			else
+			{
+				document.getElementById("diagnosisSelect").value = 0;
+			}
+		}
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows editing and display of posterior segment findings for the specialty of Vitreoretinal surgery. Clicking on the 'doodle' buttons adds them to the drawing. When the drawing is finished, clicking the report button will create a text description of the retina, and also select a diagnosis from a drop down list of common VR diagnoses</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:760px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right posterior segment:</p>
+							
+	        	<!-- Doodle toolbar -->
+				<div class="toolbar">
+					<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+	                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+	                <br />
+	                
+	                <!-- Doodle selection toolbar -->
+	                <button class="imgbutton" id="RRDRPS" title="Retinal detachment" onclick="drawingEdit.addDoodle('RRD'); return false;" ><img src="../../graphics/RRD.gif" /></button>
+	                <button class="imgbutton" id="uTearRPS" title="U tear" onclick="drawingEdit.addDoodle('UTear'); return false;" ><img src="../../graphics/UTear.gif" /></button>
+	                <button class="imgbutton" id="roundHoleRPS" title="Round hole" onclick="drawingEdit.addDoodle('RoundHole'); return false;" ><img src="../../graphics/RoundHole.gif" /></button>
+	                <button class="imgbutton" id="dialysisRPS" title="Dialysis" onclick="drawingEdit.addDoodle('Dialysis'); return false;" ><img src="../../graphics/Dialysis.gif" /></button>
+	                <button class="imgbutton" id="grtRPS" title="GRT" onclick="drawingEdit.addDoodle('GRT'); return false;" ><img src="../../graphics/GRT.gif" /></button>
+	                <button class="imgbutton" id="macularHoleRPS" title="Macular hole" onclick="drawingEdit.addDoodle('MacularHole'); return false;" ><img src="../../graphics/MacularHole.gif" /></button>
+	                <button class="imgbutton" id="starFoldRPS" title="Star Fold" onclick="drawingEdit.addDoodle('StarFold'); return false;" ><img src="../../graphics/StarFold.gif" /></button>
+	                <button class="imgbutton" id="antPVRRPS" title="Anterior PVR" onclick="drawingEdit.addDoodle('AntPVR'); return false;" ><img src="../../graphics/AntPVR.gif" /></button>
+	                <button class="imgbutton" id="latticeRPS" title="Lattice" onclick="drawingEdit.addDoodle('Lattice'); return false;" ><img src="../../graphics/Lattice.gif" /></button>
+	                <button class="imgbutton" id="cryoRPS" title="Cryo" onclick="drawingEdit.addDoodle('Cryo'); return false;" ><img src="../../graphics/Cryo.gif" /></button>
+	                <button class="imgbutton" id="laserCircleRPS" title="Laser" onclick="drawingEdit.addDoodle('LaserCircle'); return false;" ><img src="../../graphics/LaserCircle.gif" /></button>
+	                <button class="imgbutton" id="buckleRPS" title="Buckle" onclick="drawingEdit.addDoodle('Buckle'); return false;" ><img src="../../graphics/Buckle.gif" /></button>
+	                <button class="imgbutton" id="retinoschisisRPS" title="Retinoschisis" onclick="drawingEdit.addDoodle('Retinoschisis'); return false;" ><img src="../../graphics/Retinoschisis.gif" /></button>
+	                <button class="imgbutton" id="outerleafbreakRPS" title="Outer leaf break" onclick="drawingEdit.addDoodle('OuterLeafBreak'); return false;" ><img src="../../graphics/OuterLeafBreak.gif" /></button>
+	                <button class="imgbutton" id="innerleafbreakRPS" title="Inner leaf break" onclick="drawingEdit.addDoodle('InnerLeafBreak'); return false;" ><img src="../../graphics/InnerLeafBreak.gif" /></button>
+	                <br /> 		                
+	            </div>
+
+				<!-- Canvas -->
+
+	            <canvas id="canvasEdit" class="canvasEditclass" width="400" height="400" tabindex="1"></canvas><br />
+
+				<!-- Controls -->
+				<button class="actbutton" title="Extracts description and diagnosis from drawingEdit" onclick="addToReport(); return false;" >Report</button>
+				<button class="actbutton" title="Clear drawing and start again" onclick="resetEdit(); return false;" >Clear</button>
+
+				<p class="lable">Description:</p>
+				<textarea id="posteriorsegment"></textarea>
+				
+				<!-- Select for diagnosis -->
+				<p class="lable">Diagnosis:</p>
+				<select id="diagnosisSelect" title="Common diagnoses for VR">
+					<option value="0">Vitreoretinal diagnoses</option>
+					<option value="3577000">Lattice degeneration</option>
+					<option value="95690009">Retinal tear</option>
+					<option value="232003005">Retinal dialysis</option>
+					<option value="302888003">Round hole</option>
+					<option value="232004004">Giant retinal tear</option>
+					<option value="232009009">Rhegmatogenous retinal detachment - macula off</option>
+					<option value="232008001">Rhegmatogenous retinal detachment - macula on</option>
+					<option value="232016005">Proliferative vitreoretinopathy</option>
+					<option value="232006002">Macular hole</option>
+					<option value="367649002">Epiretinal membrane</option>
+					<option value="44268007">Retinoschisis</option>
+				</select>
+			</div>
+			
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left posterior segment:</p>
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>						
+
+		<!-- Display mode section -->
+		<div class="section" style="height:200px;" align="left">
+		
+			<!-- Overall width -->
+			<div style ="width:540; float:left;">
+				<h4>Display mode:</h4>
+				<div style="float:left; width: 170px; height: 120px;">
+					<!-- Canvas -->
+					<div style='float:left; width: 370px; height: 320px;'>
+		                <canvas id="canvasDisplay" class="canvasEditclass" width="150" height="150" tabindex="1" style=" border: none;"></canvas>
+					</div>
+				</div>
+				<div style="float:right; width: 320px; height: 120px;">
+					<p>Superotemporal retinal detachment (macula on), 'U' tear at 12 o'clock</p>
+				</div>
+			</div>
+	
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Vitreoretinal</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

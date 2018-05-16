@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_General.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	    
+        // Drawing
+   		var drawingEdit;
+        
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            
+            // Preload any images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+            
+            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
+            drawingEdit.onLoaded = function()
+            {
+	            drawingEdit.drawAllDoodles();
+            }
+ 
+            // Capture keystrokes for interaction with drawing
+            window.addEventListener('keydown',function(e) {
+                                    drawingEdit.keydown(e);
+                                    }, true);
+                                                
+            // Load background image
+            var img = new Image();
+            img.onload = function()
+            {
+                drawingEdit.image = img;
+                
+                // Draw doodles
+                drawingEdit.repaint();
+            }
+            img.src = "../../graphics/patientImage.png";
+        }
+    
+	    // Changes colour of preview display
+        function changeColour(_hexColour)
+        {
+            document.getElementById("colourPreviewRPS").style.background=_hexColour;
+        }
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<br />
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows viewing of an orbital photograph with the ability to superimpose 'doodles' on the drawing. The bottom toolbar contains three doodles, the first of which is a freehand drawing tool. Click the icon on the toolbar to add it to the photograph, and then move the mouse to make a shape (colour and outline/fill determined by the additional controls that appear). When completed click outside the doodle to deselect it. A single click will reselect it for moving, scaling, or rotating. A double click will return it to drawing mode.</p>
+			<p>The top toolbar includes positioning, deleting, and locking functions which apply to the currently selected doodle.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section"  align="left">
+			<h4>Edit mode:</h4>
+			
+                <!-- Doodle toolbar -->
+                <button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+
+                <!-- Squiggle options -->
+                <span <span class= "squiggle" id="squiggleSpanRPS" style="display:none;">
+                    <img class="colourWell" border="0" src="../../graphics/ColourWell.gif" usemap="#colormap" alt='colormap' />
+                    <map id="colormap" name="colormap">
+                        <area style="cursor:pointer" shape="rect" coords="0,0,16,16" onclick="changeColour('#000000');" />
+                        <area style="cursor:pointer" shape="rect" coords="16,0,32,16" onclick="changeColour('#FF0000');" />
+                        <area style="cursor:pointer" shape="rect" coords="32,0,48,16" onclick="changeColour('#FF7F00');" />
+                        <area style="cursor:pointer" shape="rect" coords="0,16,16,32" onclick="changeColour('#0000FF');" />
+                        <area style="cursor:pointer" shape="rect" coords="16,16,32,32" onclick="changeColour('#00FF00');" />
+                        <area style="cursor:pointer" shape="rect" coords="32,16,48,32" onclick="changeColour('#FFFF00');" />
+                    </map>
+                    <table class="preview" cellpadding="0" border="0" cellspacing="0" width="32"><tr><td width="32"><div id="colourPreviewRPS" style="height:32px;width:32px;background-color:#FFFF00;">&nbsp;</div></td></tr>
+                    </table>
+                    <select class="thickness" id="thicknessSelectRPS" >
+						<option value="Thin">Thin</option>
+						<option value="Medium">Medium</option>
+						<option value="Thick">Thick</option>
+					</select>
+                    <span class="fill">
+                        <input id="fillRadioRPS" class="fillbutton" type="radio" name="fill" checked="true"/>Solid<br />
+                        <input class="fillbutton" type="radio" name="fill"/>Outline<br />
+					</span>
+                </span>
+
+                                            
+                <br />
+                
+                <button class="imgbutton" id="buckleRPS" title="Freehand" onclick="drawingEdit.addDoodle('Freehand'); return false;" ><img src="../../graphics/Freehand.gif" /></button>
+                <button class="imgbutton" id="lableRPS" title="Lable" onclick="drawingEdit.addDoodle('Lable'); return false;" ><img src="../../graphics/Lable.gif" /></button>
+                <button class="imgbutton" id="arrowRPS" title="Arrow" onclick="drawingEdit.addDoodle('Arrow'); return false;" ><img src="../../graphics/Arrow.gif" /></button>
+                
+                <br />
+                <!-- add tabindex="1" to canvas after testing and remove highlighted border with css -->
+                <canvas id="canvasEdit" width="401" height="401"></canvas>
+                <br />
+                <p> </p>
+
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section">
+			<h4>Display mode:</h4>
+			<p><img src="../../graphics/display.jpg"></p>
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->	
+		<div class="section">
+			<h4>Steering Group:</h4>
+			<p>Adnexal</p>
+		</div>
+
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

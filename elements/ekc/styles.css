@@ -1,0 +1,70 @@
+/* Section of development document */
+.section {
+	border-top: 1px solid gray;
+	width: 1080px;
+}
+
+/* Used for displaying adjacent columns */
+.column {
+	float: left;
+}
+
+.lable {
+/* 	width: 110px; */
+	margin-right: 12px;
+	text-align: right;
+}
+
+.comment {
+	margin-left: 4px;
+	text-align: left;
+	color: red;
+}
+
+.radio {
+	margin-left: 4px;
+	text-align: left;
+	float:left;
+}
+
+input.checkbox {
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+.section select {
+	width: 100px;
+	height: 20px;
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
+.section textarea {
+	margin-top: 10px;
+}
+
+/* email */
+a.email {
+	display: block;
+	width: 100px;
+}
+
+textarea {
+}
+
+/* No surgery reason drop down */
+#nosurg {
+	display: none;
+}
+
+#anes {
+	display: none;
+}
+
+#mode {
+	display: none;
+}
+
+.radioButton {
+	float:left; margin-left: 5px; margin-top:10px;
+}

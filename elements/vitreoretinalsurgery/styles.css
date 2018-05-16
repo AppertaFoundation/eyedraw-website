@@ -1,0 +1,221 @@
+/* Section of development document */
+.section {
+	border-top: 1px solid gray;
+}
+
+/* Used for displaying adjacent columns */
+.column {
+	float: left;
+}
+
+.lable {
+	width: 110px;
+	margin-right: 4px;
+	text-align: right;
+}
+
+textarea.vaNotes {
+	width: 470px;
+	height: 18px;
+	margin-left: 10px;
+	margin-top: 10px;
+	display: none;
+}
+
+p#RSS {
+	font-weight: bold;
+}
+
+#rightcolumn {
+	margin-left: 20px;
+}
+
+#opnote {
+	width: 220px;
+	height: 68px;
+	margin-top: 6px;
+}
+
+input.checkbox {
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+
+input {
+	height: 16px;
+	width: 50px;
+	margin: 0px;
+	margin-top: 6px;
+	padding: 0px;
+}
+
+/* Canvas element */
+canvas {
+	border: 1px solid gray;
+    cursor: pointer;
+	margin-top: 10px;
+}
+
+canvas:focus {
+	outline: none;
+}
+
+canvas.display {
+	border: none;
+	cursor: auto;
+}
+
+.toolbar {
+	margin-top: 10px;
+}
+
+.section select {
+	width: 50px;
+	height: 20px;
+	margin-top: 10px;
+}
+
+/* email */
+a.email {
+	display: block;
+	width: 100px;
+}
+
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
+	border: solid 1px;
+	background-color: #eeeeee;
+}
+
+button.imgbutton {
+	width: 36px;
+	height: 36px;
+	border: solid 1px;
+	background-color: #eeeeee;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	overflow: visible;
+}
+
+button:hover {
+	background-color: #bbbbbb;
+	border: solid 1px;
+}
+
+button:active {
+	background-color: #888888;
+	border: solid 1px;
+}
+
+button:disabled {
+	background-color: #eeeeee;
+	border: solid 1px;
+}
+
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
+	border: solid 1px;
+	background-color: #eeeeee;
+}
+
+button img {
+	/* Margin required to centre button img - not sure why */
+	margin-left: -5px;
+	margin-top: -1px;
+	padding: 0;
+	border: none;
+	width: 32px;
+	height: 32px;
+}
+
+span.squiggle {
+	display:inline-block;
+	margin-bottom:-4px;
+}
+
+.colourWell {
+    margin-bottom: 4px;
+}
+
+.preview {
+	display: inline-table;
+    margin-bottom: 4px;
+}
+
+.thickness {
+	position: relative;
+	top: -15px;
+	display: inline-block;
+}
+
+.fill {
+	position: relative;
+	top: -5px;
+	display: inline-block;
+}
+
+.fillbutton {
+/*       display: list-item; */
+}
+
+/* VA select boxes */
+.vaSelect {
+	margin-left: 10px;
+	margin-top: 5px;
+/* 	margin-right: 10px */;
+/* 	width: 50px; */
+}
+
+/* VA Lable */
+.vaLable {
+	display: inline-block;
+	font-size: 0.8em;
+	width:170px;
+	text-align:left;
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
+/* VA Acuity */
+.vaAcuity {
+	width:90px;
+	text-align:left;
+	padding-left: 10px;
+	margin-left: 10px;
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+/* VA Acuity */
+.vaCorrection {
+	display: inline-block;
+	width:120px;
+	text-align:left;
+	padding-left: 10px;
+	margin-left: 10px;
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+
+.popup
+{
+   position:absolute; left:80px; top:-550px; width:400px;
+   border-style:solid;
+   border-width:4;
+   border-color:blue;
+   background-color:yellow;
+   padding:5px;
+   color:red;
+   font-family:Arial;
+   font-weight:bold;
+   font-size:10pt;
+   z-index:2;
+   visibility:hidden;
+}

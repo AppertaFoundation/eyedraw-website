@@ -1,0 +1,440 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    
+    	var primCode = "";
+    	var code = "";
+    
+    	var codeSet = {
+    		0:"No SNOMED code",
+			193531003:"Borderline glaucoma",
+			4210003:"Ocular hypertension",
+			84494001:"Open-angle glaucoma",
+			77075001:"Primary open angle glaucoma",
+			50485007:"Normal tension glaucoma",
+			392291006:"Angle-closure glaucoma",
+			30041005:"Acute angle-closure glaucoma",
+			71111008:"Glaucoma of childhood",
+			46168003:"Pigmentary glaucoma",
+			111514006:"Pseudoexfoliation glaucoma",
+			15374009:"Aphakic glaucoma",
+			37155002:"Glaucoma associated with ocular inflammation",
+			232086000:"Neovascular glaucoma",
+			68241007:"Glaucoma associated with ocular trauma",
+			1654001:"Corticosteroid-induced glaucoma",
+			232090003:"Glaucoma following surgery",
+			84333006:"Phacogenic glaucoma",
+			95717004:"Secondary glaucoma",
+			44219007:"Pseudoexfoliation of lens capsule",
+			392133001:"Pigment dispersion syndrome",
+			24010005:"Aphakia",
+			128473001:"Uveitis",
+			51995000:"Rubeosis iridis",
+			51995000:"Injury of eye",
+			415176004:"Primary congenital glaucoma",
+			89215000:"Postoperative angle-closure glaucoma",
+			392288006:"Primary angle-closure glaucoma",
+			232080006:"Plateau iris",
+			232082003:"Iatrogenic angle-closure glaucoma",
+			65460003:"Intermittent angle-closure glaucoma",
+			21571006:"Secondary angle-closure glaucoma",
+			21928008:"Secondary open-angle glaucoma",
+		}
+               
+        // Runs on page load
+        function init()
+        {
+        }
+        
+        function primarySelect(_sel, _res) {
+	        primCode = _sel.options[_sel.selectedIndex].value;
+	        
+	        // Option 4
+	        if (_sel.id == 'primary4') {
+	        
+	        	// Reset saved code
+	        	document.getElementById('result4').innerHTML = "None";
+	        
+	        	// Get reference to the secondary select
+				var secSel = document.getElementById('secondary4');
+	
+				// Remove all options
+				secSel.options.length = 0;
+				
+				// Put in first line
+				secSel.options[secSel.options.length] = new Option("-- Please select --",0);
+				
+				// Make invisible
+				secSel.style.display = "none";
+				
+				// Flag to determine code
+				var usePrim = true;
+		        
+		        // Populate according to primary diagnosis
+		        switch (_sel.options[_sel.selectedIndex].innerHTML) {
+        		
+			        case "Glaucoma suspect":
+			        	secSel.options[secSel.options.length] = new Option('Pigment Dispersion Syndrome', 392133001);
+			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation of lens capsule', 44219007);
+			        	secSel.options[secSel.options.length] = new Option('Aphakia', 24010005);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 128473001);
+			        	secSel.options[secSel.options.length] = new Option('Rubeosis iridis', 51995000);
+			        	secSel.options[secSel.options.length] = new Option('Steroid use', 0);
+			        	secSel.options[secSel.options.length] = new Option('Post eye surgery', 0);
+			        	secSel.style.display = "";
+			        	usePrim = false;
+			        	break;
+			        	
+			        case "Ocular hypertension":
+			        	secSel.options[secSel.options.length] = new Option('Pigment Dispersion Syndrome', 392133001);
+			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation of lens capsule', 44219007);
+			        	secSel.options[secSel.options.length] = new Option('Aphakia', 24010005);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 128473001);
+			        	secSel.options[secSel.options.length] = new Option('Rubeosis iridis', 51995000);
+			        	secSel.options[secSel.options.length] = new Option('Steroid use', 0);
+			        	secSel.options[secSel.options.length] = new Option('Post eye surgery', 0);
+			        	secSel.style.display = "";
+			        	usePrim = false;
+			        	break;
+			        	
+			        case "Open-angle glaucoma":
+						secSel.options[secSel.options.length] = new Option('Primary open angle glaucoma', 77075001);
+			        	secSel.options[secSel.options.length] = new Option('Pigment Dispersion Syndrome', 392133001);
+			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation of lens capsule', 44219007);
+			        	secSel.options[secSel.options.length] = new Option('Aphakia', 24010005);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 128473001);
+			        	secSel.options[secSel.options.length] = new Option('Rubeosis iridis', 51995000);
+			        	secSel.options[secSel.options.length] = new Option('Steroid use', 0);
+			        	secSel.options[secSel.options.length] = new Option('Post eye surgery', 0);
+			        	secSel.style.display = "";
+			        	usePrim = false;
+			        	break;
+			        	
+			        case "Normal tension glaucoma":
+			        	break;
+			        	
+			        case "Angle-closure glaucoma":
+			        	secSel.options[secSel.options.length] = new Option('Primary angle-closure glaucoma', 392288006);
+			        	secSel.options[secSel.options.length] = new Option('Acute angle-closure glaucoma', 30041005);
+			        	secSel.options[secSel.options.length] = new Option('Iatrogenic angle-closure glaucoma', 232082003);
+			        	secSel.options[secSel.options.length] = new Option('Intermittent angle-closure glaucoma', 65460003);
+			        	secSel.options[secSel.options.length] = new Option('Postoperative angle-closure glaucoma', 89215000);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 128473001);
+			        	secSel.options[secSel.options.length] = new Option('Plateau iris', 232080006);
+			        	secSel.options[secSel.options.length] = new Option('Secondary angle-closure glaucoma', 21571006);
+			        	secSel.style.display = "";
+			        	usePrim = false;
+			        	break;
+
+			        case "Glaucoma of childhood":
+						secSel.options[secSel.options.length] = new Option('Primary', 415176004);
+			        	secSel.options[secSel.options.length] = new Option('Aphakia', 15374009);
+			        	secSel.options[secSel.options.length] = new Option('Neovascularisation', 232086000);
+			        	secSel.options[secSel.options.length] = new Option('Pigment dispersion syndrome', 46168003);
+			        	secSel.options[secSel.options.length] = new Option('Post surgery', 232090003);
+			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation', 111514006);
+			        	secSel.options[secSel.options.length] = new Option('Steroid use', 1654001);
+			        	secSel.options[secSel.options.length] = new Option('Trauma', 68241007);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 37155002);
+			        	secSel.style.display = "";
+			        	usePrim = false;
+			        	break;
+		        }
+		        
+		        // No secondary code
+		        if (usePrim) {
+			        document.getElementById(_res).innerHTML = primCode + ": " + codeSet[primCode];
+		        }
+	        }
+	        // Other options
+	        else {  	        
+		        if (typeof(_res) != 'undefined') {
+			        document.getElementById(_res).innerHTML = primCode + ": " + codeSet[primCode];
+		        }
+	        }
+        }
+
+        function secondarySelect(_sel, _res) {
+	        var secCode = _sel.options[_sel.selectedIndex].value;
+	        if (secCode != "0") code = secCode;
+	        else code = primCode;
+	        
+	        if (_res == 'result3') {
+		        if (secCode != "0") document.getElementById(_res).innerHTML += "\r" + code + ": " + codeSet[code];
+	        }
+	        else {
+	        	document.getElementById(_res).innerHTML = code + ": " + codeSet[code];
+	        }
+	        
+			if (_res == 'result4') {
+				var singleCodeArray = new Array("77075001", "392288006", "30041005", "232082003", "65460003", "89215000", "21571006");
+				
+				if (singleCodeArray.indexOf(secCode) >= 0) {
+					document.getElementById(_res).innerHTML = secCode + ": " + codeSet[secCode];	
+				}
+				else {
+					document.getElementById(_res).innerHTML = primCode + ": " + codeSet[primCode];
+		        	document.getElementById(_res).innerHTML += "\r" + secCode + ": " + codeSet[secCode];					
+				}
+	        }
+        }
+        
+        function reset(_num) {
+	        document.getElementById('result' + _num).innerHTML = "None";
+	        document.getElementById('primary' + _num).selectedIndex = 0;
+	        document.getElementById('secondary' + _num).selectedIndex = 0;
+	        document.getElementById('secondary' + _num).style.display = "none";
+        }
+        	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element explores different methods of entering common glaucoma diagnoses.</p>
+			<p>NB There my be individual items missing from each menu, but the idea is to illustrate different methods of selecting common diagnoses. Irrespective of this, any number of diagnoses can be attached to a patient, and any diagnosis can be found using a text search</p>
+			<p>Status: <b style="color:red;">*** This element code is now frozen for the Glaucoma 2 release in July 2014 ***</b></p>
+		</div>
+
+		<div class="section" style="height:320px;" align="left">
+			<h4>Option 1:</h4>
+			<p>This is the current method in OpenEyes, consisting of a single drop down containing common diagnoses.</p>
+						
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+			   				
+				<div style="float:left; width: 220px; height: 220px;">
+				
+					<p>Principal diagnosis:</p>
+					<select id="primary1" onchange="secondarySelect(this, 'result1');">
+						<option value="">-- Please select --</option>
+						<option value="193531003">Glaucoma suspect</option>
+						<option value="4210003">Ocular hypertension</option>
+						<option value="84494001">Open-angle glaucoma</option>
+						<option value="50485007">Normal tension glaucoma</option>
+						<option value="392291006">Angle-closure glaucoma</option>
+						<option value="30041005">Acute angle-closure glaucoma</option>
+						<option value="71111008">Glaucoma of childhood</option>
+						<option value="46168003">Pigmentary glaucoma</option>
+						<option value="111514006">Pseudoexfoliation glaucoma</option>
+						<option value="15374009">Aphakic glaucoma</option>
+						<option value="37155002">Glaucoma associated with ocular inflammation</option>
+						<option value="232086000">Neovascular glaucoma</option>
+						<option value="68241007">Glaucoma associated with ocular trauma</option>
+						<option value="1654001">Corticosteroid-induced glaucoma</option>
+						<option value="232090003">Glaucoma following surgery</option>
+						<option value="84333006">Phacogenic glaucoma</option>
+						<option value="95717004">Secondary glaucoma</option>
+					</select>
+									
+					<p style="margin-top:50px;">Saved code:</p>
+					<h4 id='result1'>None</h4>
+					
+					<button class="actbutton" style="margin-top:30px;" onclick="reset('1');">Reset</button>
+
+				</div>
+				<div style="float:right; width: 220px; height: 220px;">
+
+
+
+				</div>
+			</div>
+ 
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+			
+		</div>
+
+		<div class="section" style="height:400px;" align="left">
+			<h4>Option 2:</h4>
+			<p>The idea here is to require the user to first enter a primary diagnosis, and then any factor that the diagnosis is secondary too. If there is no factor, then 'Primary' is selected. The code stored is a single code derived from the factor (ie Open angle glaucoma in combination with Pseudoexfoliation results in a code of 'Pseudoexfoliation glaucoma' being stored.</p>
+			<p>NB Most of the codes in the second menu are children of 'Open-Angle glaucoma', so we may have to consider storing both diagnoses if there are other combinations which are legitimate (eg Normal tension glaucoma secondary to xxx?)</p>
+						
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+			   				
+				<div style="float:left; width: 220px; height: 220px;">
+				
+					<p>Primary diagnosis:</p>
+					<select id="primary2" onchange="primarySelect(this);">
+						<option value="">-- Please select --</option>
+						<option value="193531003">Glaucoma suspect</option>
+						<option value="4210003">Ocular hypertension</option>
+						<option value="84494001">Open-angle glaucoma</option>
+						<option value="50485007">Normal tension glaucoma</option>
+						<option value="392291006">Angle-closure glaucoma</option>
+						<option value="30041005">Acute angle-closure glaucoma</option>
+						<option value="71111008">Glaucoma of childhood</option>
+					</select>
+									
+					<p style="margin-top:50px;">Saved code:</p>
+					<h4 id='result2'>None</h4>
+					
+					<button class="actbutton" style="margin-top:30px;" onclick="reset('2');">Reset</button>
+
+				</div>
+				<div style="float:right; width: 220px; height: 220px;">
+					<p>Secondary to:</p>
+					<select id='secondary2' onchange="secondarySelect(this, 'result2');">
+						<option value="">-- Please select --</option>
+						<option value="0">Primary</option>
+						<option value="46168003">Pigment dispersion syndrome</option>
+						<option value="111514006">Pseudoexfoliation</option>
+						<option value="15374009">Aphakia</option>
+						<option value="37155002">Uveitis</option>
+						<option value="232086000">Neovascularisation</option>
+						<option value="68241007">Trauma</option>
+						<option value="1654001">Steroid use</option>
+						<option value="232090003">Post surgery</option>
+						<option value="95717004">Secondary</option>
+					</select>
+
+				</div>
+			</div>
+
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+
+		</div>					
+
+
+		<div class="section" style="height:400px;" align="left">
+			<h4>Option 3:</h4>
+			<p>In this option there are TWO diagnoses collected against the episode, a primary one (which would replace the current 'principal' diagnosis), and a secondary one. This approach may also be useful for Medical retina (for example, Choroidal neovascularisation secondary to ARMD).</p>
+						
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+			   				
+				<div style="float:left; width: 220px; height: 220px;">
+				
+					<p>Primary diagnosis:</p>
+					<select id="primary3" onchange="primarySelect(this, 'result3');">
+						<option value="">-- Please select --</option>
+						<option value="193531003">Glaucoma suspect</option>
+						<option value="4210003">Ocular hypertension</option>
+						<option value="84494001">Open-angle glaucoma</option>
+						<option value="50485007">Normal tension glaucoma</option>
+						<option value="392291006">Angle-closure glaucoma</option>
+						<option value="30041005">Acute angle-closure glaucoma</option>
+						<option value="71111008">Glaucoma of childhood</option>
+					</select>
+									
+					<p style="margin-top:50px;">Saved codes:</p>
+					<h4 id='result3'>None</h4>
+					
+					<button class="actbutton" style="margin-top:30px;" onclick="reset('3');">Reset</button>
+
+				</div>
+				<div style="float:right; width: 220px; height: 220px;">
+					<p>Secondary diagnosis:</p>
+					<select id='secondary3' onchange="secondarySelect(this, 'result3');">
+						<option value="">-- Please select --</option>
+						<option value="0">None</option>
+						<option value="392133001">Pigment dispersion syndrome</option>
+						<option value="111514006">Pseudoexfoliation of lens capsule</option>
+						<option value="24010005">Aphakia</option>
+						<option value="128473001">Uveitis</option>
+						<option value="51995000">Rubeosis iridis</option>
+						<option value="51995000">Injury of eye</option>
+					</select>
+
+				</div>
+			</div>
+ 
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+
+		</div>	
+			
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:400px;" align="left">
+			<h4>Option 4:</h4>
+			<p>This is a modification of option 2 and 3 , so that the the user first enters a diagnosis, and if there are any varieties of that diagnosis available, a second drop down appears with options that are specific for the selection. If appropriate, two codes are stored, with the first being the 'principal' diagnosis.</p>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+			   				
+				<div style="float:left; width: 220px; height: 220px;">
+				
+					<p>Diagnosis:</p>
+					<select id="primary4" onchange="primarySelect(this, 'result4');">
+						<option value="">-- Please select --</option>
+						<option value="193531003">Glaucoma suspect</option>
+						<option value="4210003">Ocular hypertension</option>
+						<option value="84494001">Open-angle glaucoma</option>
+						<option value="50485007">Normal tension glaucoma</option>
+						<option value="392291006">Angle-closure glaucoma</option>
+					</select>
+									
+					<p style="margin-top:50px;">Displayed and saved code/s:</p>
+					<h4 id='result4'>None</h4>
+					
+					<button class="actbutton" style="margin-top:30px;" onclick="reset('4');">Reset</button>
+
+				</div>
+				<div style="float:right; width: 220px; height: 220px;">
+					<p>Supplementary drop down:</p>
+					<select id='secondary4' style="display:none;" onchange="secondarySelect(this, 'result4');">
+					</select>
+
+				</div>
+			</div>
+ 
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+
+			
+		<!-- End of Edit mode section -->
+		</div>		
+		
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Glaucoma</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

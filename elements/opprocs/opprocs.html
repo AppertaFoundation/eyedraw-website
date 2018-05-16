@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        
+		// Add row
+		function addRow(_sel)
+		{
+			// Get index of selected drug
+			var index = _sel.selectedIndex;
+			
+			// Get reference to table
+			var table = document.getElementById('procTable');
+			
+			// Index of next row is equal to number of rows
+			var nextRowIndex = table.tBodies[0].rows.length;
+			
+			// Add new row
+			var newRow = table.tBodies[0].insertRow(nextRowIndex);
+			
+			// Name
+			var paraNode = document.createElement("p");
+			paraNode.setAttribute('class','tableText');
+			var textNode = document.createTextNode(_sel.value);
+			paraNode.appendChild(textNode);
+			var cell0 = newRow.insertCell(0);
+			cell0.appendChild(paraNode);
+			
+			// Delete aref
+			var cell1 = newRow.insertCell(1);
+			var deleteButton = document.createElement('a');
+			deleteButton.setAttribute('onClick','deleteRow(this);');
+			deleteButton.innerText = "Delete";
+			cell1.appendChild(deleteButton);
+									
+			// Reset select index
+			document.getElementById('procSelector').selectedIndex = 0;
+		}
+
+		// Delete row
+		function deleteRow(obj)
+		{
+			// Get index of row
+			var rowIndex = obj.parentNode.parentNode.sectionRowIndex + 1;
+			
+			// Delete it
+			document.getElementById('procTable').deleteRow(rowIndex);
+		}
+		
+    </script>
+
+</head>
+
+<body>
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element collects outpatient procedures, and will be an optional element in the examination event. This version simply collects the fact that the procedure was done, without any significant 'metadata'. It will replace the current paper form, and have the dual function of recording a clinical procedure, and registering it for payment (the sole purpose of the current paper form).</p>
+			<p>The current content is a mixture of the procedures mentioned in recent emails, and the current paper form, and can be easily changed. The procedures offered will also be sub-specialty specific.</p>
+			<p>This element would be shared with all other sub-specialties that carry out procedures in outpatients, so needs to be as generic as possible. There is one text box to provide for any additional clinical information.</p>
+			<p>NB laser procedures are collected using the current laser event modified to include sub-specialty defined laser procedures.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:350px;" align="left">
+			<h4>Outpatient procedures:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+				
+				<!-- Select for common diagnoses -->
+				<select class="sidebar" id="procSelector" style="width: 170px;" onchange="addRow(this);">
+					<option>-- Please select -- </option>
+					<option>Bleb Massage</option>
+					<option>Bleb needling</option>
+					<option>Adjustment of releasable suture</option>
+					<option>Removal of releasable suture</option>
+					<option>Removal of supramid suture</option>
+					<option>Removal conjunctival suture</option>
+					<option>Removal of corneal suture</option>
+					<option>Subconjunctival 5FU</option>
+					<option>Subconjunctival steroid </option>
+					<option>Injection of viscoelastic into AC </option>
+					<option>Injection of gas into AC </option>
+					<option>Orbital floor injection</option>
+				</select>
+				
+				<table id="procTable" align="left" cellspacing="0" width="500" style="margin-bottom:40px;">
+					<thead class="tabletitles">
+						<tr>
+							<th align="left" width="80%"><p class="tableText"><b>Procedure</b></p></th>
+							<th align="left" width="20%"></td>
+						</tr>
+					</thead>
+					<tbody id="tableBody">
+					</tbody>
+				</table>
+				
+				</br>
+			   				
+<!--
+				<table width="500px;">
+					<tbody>
+						<tr>
+							<td width="50%">
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Topical local anesthetic to eye</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Bleb massage</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Needling of bleb</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Removal of corneal suture</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Adjustment of corneal suture</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Reformation of anterior chamber</p>
+							</td>
+							<td width="50%">
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Incision of conjunctiva</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Subconjunctival injection</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Injection into anterior chamber</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Injection of viscoelastic into AC</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Injection of 5FU</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Injection of steroid</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+-->
+				<p>Comments</p>
+				<textarea style="width:500px; height:60px;"></textarea>
+ 				
+   			
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

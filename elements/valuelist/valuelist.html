@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->		
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/common.js" type="text/javascript"></script>	
+	<script language="JavaScript" src="valuelist.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_AntSeg.js" type="text/javascript"></script>	
+    <script type="text/javascript">
+
+		// Counter to track rows
+		var rowCount = 0;
+		
+		// Value of last index
+		var lastIndex = 2;
+		
+		// Principal eye
+		var principalEye = 'RE';
+		
+        // Variables assigned to each drawing on this page
+        var drawingEdit;
+        var drawingDisplay;
+	                            
+        // Runs on page load
+        function init()
+        {
+        	// Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawing
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            
+            // Preload images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+            
+            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
+            drawingEdit.onLoaded = function()
+            {
+                drawingEdit.addDoodle('AntSeg');
+                drawingEdit.deselectDoodles();
+	            drawingEdit.drawAllDoodles();
+            }
+        }
+        
+		// Delete row
+		function deleteRow(obj)
+		{
+			// Get index of row
+			var rowIndex = obj.parentNode.parentNode.sectionRowIndex + 1;
+
+ 			// Get term
+ 			var textToDelete = document.getElementById('valueTable').rows[rowIndex].cells[0].firstChild.innerHTML;
+			
+			// Delete row
+			document.getElementById('valueTable').deleteRow(rowIndex);
+			
+			// Augment row counter
+			rowCount--;
+			
+			// Delete from text area
+			deleteFromTextarea(textToDelete,'valueTextArea');
+		}
+		
+		// Add row
+		function addRow(_value)
+		{
+			// Get index of selected drug
+			var index = _value
+			
+			// Get reference to dropdown
+			var select = document.getElementById('valueSelector');
+			
+			// Get reference to table
+			var table = document.getElementById('valueTable');
+			
+			// Index of next row is equal to number of rows
+			var nextRowIndex = table.tBodies[0].rows.length;
+			
+			// Add new row
+			var newRow = table.tBodies[0].insertRow(nextRowIndex);
+
+			// Name
+			var paraNode = document.createElement("p");
+			paraNode.setAttribute('class','tableText');
+			textNode = document.createTextNode(select[select.selectedIndex].innerHTML);
+			paraNode.appendChild(textNode);
+			var cell0 = newRow.insertCell(0);
+			cell0.setAttribute('width', '50%');
+			cell0.appendChild(paraNode);
+
+			// Code
+			paraNode = document.createElement("p");
+			paraNode.setAttribute('class','tableText');
+			textNode = document.createTextNode(select.value);
+			paraNode.appendChild(textNode);
+			var cell1 = newRow.insertCell(1);
+			cell1.setAttribute('width', '40%');
+			cell1.appendChild(paraNode);
+			
+			// Delete aref
+			var cell2 = newRow.insertCell(2);
+			var deleteButton = document.createElement('a');
+			deleteButton.setAttribute('onClick','deleteRow(this);');
+			deleteButton.innerText = "Delete";
+			cell2.appendChild(deleteButton);
+			
+			// Augment row counter
+			rowCount++;
+			
+			// Add to text area as well
+			addToTextarea('valueSelector', 'valueTextArea');
+			
+			// Reset select index
+			document.getElementById('valueSelector').selectedIndex = 0;
+		}
+		
+		function deleteFromTextarea(valueText, textareaId)
+		{
+			// Get references to textarea
+			var textArea = document.getElementById(textareaId);
+			
+			// Get text from textarea 
+			var text = textArea.value;
+
+			// Remove text
+			textArea.value = text.replace(valueText, '');
+		}
+     
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<!-- Description section -->
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element handles values lists.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Settings section -->
+<!--
+		<div class="section" style="height:130px;" align="left">
+			<h4>Settings:</h4>
+			<table cellspacing="0" width="620" >
+				<tbody>				
+					<tr>
+						<td align="left" width="60%"><p class="complable" >Select:</p></td>
+						<td align="left" width="40%">
+							<select style="width: auto;">
+								<option>Option</option>
+							</select>
+				        </td>
+					</tr>
+					<tr>
+						<td align="left"><p class="complable" >Check box:</p></td>
+						<td align="left">
+							<input class="checkbox" type="checkbox" id="chk_pxe" onchange="someFunction(this.checked);"/>
+				        </td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+-->
+		
+		<!-- Edit mode section -->
+		<div class="section" style="height:440px;" align="left">
+			<h4>Edit mode:</h4>
+							
+			<!-- Left column -->
+			<div style ="width: 220px; float:left;">
+
+				<!-- Select for common diagnoses -->
+				<select class="sidebar" id="valueSelector" style="width: 170px;" onchange="addRow(this.value);">
+					<option value="">Morphology</option>
+					<option value="01">Nuclear cataract</option>
+					<option value="02">Cortical cataract</option>
+				</select>
+				
+				<!-- New line -->
+				<br />		
+				
+				<!-- Text area -->
+				<textarea name="freeText" id="valueTextArea" ></textarea>
+
+				<!-- New line -->
+				<br />
+								
+				<!-- Doodle toolbar -->
+				<div class="toolbar">
+
+	                <button class="imgbutton" title="Nuclear Cataract" onclick="drawingEdit.addDoodle('NuclearCataract'); return false;" ><img src="../../graphics/NuclearCataract.gif" /></button>
+				</div>
+				
+				<!-- Canvas -->
+				<canvas id="canvasEdit" width="200" height="200" tabindex="1"></canvas>
+
+
+			</div>
+			
+			<!-- Right column -->
+			<div style ="width:660px; float:left;">
+			
+				<!-- Value list -->
+				<table name="table" id="valueTable" align="left" cellspacing="0" width="500">
+					<thead class="tabletitles">
+						<tr>
+							<th align="left" width="50%"><p class="tableText"><b>Item</b></p></th>
+							<th align="left" width="40%"><p class="tableText"><b>Code</b></p></td>
+							<th align="left" width="10%"></td>
+						</tr>
+					</thead>
+					<tbody id="tableBody">
+					</tbody>
+				</table>
+
+			
+			</div>
+				
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:120px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<table style="border: none;" width="300">
+				<tbody>
+					<tr>
+						<td style="border: none;" align="left" width="60%">G Chloramphenicol</td>
+						<td style="border: none;" align="left" width="10%">qid</td>
+						<td style="border: none;" align="left" width="10%">RE</td>
+						<td style="border: none;" align="left" width="20%">1 month</td>
+					</tr>
+					<tr>
+						<td style="border: none;" align="left">G Dexamethasone 0.1%</td>
+						<td style="border: none;" align="left">qid</td>
+						<td style="border: none;" align="left">RE</td>
+						<td style="border: none;" align="left">1 week</td>
+					</tr>
+				</tbody>
+			</table>	
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->		
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+	<script language="JavaScript" src="anaesthdrugs.js" type="text/javascript"></script>	
+    <script type="text/javascript">
+
+		// Common Drugs
+		var commonDrugSet = 
+		[
+			{id:0, name:"Propofol 1%", route:"IV", dose:0, unit:"mg/kg/hr", type:"range", inTable:false},
+			{id:1, name:"Propofol 2%", route:"IV", dose:0, unit:"mg/kg/hr", type:"range", inTable:false},
+			{id:2, name:"Remifentanil", route:"IV", dose:0, unit:"ug/kg/hr", type:"range", inTable:false},
+			{id:3, name:"Paracetamol", route:"IV", dose:0, unit:"mg", type:"range", inTable:false},
+			{id:4, name:"Diclofenac", route:"IV", dose:0, unit:"mg", type:"range", inTable:false},
+			{id:5, name:"Compound Sodium Lactate", route:"IV", dose:0, unit:"mls", type:"range", inTable:false},
+			{id:6, name:"0.9% Saline", route:"IV", dose:0, unit:"mls", type:"range", inTable:false},
+			{id:7, name:"5% Dextrose", route:"IV", dose:0, unit:"mls", type:"range", inTable:false},
+			{id:8, name:"10% Dextrose", route:"IV", dose:0, unit:"mls", type:"range", inTable:false},
+			{id:9, name:"Propofol bolus", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:10, name:"Remifentanil bolus", route:"IV", dose:0, unit:"ug", type:"fixed", inTable:false},
+			{id:11, name:"Fentanil", route:"IV", dose:0, unit:"ug", type:"fixed", inTable:false},
+			{id:12, name:"Alfentanil", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:13, name:"Morphine", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:14, name:"Ondansetron", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:15, name:"Dexamethasone", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:16, name:"Glycopyrollate", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:17, name:"Atropine", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:18, name:"Ephedrine", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:19, name:"Metaraminol", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:20, name:"Midazolam", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:21, name:"Lignocaine", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:22, name:"Dexmedatomidine", route:"IV", dose:0, unit:"ug", type:"fixed", inTable:false},			
+			{id:23, name:"G.Proxymetacaine 0.5%", route:"Eye", dose:0, unit:"drops", type:"fixed", inTable:false},			
+			{id:24, name:"G.Tetracaine 0.5%", route:"Eye", dose:0, unit:"drops", type:"fixed", inTable:false},			
+			{id:25, name:"Lignocaine 2%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:26, name:"Bupivacaine 0.5%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:27, name:"Bupivacaine 0.75%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:28, name:"Ropivacaine 0.5%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:29, name:"Ropivacaine 0.75%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:30, name:"Ropivacaine 1%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:31, name:"Hyalase", route:"Eye", dose:0, unit:"IU", type:"fixed", inTable:false}			
+
+		];
+		
+		// ArrayS to track drawing objects and controllers
+		var drawingArray = new Array();
+		var controllerArray = new Array();
+		var selectedDoodle = null;
+
+		// Counter to track rows
+		var rowCount = 0;
+		
+		// Value of last index
+		//var lastIndex = 8;
+		
+		// Principal eye
+		var principalEye = 'LE';
+	                            
+        // Runs on page load
+        function init()
+        {
+        	updateSelect("infusion", 0, 8);
+        	updateSelect("drug", 9, 22);
+        	updateSelect("block", 23, 31);
+        	document.getElementById('infusionSelector').focus();
+        }
+        
+        // Change the options in the _select
+		function updateSelect(_type, _startId, _endId)
+		{
+			// ID of select
+			var id = _type + 'Selector';
+			
+			// Get reference to the select
+			var sel = document.getElementById(id);
+			
+			// Remove all options
+			sel.options.length = 0;
+			
+			// Populate select according to state of no preservative flag and type
+			sel.options[sel.options.length] = new Option("-- Select " + _type + " --","");
+			for (var i = _startId; i <= _endId; i++)
+			{
+				sel.options[sel.options.length] = new Option(this.commonDrugSet[i].name, this.commonDrugSet[i].id);
+			}		
+		}
+		
+		// Delete row
+		function deleteRow(obj) {
+			// Get index of row
+			var rowIndex = obj.parentNode.parentNode.sectionRowIndex;
+			
+			// Delete it
+			document.getElementById('presTable').deleteRow(rowIndex);
+			
+			// Delete corresponding drawing object and controller
+			drawingArray.splice(rowIndex, 1);
+			controllerArray.splice(rowIndex, 1);
+			
+			// Reset drug set
+			for (var i in this.commonDrugSet) {
+				var drug = this.commonDrugSet[i];
+				
+				if (drug.id == obj.parentNode.parentNode.getAttribute('drugid')) {
+					drug.inTable = false;
+				}
+			}
+			
+			// Decrement row counter
+			rowCount--;
+		}
+		
+		// Add row
+		function addRow(_selectId, _value) {
+			// Get index of selected drug
+			var index = _value
+			
+			// Get reference to table
+			var table = document.getElementById('presTable');
+			
+			if (!this.commonDrugSet[index].inTable) {
+			
+				// Index of next row is equal to number of rows
+				var nextRowIndex = table.tBodies[0].rows.length;
+				
+				// Add new row
+				var newRow = table.tBodies[0].insertRow(nextRowIndex);
+				
+				// Store drug id as an attribute of the row (to assist row deleting)
+				newRow.setAttribute('drugid', this.commonDrugSet[index].id);
+				
+				// Name
+				var paraNode = document.createElement("p");
+				paraNode.setAttribute('class','tableText');
+				var textNode = document.createTextNode(this.commonDrugSet[index].name);
+				paraNode.appendChild(textNode);
+				var cell0 = newRow.insertCell(0);
+				cell0.appendChild(paraNode);
+				cell0.setAttribute('width', '18%')
+				
+				// Route
+				var cell1 = newRow.insertCell(1);
+				var routes = ['IV', 'Eye'];
+				cell1.appendChild(tableSelect(routes, this.commonDrugSet[index].route, 'route'));
+				cell1.setAttribute('width', '8%')
+				
+				// Duration
+				var cell2 = newRow.insertCell(2);
+				var duration = document.createElement("canvas");
+				duration.setAttribute('width', 600);
+				duration.setAttribute('height', 30);
+				duration.setAttribute('id', 'duration' + this.commonDrugSet[index].id); // ID of canvas relates to id of drug
+				duration.setAttribute('class', 'durationCanvas');
+				cell2.appendChild(duration);
+				cell2.setAttribute('width', '68%')
+				canvasInit('duration' + this.commonDrugSet[index].id, this.commonDrugSet[index].unit, this.commonDrugSet[index].type);
+				
+				// Delete aref
+				var cell3 = newRow.insertCell(3);
+				var deleteButton = document.createElement('a');
+				deleteButton.setAttribute('onClick','deleteRow(this);');
+				deleteButton.innerText = "Delete";
+				cell3.appendChild(deleteButton);
+				cell3.setAttribute('width', '6%')
+				
+				// Mark drug as having been used
+				this.commonDrugSet[index].inTable = true;
+						
+				// Augment row counter
+				rowCount++;	
+			}
+			else {
+				//this.drawingArray[this.commonDrugSet[index].index].addDoodle('AgentDuration');
+				
+				// Iterate through drawing array looking for matching drawing and adding new doodle
+				for (var i in this.drawingArray) {
+					if (this.drawingArray[i].IDSuffix == 'duration' + this.commonDrugSet[index].id) {
+						this.drawingArray[i].addDoodle('AgentDuration', {originX: -200, unit:this.commonDrugSet[index].unit, type:this.commonDrugSet[index].type});
+					}
+				}
+			}
+			
+			// Reset select index
+			document.getElementById(_selectId).selectedIndex = 0;
+		}
+		
+		// Construct and return select for array
+		function tableSelect(optionArray, selectedValue, name)
+		{
+			var tableSelect = document.createElement('select');
+			tableSelect.setAttribute('name', name + rowCount);
+			tableSelect.setAttribute('class', 'tableSelect');
+			
+			// Iterate through array adding options
+			var i;
+			for (i in optionArray)
+			{
+				var option = document.createElement('option');
+				if (selectedValue == optionArray[i]) option.setAttribute('selected', 'true');
+				option.innerText = optionArray[i];
+				tableSelect.appendChild(option);
+			}
+		
+			return tableSelect;
+		}
+		
+		// Initialises canvas
+		function canvasInit(_canvasId, _unit, _type)
+		{
+		    // Get reference to the drawingEdit canvas
+		    var canvasEdit = document.getElementById(_canvasId);
+		
+		    // Create a drawingEdit (Set to scale on width (otherwise compresses doodle)
+		    var drawing = new ED.Drawing(canvasEdit, ED.eye.Right, _canvasId, true, {graphicsPath:'../../graphics/', scaleOn:'Width'});
+		
+		    // Instantiate a controller object
+		    var controller = new eyeDrawController(drawing);
+		
+		    // Store drawing object and controller in array
+		    drawingArray.push(drawing);
+		    controllerArray.push(drawing);
+		    
+		    // Initialise drawing
+		    drawing.init();
+		    
+		    // Set focus to canvasEdit element
+		    canvasEdit.focus();
+		
+		    // Controller class
+		    function eyeDrawController(_drawing)
+		    {
+		        this.drawing = _drawing;
+		        
+		        // Flag to ensure focus is given to dose box even after redraw
+		        this.drugFocus = false;
+		        
+		        // Specify call back function
+		        this.callBack = callBack;
+		        
+		        // Register for notifications with drawing object
+		        this.drawing.registerForNotifications(this, 'callBack', []);
+		        
+		        // Method called for notification
+		        function callBack(_messageArray)
+		        {
+		            //console.log("Notified for event: " + _messageArray['eventName']);
+		
+		            switch (_messageArray['eventName'])
+		            {
+		                // Eye draw image files all loaded
+		                case 'ready':
+		                    // Deselect doodles in all drawings
+		                	for (var i in drawingArray) {
+								drawingArray[i].deselectDoodles();
+							}
+		                    selectedDoodle = this.drawing.addDoodle('AgentDuration', {originX: -200, unit:_unit, type:_type});
+		                    //selectedDoodle.unit = _unit;
+		                    break;
+		                    
+		                case 'mouseout':
+		                	//this.drawing.deselectDoodles();
+		                	break;
+		                	
+		                case 'doodleAdded':
+		                	selectedDoodle = _messageArray['selectedDoodle'];
+							flipDoseBox('', true);
+							this.drugFocus = true;
+		                	break;
+		                	
+		                case 'doodleSelected':
+		                 	// Deselect doodles in other drawings
+		                	for (var i in drawingArray) {
+		                							
+								if (drawingArray[i].IDSuffix != _messageArray['selectedDoodle'].drawing.IDSuffix) {
+		
+									drawingArray[i].deselectDoodles();
+								}
+							}
+		                	selectedDoodle = _messageArray['selectedDoodle'];
+		                	flipDoseBox(selectedDoodle.dose, true);
+		                	this.drugFocus = true;
+		                	break;
+		                	
+		                case 'doodleDeselected':
+		                	selectedDoodle = null;
+							flipDoseBox('', false);
+							this.drugFocus = false;
+		                	break;
+		                	
+		                case 'drawingRepainted':
+		                	//console.log('repainted');
+		                	if (this.drugFocus) document.getElementById('doseBox').focus();
+		                	break;
+		            }
+		        }
+		        
+		        function flipDoseBox(_dose, _show) {
+		        	document.getElementById('doseBox').value = _dose;
+			        if (_show) {
+			        	document.getElementById('doseBox').style.display = 'block';
+			        	document.getElementById('doseBox').focus();
+			        }
+			        else
+			        {
+			        	document.getElementById('doseBox').blur();
+			        	document.getElementById('doseBox').style.display = 'none'        
+			        }
+		        }
+		    }
+		}
+		
+		function doseKeyUp(_event) {
+			if (selectedDoodle) {
+				selectedDoodle.dose = document.getElementById('doseBox').value;
+				selectedDoodle.drawing.repaint();
+			}
+		}
+
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<!-- Description section -->
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows the recording of drugs administered during a general anaesthetic. Selection of a drug places a marker in the time grid. For drugs that are infused over time, the marker can be moved and stretched to indicate the duration of the infusion. When the marker is added, or when the timeline is subsequently selected, the dose can be edited by typing in the text box that appears.</p>
+			<p>Selecting a drug which is already in the table will add a new marker to the existing entry.</p>
+			<p>NB. The live version will place the marker at the current timepoint, and will have a moving red time indicator (see the anaesthetic monitoring element for a working demo).</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+		
+		<!-- Edit mode section -->
+		<div class="section" style="height:340px;" align="left">
+			<h4>Edit mode:</h4>
+							
+			<!-- Left column -->
+			<div style ="width: 180px; float:left;">
+								
+				<!-- Selects for anaesthetic drugs -->
+				<select class="sidebar" id="infusionSelector" style="width: 170px;" onchange="addRow('infusionSelector', this.value);">
+				</select>
+				<select class="sidebar" id="drugSelector" style="width: 170px;" onchange="addRow('drugSelector', this.value);">
+				</select>
+				<select class="sidebar" id="blockSelector" style="width: 170px;" onchange="addRow('blockSelector', this.value);">
+				</select>
+								
+				<!-- Dose box -->
+				</br>
+				<input type="text" class="entrytext" id="doseBox" title="Dose" onkeyup="doseKeyUp(event);" style="display:none;">
+							
+			</div>
+			
+			<!-- Right column -->
+			<div style ="width:860px; float:left; background-image:url(../../graphics/DrugGrid.png);background-repeat:no-repeat;">
+			
+				<!-- Time values -->
+				<span class="time" style="margin-left:254px;">09:30</span>
+				<span class="time">10:00</span>
+				<span class="time">10:30</span>
+				<span class="time">11:00</span>
+				<span class="time">11:30</span>
+
+				</br>
+				
+				<!-- Drug list (infusions) -->
+				<table name="table" id="presTable" align="center" cellspacing="0" width="800">
+					<tbody id="tableBody">
+					</tbody>
+				</table>
+			
+			</div>
+				
+		<!-- End of Edit mode section -->
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+</body>
+</html>

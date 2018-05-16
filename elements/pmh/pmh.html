@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        function init()
+        {
+        	
+        }
+        
+		// Add row
+		function addRow(_index) {
+			
+			// Get text of selected diagnosis
+			var chosenOption = document.getElementById("diagSelect").options[_index];
+	
+			// Get reference to table
+			var table = document.getElementById('diagTable');
+			
+			// Index of next row is equal to number of rows
+			var nextRowIndex = table.tBodies[0].rows.length;
+			
+			// Add new row
+			var newRow = table.tBodies[0].insertRow(nextRowIndex);
+				
+			// Date
+			var paraNode = document.createElement("p");
+			paraNode.setAttribute('class','tableText');
+			var textNode = document.createTextNode('12/11/13');
+			paraNode.appendChild(textNode);
+			var cell0 = newRow.insertCell(0);
+			cell0.appendChild(paraNode);
+			
+			// Diagnosis
+			paraNode = document.createElement("p");
+			paraNode.setAttribute('class','tableText');
+			var textNode = document.createTextNode(chosenOption.text);
+			paraNode.appendChild(textNode);
+			var cell1 = newRow.insertCell(1);
+			var routes = ['IV', 'Eye'];
+			cell1.appendChild(paraNode);
+			
+			// Spare cells
+			var cell2 = newRow.insertCell(2);
+			
+			// Delete aref
+			var cell3 = newRow.insertCell(3);
+			var deleteButton = document.createElement('a');
+			deleteButton.setAttribute('onClick','deleteRow(this);');
+			deleteButton.innerText = "Delete";
+			cell3.appendChild(deleteButton);
+			
+			// Reset select index
+			document.getElementById("diagSelect").selectedIndex = 0;
+		}
+		
+		// Delete row
+		function deleteRow(obj) {
+			// Get index of row
+			var rowIndex = obj.parentNode.parentNode.sectionRowIndex + 1;
+			
+			// Delete it
+			document.getElementById('diagTable').deleteRow(rowIndex);
+		}
+		
+		// Incremental search (DEMO only)
+		function entryKeyUp(_event) {
+			alert('Incremental search of all SNOMED codes for systemic disorders');
+		}
+		
+		function allWell() {
+			var buttons = document.getElementsByTagName('input');
+			for (var i in buttons) {
+				var button = buttons[i];
+				if (button.value == 'n') {
+					button.checked = true;
+				}
+			}
+		}
+		
+		// Make additonal options for IHD visible or not
+		function ihd(_obj) {
+			if (_obj.value == 'y') {
+				//console.log(document.getElementById('an').style.display);
+				document.getElementById('an').style.display = "";
+				document.getElementById('mi').style.display = "";
+				document.getElementById('cg').style.display = "";
+				document.getElementById('st').style.display = "";
+			}
+			else {
+				document.getElementById('an').style.display = "none";
+				document.getElementById('mi').style.display = "none";
+				document.getElementById('cg').style.display = "none";
+				document.getElementById('st').style.display = "none";
+			}
+		}
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element records the past medical history as described in the draft National Glaucoma Dataset of the Royal College of Ophthalmologists sections 7.21 to 7.43. It will appear while recording an examination, and opened by default for new glaucoma patients.</p>
+			<p>Specific conditions that require mandatory yes:no answers are listed in the table. Other conditions can be added by using either the drop down menu (for common conditions), or the incremental search box. Dates are 'fuzzy' in that they can be edited with as much specificity as required (NB Both incremental search and fuzzy dates are implemented in the current release, but not in this demo).</p>
+			<p>The list of diagnoses should also appear in the patient summary page and the glaucoma management plan.</p>
+
+			<p>Status: <b style="color:red;">*** This element code is now frozen for the Glaucoma 2 release in July 2014 ***</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:560px;" align="left">
+			<h4>Systemic Diagnosis:</h4>
+			<select id="diagSelect" style="width:auto;" onchange="addRow(this.selectedIndex);">
+				<option value="">Other common diagnoses</option>
+				<option value="90688005">Raynaud's disease</option>
+				<option value="34486009">Migraine</option>
+				<option value="40930008">Systemic hypotension</option>
+<!-- 				<option value="40930008">Major blood loss</option> -->
+				<option value="19346006">Cardiac arrhythmias</option>
+				<option value="40930008">Syncope</option>
+				<option value="19346006">Cerebrovascular accident</option>
+				<option value="69896004">Sleep apnoea</option>
+			</select>
+			</br>
+			<!-- text box for incremental search -->
+			<input type="text" class="entrytext" title="Any diagnosis can be found by typing here" onkeyup="entryKeyUp(event);">
+<!-- 			<button style="margin-left: 40px; width: 50px; height: 20px; display:inline;" title="No illness" onclick="allWell();">Well</button> 
+			<br/>	-->
+
+			<table id="diagTable" width="800px">
+				<thead>
+					<th width="15%">Date</th>
+					<th width="65%">Diagnosis</th>
+					<th width="10%">Yes</th>
+					<th width="10%">No</th>
+				</thead>
+				<tbody id="tableBody">
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Asthma</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="as" value="y">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="as" value="n">
+					</td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Chronic Obstructive Airways Disease</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="hd" value="y">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="hd" value="n">
+					</td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Hypertension</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="ht" value="y">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="ht" value="n">
+					</td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Ischaemic Heart Disease</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="hb" value="y" onclick="ihd(this);">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="hb" value="n" onclick="ihd(this);">
+					</td>
+				</tr>
+				<tr style="display:none;" id="an">
+					<td><p class="tableText"></p></td>
+					<td><p class="tableText" style="margin-left:30px;">Angina</p></td>
+					<td style="text-align:center">
+						<input type="checkbox"/>
+					</td>
+					<td style="text-align:center">
+					</td>				</tr>
+				<tr style="display:none;" id="mi">
+					<td><p class="tableText"></p></td>
+					<td><p class="tableText" style="margin-left:30px;">Myocardial infarction</p></td>
+					<td style="text-align:center">
+						<input type="checkbox"/>
+					</td>
+					<td style="text-align:center">
+					</td>
+				</tr>
+				<tr style="display:none;" id="cg">
+					<td><p class="tableText"></p></td>
+					<td><p class="tableText" style="margin-left:30px;">CABG</p></td>
+					<td style="text-align:center">
+						<input type="checkbox"/>
+					</td>
+					<td style="text-align:center">
+					</td>
+				</tr>
+				<tr style="display:none;" id="st">
+					<td><p class="tableText"></p></td>
+					<td><p class="tableText" style="margin-left:30px;">Stent</p></td>
+					<td style="text-align:center">
+						<input type="checkbox"/>
+					</td>
+					<td style="text-align:center">
+					</td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Diabetes mellitus type 1</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="dm1" value="y">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="dm1" value="n">
+					</td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Diabetes mellitus type 2</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="dm2" value="y">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="dm2" value="n">
+					</td>
+				</tr>
+				</tbody>
+			</table>			
+	
+		
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Glaucoma</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    
+    	// Variables to calculate compliance. Can have three values, 'Unknown', 'No', or 'Yes'
+    	var answers;
+    	var treatment;
+    	var isCNV;
+    	
+    	// Status of Nice compliance (Irrelevant, Unknown, Yes, No)
+    	var nice;
+
+    	
+//     	var secondarySelect;
+//     	var vaLucentisSelect;
+//     	var vaPDTSelect;
+                            
+        // Runs on page load
+        function init()
+        {
+        	// get reference to elements
+        	//secondarySelect = document.getElementById("secondarySelect");
+        	//vaLucentisSelect = document.getElementById("vaLucentisSelect");
+        	//vaPDTSelect = document.getElementById("vaPDTSelect");
+        	
+        	// Initialise values
+        	answers = new Object();
+        	answers.secondary = 'Unknown';
+        	answers.vaLucentis = 'Unknown';
+        	answers.vaPDT = 'Unknown';
+        	answers.vaLucentis = 'Unknown';
+        	answers.vaPDT = 'Unknown';
+        	answers.isClassic = 'Unknown';
+        	answers.fovealDamage = 'Unknown';
+        	answers.recentProgression = 'Unknown';
+        	answers.smallCNV = 'Unknown';
+        	
+        	treatment = 'None';
+        	isCNV = 'Unknown';
+        	
+        	// Set initial status
+        	nice = "Unknown";
+        }
+
+		// Calculate compliance
+		function checkCompliance()
+		{
+			// Change visibility of menus appropriately
+			setVisibility();
+			
+			// CNV
+			if (isCNV == 'Unknown')
+			{
+				nice = 'Unknown';
+			}
+			else if (isCNV == 'Yes')
+			{
+				// Drug
+				if (treatment == 'Avastin' || treatment == 'Lucentis' || treatment == 'PDT')
+				{
+					// Lucentis
+					if (treatment == 'Lucentis')
+					{
+						// Secondary to AMD
+						if (answers.secondary == 'Unknown')
+						{
+							nice = 'Unknown';
+						}
+						else if (answers.secondary == 'Yes')
+						{
+							// VA in range
+							if (answers.vaLucentis == 'Unknown')
+							{
+								nice = 'Unknown';
+							}
+							else if (answers.vaLucentis == 'Yes')
+							{
+								// Foveal damage
+								if (answers.fovealDamage == 'Unknown')
+								{
+									nice = 'Unknown';
+								}
+								else if (answers.fovealDamage == 'Yes')
+								{
+									nice = "No";
+								}
+								else
+								{
+									// Recent progression
+									if (answers.recentProgression == 'Unknown')
+									{
+										nice = 'Unknown';
+									}
+									else if (answers.recentProgression == 'Yes')
+									{
+										// Small CNV
+										if (answers.smallCNV == 'Unknown')
+										{
+											nice = 'Unknown';
+										}
+										else if (answers.smallCNV == 'Yes')
+										{
+											nice = 'Yes';
+										}
+										else
+										{
+											nice = 'No';
+										}
+									}
+									else
+									{
+										nice = 'No';
+									}
+								}
+							}
+							else
+							{
+								nice = 'No';
+							}
+						}
+						else
+						{
+							nice = 'No';
+						}
+						
+					}
+					// PDT
+					else if (treatment == 'PDT')
+					{
+						// Secondary to AMD
+						if (answers.secondary == 'Unknown')
+						{
+							nice = 'Unknown';
+						}
+						else if (answers.secondary == 'Yes')
+						{
+							// VA in range
+							if (answers.vaPDT == 'Unknown')
+							{
+								nice = 'Unknown';
+							}
+							else if (answers.vaPDT == 'Yes')
+							{
+								// Subtype
+								if (answers.isClassic == 'Unknown')
+								{
+									nice = 'Unknown';
+								}
+								else if (answers.isClassic == 'Yes')
+								{
+									// Foveal damage
+									if (answers.fovealDamage == 'Unknown')
+									{
+										nice = 'Unknown';
+									}
+									else if (answers.fovealDamage == 'Yes')
+									{
+										nice = "No";
+									}
+									else
+									{
+										// Recent progression
+										if (answers.recentProgression == 'Unknown')
+										{
+											nice = 'Unknown';
+										}
+										else if (answers.recentProgression == 'Yes')
+										{
+											// Small CNV
+											if (answers.smallCNV == 'Unknown')
+											{
+												nice = 'Unknown';
+											}
+											else if (answers.smallCNV == 'Yes')
+											{
+												nice = 'Yes';
+											}
+											else
+											{
+												nice = 'No';
+											}
+										}
+										else
+										{
+											nice = 'No';
+										}
+									}
+								}
+								else
+								{
+									nice = 'No';
+								}
+							}
+							else
+							{
+								nice = 'No';
+							}
+						}
+						else
+						{
+							nice = 'No';
+						}
+					}
+					// Avastin
+					else
+					{
+						nice = 'No';
+					}
+				}
+				else if (treatment == 'None')
+				{
+					nice = 'Unknown';
+				}
+				else
+				{
+					nice = 'NotRequired';
+				}			
+			}
+			else
+			{
+				nice = 'NotRequired';
+			}
+			
+			console.log('Nice: ', nice);
+			
+			switch (nice)
+			{
+				case 'Unknown':
+					document.getElementById('nice').src = "../../graphics/niceUnknown.png";
+					break;
+				case 'Yes':
+					document.getElementById('nice').src = "../../graphics/niceYes.png";
+					break;
+				case 'No':
+					document.getElementById('nice').src = "../../graphics/niceNo.png";
+					break;
+				default:
+					document.getElementById('nice').src = "../../graphics/niceNotRequired.png";
+					break;
+			}
+		}
+
+		// Set visibility of dropdowns
+		function setVisibility()
+		{
+			// Make all invisible
+			for (var name in answers)
+			{
+				document.getElementById(name + 'Div').style.display = 'none';
+			}
+			
+			if (isCNV == 'Yes')
+			{
+				if (treatment == 'Lucentis')
+				{
+					document.getElementById('secondaryDiv').style.display = 'inline';
+					
+					if (answers.secondary == 'Yes')
+					{
+						document.getElementById('vaLucentisDiv').style.display = 'inline';
+						
+						if (answers.vaLucentis == 'Yes')
+						{
+							document.getElementById('fovealDamageDiv').style.display = 'inline';
+							
+							if (answers.fovealDamage == 'No')
+							{
+								document.getElementById('recentProgressionDiv').style.display = 'inline';
+								
+								if (answers.recentProgression == 'Yes')
+								{
+									document.getElementById('smallCNVDiv').style.display = 'inline';
+								}
+							}
+						}
+					}
+				}
+				
+				if (treatment == 'PDT')
+				{
+					document.getElementById('secondaryDiv').style.display = 'inline';
+					debugger;
+					if (answers.secondary == 'Yes')
+					{
+						document.getElementById('vaPDTDiv').style.display = 'inline';
+						
+						if (answers.vaPDT == 'Yes')
+						{
+							document.getElementById('isClassicDiv').style.display = 'inline';
+							
+							if (answers.isClassic == 'Yes')
+							{
+								document.getElementById('fovealDamageDiv').style.display = 'inline';
+								
+								if (answers.fovealDamage == 'No')
+								{
+									document.getElementById('recentProgressionDiv').style.display = 'inline';
+									
+									if (answers.recentProgression == 'Yes')
+									{
+										document.getElementById('smallCNVDiv').style.display = 'inline';
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// Called by change in diagnosis select
+		function changeDiagnosis()
+		{
+			var diagnosisSelect = document.getElementById('diagnosisSelect');
+			var selectedOption = diagnosisSelect.options[diagnosisSelect.selectedIndex];
+			
+			isCNV = selectedOption.getAttribute('cnv') == 'Yes'?'Yes':'No';
+			answers.secondary = selectedOption.getAttribute('amd') == 'Yes'?'Yes':'No';
+			console.log(isCNV, answers.secondary);
+			
+			// Update secondary select
+			if (diagnosisSelect.value == 'None')
+			{
+				document.getElementById('secondarySelect').value = 'Unknown';
+			}
+			else
+			{
+				document.getElementById('secondarySelect').value = answers.secondary == 'Yes'?'Yes':'No';
+			}
+
+			checkCompliance();
+		}
+
+		// Called by change in visual acuity select
+		function changeVa()
+		{
+			var etdrs = parseInt(document.getElementById('vaSelect').value);
+			
+			if (!isNaN(etdrs))
+			{
+				// Test for lucentis compliance
+				if (etdrs >= 25 && etdrs <= 70)
+				{
+					vaLucentisSelect.value = 'Yes';
+					answers.vaLucentis = 'Yes';
+				}
+				else
+				{
+					vaLucentisSelect.value = 'No';
+					answers.vaLucentis = 'No';
+				}
+				
+				// Test for PDT compliance
+				if (etdrs >= 35 && etdrs <= 70)
+				{
+					vaPDTSelect.value = 'Yes';
+					answers.vaPDT = 'Yes';
+				}
+				else
+				{
+					vaPDTSelect.value = 'No';
+					answers.vaPDT = 'No';
+				}				
+			}
+			else
+			{
+				if (document.getElementById('vaSelect').value == 'Not recorded')
+				{
+					vaLucentisSelect.value = 'Unknown';
+					vaPDTSelect.value = 'Unknown';
+					answers.vaLucentis = 'Unknown';
+					answers.vaPDT = 'Unknown';
+				}
+			}
+			
+			checkCompliance();
+		}
+						
+		// Called by change in treatment select
+		function changeTreatment()
+		{
+			treatment = document.getElementById("treatmentSelect").value;
+
+			checkCompliance();
+		}
+		
+		// Called by change in a select
+		function changeValue(_name)
+		{
+			answers[_name] = document.getElementById(_name + 'Select').value;
+			
+			checkCompliance();
+		}
+
+		            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+				<img id="nice" class="nice" src="../../graphics/niceUnknown.png" style="display:inline;margin-top:40px;">
+
+			</div>				
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>AMD</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

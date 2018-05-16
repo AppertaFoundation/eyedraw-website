@@ -1,0 +1,546 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        function init()
+        {
+        }
+        
+        function actionChange(_sel) {
+	        
+	        switch (_sel.value) {
+		        case 'Observe':
+		        	document.getElementById('dropsSelect').style.display = "none";
+		        	document.getElementById('surgerySelect').style.display = "none";
+		        	break;
+		        	
+		        case 'Drops':
+					document.getElementById('dropsSelect').style.display = "";
+					document.getElementById('surgerySelect').style.display = "none";
+		        	break;
+		        	
+		        case 'Surgery':
+		        	document.getElementById('dropsSelect').style.display = "none"
+		        	document.getElementById('surgerySelect').style.display = "";
+		        	break;
+	        }
+        }
+        
+        function surgeryChange(_sel) {
+        
+	        document.getElementById('procSelect').style.display = "none";
+        	document.getElementById('laserSelect').style.display = "none";
+        	document.getElementById('responseSelect').style.display = "none";
+        	
+        	if (_sel.value == 1) {
+        		document.getElementById('surgSelect').style.display = "";
+	        }
+	        else  {
+        		document.getElementById('surgSelect').style.display = "none";
+	        }
+        }
+        
+        function observeChange(_val) {
+	        if (_val == 'no') document.getElementById('actionTable').style.display="";
+	        else document.getElementById('actionTable').style.display="none";
+        }
+ 
+        function surgChange(_sel) {
+        	document.getElementById('procSelect').style.display = "none";
+        	document.getElementById('laserSelect').style.display = "none";
+        	document.getElementById('responseSelect').style.display = "none";
+	        if (_sel.value == "Glaucoma") {
+	        	document.getElementById('procSelect').style.display="";
+	        }
+	        else if (_sel.value == "Laser") {
+	        	document.getElementById('laserSelect').style.display="";
+	        }
+        }
+               
+        function procChange(_sel) {
+	        if (_sel.value != '-- Please Select --') document.getElementById('responseSelect').style.display = "";
+	        else document.getElementById('responseSelect').style.display = "none";
+        }
+        
+        function impChange(_sel) {
+        	if (_sel.value == 1) {
+	        	document.getElementById('progCause').style.display = "";
+        	}
+        	else {
+	        	document.getElementById('progCause').style.display = "none";
+        	}
+	    }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element shows the Glaucoma management plan, which will be a child element of the current Clinical Management element in the examination event. It will be open by default for new patients, and portions of it. It consists of two major parts</p>
+			<ol>
+				<li>Overall management plan (Which will be reproduced on the glaucoma episode summary)</li>
+				<li>Current management plan</li>
+			</ol>
+			<p>Status: <b style="color:red;">*** This element code is now frozen for the Glaucoma 2 release in July 2014 ***</b></p>
+		</div>
+
+		<!--Overall Management Plan -->
+		<div class="section" style="height:360px;" align="left">
+			<h4>Overall Management Plan:</h4>
+			<p>All values pre-populated from last entry</p>			
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+				
+ 				<table width="520px;">
+					<tbody>
+						<tr>
+							<td width="30%">
+								<p style="margin-top:-5px;">Target IOP:</p>
+							</td>
+							<td width="70%">
+								<select>
+									<option>1</option>
+									<option>2</option>
+									<option>3</option>
+									<option>4</option>
+									<option>5</option>
+									<option>6</option>
+									<option>7</option>
+									<option>8</option>
+									<option>9</option>
+									<option>10</option>
+									<option>11</option>
+									<option>12</option>
+									<option>13</option>
+									<option selected=true>14</option>
+									<option>15</option>
+									<option>16</option>
+									<option>17</option>
+									<option>18</option>
+									<option>19</option>
+									<option>20</option>
+									<option>21</option>
+									<option>22</option>
+									<option>23</option>
+									<option>24</option>
+									<option>25</option>
+									<option>26</option>
+									<option>27</option>
+									<option>28</option>
+									<option>29</option>
+									<option>30</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Clinic internal:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option>6 weeks</option>
+									<option selected=true>3 months</option>
+									<option>4 months</option>
+									<option>6 months</option>
+									<option>9 months</option>
+									<option>12 months</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Photo:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option>6 weeks</option>
+									<option>3 months</option>
+									<option>4 months</option>
+									<option selected=true>6 months</option>
+									<option>9 months</option>
+									<option>12 months</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">OCT:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option>6 weeks</option>
+									<option>3 months</option>
+									<option>4 months</option>
+									<option selected=true>6 months</option>
+									<option>9 months</option>
+									<option>12 months</option>
+								</select>
+							</td>						</tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">HFA:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option>6 weeks</option>
+									<option>3 months</option>
+									<option>4 months</option>
+									<option>6 months</option>
+									<option>9 months</option>
+									<option selected=true>12 months</option>
+								</select>
+							</td>
+						</tr>
+						</tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Gonio:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option>6 weeks</option>
+									<option>3 months</option>
+									<option>4 months</option>
+									<option selected=true>6 months</option>
+									<option>9 months</option>
+									<option>12 months</option>
+								</select>
+							</td>
+						</tr>
+					</tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Comments:</p>
+							</td>
+							<td width="35%">
+								<textarea></textarea>
+							</td>
+						</tr>
+					</tbody>
+ 				</table>
+ 				
+   			
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+			
+		<!-- End of Overall Management Plan -->
+		</div>					
+
+		<!--Current Management Plan -->
+		<div class="section" style="height:740px;" align="left">
+			<h4>Current Management Plan:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+				
+				<table width="520px;">
+					<tbody>
+<!--
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Impression:</p>
+							</td>
+							<td width="35%">
+								<select onchange="impChange(this);">
+									<option value=0>-- Please Select --</option>
+									<option value=0>Stable</option>
+									<option value=0>Uncontrolled IOP</option>
+									<option value=1>Possible progression</option>
+									<option value=1>Likely progression</option>
+									<option value=1>Definite progression</option>
+									<option value=0>Drop related problems</option>
+								</select>
+							</td>
+							<td width="25%">
+								<span id="progCause" style="display:none;">
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Angle</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Disc</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Visual fields</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Imaging</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Subjective</p>
+								</span>
+							</td>
+							<td width="25%">
+							</td>
+						</tr>
+-->
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">IOP:</p>
+							</td>
+							<td width="35%">
+								<p style="color:red;">*** IOP above target ***</p>
+							</td>
+							<td width="25%">
+								(determined from difference between last IOP measurement and target)
+							</td>
+							<td width="25%">
+							</td>
+						</tr>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Glaucoma status:</p>
+							</td>
+							<td width="35%">
+								<select onchange="impChange(this);">
+									<option value=0>-- Please Select --</option>
+									<option value=0>Insufficient data</option>
+									<option value=0>Stable</option>
+									<option value=1>Possible progression</option>
+									<option value=1>Likely progression</option>
+									<option value=1>Definite progression</option>
+								</select>
+							</td>
+							<td width="25%">
+								<span id="progCause" style="display:none;">
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Angle</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Disc</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Visual fields</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Imaging</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Subjective</p>
+								</span>
+							</td>
+							<td width="25%">
+							</td>
+
+						</tr>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Drop-related problems:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option value=0>None</option>
+									<option value=0>Mild irritation</option>
+									<option value=0>Allergy</option>
+									<option value=0>Intolerance</option>
+									<option value=0>Side-effects</option>
+									<option value=0>Non responder</option>
+									<option value=0>Tachyphylaxis</option>
+									<option value=0>Non adherence</option>
+									<option value=0>Inability to apply</option>
+								</select>
+							</td>
+							<td width="25%">
+							</td>
+							<td width="25%">
+							</td>
+						</tr>
+<!--
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Observe:</p>
+							</td>
+							<td width="35%">
+								<label for="male">Yes</label>
+								<input style="margin-top:6px;" type="radio" name="observe" id="yes" value="yes" onchange="observeChange(this.value);">
+								<label for="female">No</label>
+								<input type="radio" name="observe" id="no" value="no" onchange="observeChange(this.value);"><br>
+							</td>
+							<td width="25%">
+							</td>
+							<td width="25%">
+							</td>
+						</tr>
+-->
+					</tbody>
+				</table>
+				
+				<table id="actionTable" style="display:'';" width="500px;">
+					<tbody>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Drops:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option>-- Please Select --</option>
+									<option>Start</option>
+									<option>Continue</option>
+									<option>Change</option>
+								</select>
+							</td>
+							<td width="25%">
+								<p>(--Current drops displayed here--)</p>
+							</td>
+							<td width="25%">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p style="margin-top:-5px;">Surgery:</p>
+							</td>
+							<td>
+								<select onchange = "surgeryChange(this);">
+									<option>-- Please Select --</option>
+									<option value=1>Discussed</option>
+									<option value=1>Offered</option>
+									<option value=1>Considering</option>
+									<option value=1>Accepted</option>
+									<option>Declined</option>
+								</select>
+							</td>
+							<td>
+								<select id="surgSelect" style="display:none;" onchange="surgChange(this);">
+									<option>-- Please Select --</option>
+									<option>Glaucoma</option>
+									<option>Laser</option>
+									<option>Cataract</option>
+									<option>Other</option>
+								</select>
+								<select id="procSelect" style="display:none;" onchange="procChange(this);">
+									<option>-- Please Select --</option>
+									<option>Trabeculectomy</option>
+									<option>Tube</option>
+									<option>Surgical PI</option>
+									<option>Etc</option>
+								</select>
+								<select id="laserSelect" style="display:none;" onchange="procChange(this);">
+									<option>-- Please Select --</option>
+									<option>Diode</option>
+									<option>PI</option>
+									<option>YAG-Caps</option>
+									<option>SLT</option>
+									<option>ALT</option>
+									<option>Iridoplasty</option>
+								</select>
+							</td>
+							<td>
+								<select id="responseSelect" style="display:none;" onchange="if(this.value == 'Accepted' || this.value == 'Considering') alert('An information leaflet has been printed');">
+									<option>-- Please Select --</option>
+									<option>Declined</option>
+									<option>Considering</option>
+									<option>Accepted</option>
+								</select>
+							</td>
+						</tr>
+						
+						<tr>
+							<td>
+								<p style="margin-top:-5px;">Referral:</p>
+							</td>
+							<td>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Other service</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Refraction</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">LVA</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Orthoptics</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">CL cLinic</p>
+							</td>
+							<td>
+								<p style="margin-top:-5px;">Investigations:</p>
+							</td>
+							<td>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">VF</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">US</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Biometry</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">OCT</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">HRT</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Disc photos</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">EDT</p>
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+ 				<h3>Clinic outcome element</h3>
+				<table width="500px;">
+					<tbody>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Status:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option>Follow up</option>
+									<option>Discharge</option>
+								</select>
+							</td>
+							<td width="25%">
+								<p>see current 'Clinic outcome' element</p>
+							</td>
+							<td width="25%">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+   			
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>		
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Glaucoma</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

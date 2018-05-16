@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        function init()
+        {
+        }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This page shows the proposed layout for summary clinical information on a particular patient. The information will sit in an area above the event display</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:480px;" align="left">
+			<h4>Edit mode:</h4>
+						
+
+			   				
+				<div class="blueBox">
+					<h5>All Episodes<span style="float:right;">&nbsp; open 2 &nbsp;|&nbsp;<span style="font-weight:normal;">closed 0</span></span></h5>
+					<div id="yw0" class="grid-view">
+						<table class="items"  width="400">
+							<thead>
+								<tr><th id="yw0_c0">Start  Date</th><th id="yw0_c1">End  Date</th><th id="yw0_c2">Firm</th><th id="yw0_c3">Specialty</th><th id="yw0_c4">Eye</th><th id="yw0_c5">Diagnosis</th><th id="yw0_c5">Status</th></tr>
+							</thead>
+							<tbody>
+								<tr id="89" class="all-episode even">
+									<td>20 Dec 2011</td>
+									<td></td>
+									<td>Abou-Rayyah Yassir</td>
+									<td>Adnexal</td>
+									<td>Both</td>
+									<td>Chalazion</td>
+									<td>Booked for Right Incision and Curettage on 23rd April 2010</td>
+								</tr>
+								<tr id="107" class="all-episode odd">
+									<td>17 Jan 2012</td>
+									<td></td>
+									<td>Andrews Richard</td>
+									<td>Medical Retinal</td>
+									<td>Left</td>
+									<td>Malignant melanoma of choroid</td>
+									<td>Investigations</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="table_endRow">
+						</div>
+					</div> <!-- .grid-view -->
+				</div>	<!-- .blueBox -->
+				
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+				
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:270px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<!-- Right eye -->
+			<div style ="width:540px; float:left;">
+				<p>Right eye:</p>
+				<div style="float:left; width: 220px; height: 220px;">
+
+				</div>
+				<div style="float:right; width: 320px; height: 220px;">
+
+				</div>
+			</div>
+			
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>					
+			</div>				
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Steering group name</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

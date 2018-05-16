@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/common.js" type="text/javascript"></script>	
+	<script language="JavaScript" src="../../scripts/incrementalSearch.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_General.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_VitreoRetinal.js" type="text/javascript"></script>	
+	<script language="JavaScript" src="opnote.js" type="text/javascript"></script>	
+    <script type="text/javascript">
+    
+    	// Counter to track procs
+		var procCount = 0;
+		
+        // Assign a global variable for each drawingEdit on the page
+        var drawingEdit;
+        var drawingDisplay;
+                                        
+        function init()
+        {
+            // Procedure list defaults to booked values
+        	addProc('Vitrectomy');
+        	addProc('Peel');
+        	
+            // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            
+            // Preload any images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
+            drawingEdit.onLoaded = function()
+            {
+                drawingEdit.addDoodle('BuckleOperation');
+                drawingEdit.deselectDoodles();
+            }
+            
+        }
+
+       	function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('opnote');
+			
+			// ***TEMP***
+			repText.value = "";
+			
+			// If text there already, make it lower case and add a comma before
+			if (repText.value.length > 0)
+			{
+				text = ", " + text.toLowerCase();
+			}
+
+			// Add to existing text in text area
+			repText.value += text;
+		}
+		     
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This page illustrates the way an operation note works within OpenEyes. Procedures and the anaesthetic type default to those that were present in the operation booking, but can be changed. For each procedure, a corresponding element may appear containing additional fields to collect relevant detail.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:700px;" align="left">
+			<h4>Edit mode:</h4>
+
+		<!-- Opnote general -->
+		<div style="height:140px; width:1080px;">
+		
+			<!-- Procedure select -->
+			<div style ="width: 160px; float:left;">
+				<p>Procedures:</p>
+
+				<!-- Select for standard sets -->
+				<select class="sidebar" id="procSelector" style="width: 140px;" onchange="addProc(this.value);">
+					<option>Add Procedure:</option>
+					<option value="Vitrectomy">Vitrectomy</option>
+					<option value="Peel">Peel</option>
+					<option value="Buckle">Buckle</option>
+					<option value="Cryo">Cryo</option>
+					<option value="Gas">Gas</option>
+					<option value="Oil">Oil</option>
+				</select>
+
+				<!-- text box for incremental search -->
+				<input type="text" class="entrytext" id="is_entry" title="Any procedure can be found by typing here" onkeyup="entryKeyUp(event);"><br/>
+				<!-- Results -->
+				<div id="results"></div>												
+			</div>
+			<div style ="width: 220px; float:left;">
+				
+				<!-- List of procedures -->	
+				<table name="table" id="procTable" align="center" cellspacing="0" width="200">
+					<tbody id="tableBody">
+					</tbody>
+				</table>
+			
+			</div>
+
+
+			<!-- Anaesthetic -->
+			<div style ="width:300px; float:left;">
+				<p>Anaesthetic type:</p>
+				<input class="radio" type="radio" name="q1"/><p class="label">Topical</p>
+				<input type="radio" name="q1" checked=true/><p class="label">LA</p>
+				<input type="radio" name="q1"/><p class="label">LAC</p>
+				<input type="radio" name="q1"/><p class="label">LAS</p>
+				<input type="radio" name="q1"/><p class="label">GA</p>
+			</div>
+			
+			<!-- Surgeon -->
+			<div style ="width:160px; float:left;">
+				<p>Surgeon:</p>
+				<select style="width: 140px;">
+					<option >Aylward, George</option>
+					<option>Sullivan, Paul</option>
+					<option>Smith, John</option>
+				</select>
+			</div>
+			
+			<!-- Surgeon -->
+			<div style ="width:160px; float:left;">
+				<p>Assistant:</p>
+				<select style="width: 140px;">
+					<option>None</option>
+					<option >Aylward, George</option>
+					<option>Sullivan, Paul</option>
+					<option>Smith, John</option>
+				</select>
+			</div>
+		
+		</div>
+		
+
+		<!-- Opnote specific -->
+		<div style="height:500px; width:1080px;">	
+		
+			<!-- Vitrectomy -->
+			<div id="Vitrectomy" style="height:40px; width:1080px; background: #eee; border: 1px solid gray; display:none;">
+
+				<label><span>Vitrectomy:</span></label>
+
+				<label>Gauge:</label>
+				<select>
+					<option value="20g" selected="selected">20g</option>
+					<option value="23g">23g</option>
+					<option value="25g">25g</option>
+				</select>
+
+                <label>PVD Induced:</label>
+                <input class="checkBox" type="checkbox" />
+
+             </div>
+ 
+  			<!-- Peel -->
+			<div id="Peel" style="height:40px; width:1080px; background: #eee; border: 1px solid gray; display:none;">
+
+				<label><span>Membrane Peel:<span></label>
+				
+                <label>Membrane blue:</label>
+                <input class="checkBox" type="checkbox" style="margin-top:13px;" />
+                
+                <label>Brilliant blue:</label>
+                <input class="checkBox" type="checkbox" />
+
+                <label>Other dye:</label>
+                <input type="text" style="width: 180px;"/>
+                
+             </div> 
+             
+  			<!-- Buckle -->
+			<div id="Buckle" style="height:320px; width:1080px; background: #eee; border: 1px solid gray; display:none;">
+
+				<label><span>Buckle:<span></label>
+				
+				<div style='float:left; margin-left: 10px; width: 320px; height: 320px;'>
+	
+					<!-- Canvas -->
+		            <canvas id="canvasEdit" class="canvasEditclass" width="300" height="300" tabindex="1"></canvas><br />
+	            </div>
+	            
+	            <!-- Controls -->
+				<div style='float:left; width: 300px;height: 320px;'>
+				
+					<!-- Doodle toolbar -->
+					<div class="toolbar">
+						<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+		                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+		          		<br />
+		          		     
+		                <!-- Doodle selection toolbar -->
+	                    <button class="imgbutton" id="circumferentialBuckle" title="Circumferential Buckle" onclick="drawingEdit.addDoodle('CircumferentialBuckle'); return false;" ><img src="../../graphics/CircumferentialBuckle.gif" /></button>                            
+	                    <button class="imgbutton" id="encirclingBand" title="Encircling Band" onclick="drawingEdit.addDoodle('EncirclingBand'); return false;" ><img src="../../graphics/EncirclingBand.gif" /></button>
+	                    <button class="imgbutton" id="radialSponge" title="Radial Sponge" onclick="drawingEdit.addDoodle('RadialSponge'); return false;" ><img src="../../graphics/RadialSponge.gif" /></button> 
+	                    <button class="imgbutton" id="buckleSuture" title="Buckle suture" onclick="drawingEdit.addDoodle('BuckleSuture'); return false;" ><img src="../../graphics/BuckleSuture.gif" /></button>
+	                    <button class="imgbutton" id="drainageSite" title="Drainage site" onclick="drawingEdit.addDoodle('DrainageSite'); return false;" ><img src="../../graphics/DrainageSite.gif" /></button>
+		                <br /> 		                
+		            </div>
+		            
+					<table cellspacing="0" width="120" >
+					<tbody>		
+						<tr>
+							<td align="left" width="20%"><p class="lable" >Drainage type:</p></td>
+							<td align="left" width="60%">
+						        <select style="margin-top: 8px;">
+						            <option value="None">None</option>
+						            <option value="Corneal">Suture needle</option>
+						            <option value="Limbal">Laser</option>
+						            <option value="Scleral">Cutdown</option>
+						        </select>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Drain haem:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Deep suture:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox"/>
+					        </td>
+						</tr>
+					</tbody>	
+					</table>
+					
+					<button class="actbutton" title="Creates a written report of the operation" onclick="addToReport(); return false;" >Report</button>
+					
+					<textarea name="opnote" id="opnote"></textarea>
+
+				</div>	
+
+                
+             </div>  
+             
+ 			<!-- Tamponade -->
+			<div id="Tamponade" style="height:40px; width:1080px; background: #eee; border: 1px solid gray; display:none;">
+
+				<label><span>Tamponade:<span></label>
+
+				<label>Type:</label>
+				<select>
+					<option value="Air">Air</option>
+					<option value="SF6">SF6</option>
+					<option value="C2F6">C2F6</option>
+					<option value="C3F8" selected="selected">C3F8</option>
+					<option value="1000cS oil">1000cS oil</option>
+					<option value="2000cS oil">2000cS oil</option>
+					<option value="5000cS oil">5000cS oil</option>
+					<option value="Densiron">Densiron</option>
+					<option value="Oxane HD">Oxane HD</option>
+					<option value="PFCL">PFCL</option>
+				</select>
+
+                <label>Percentage:</label>
+                <input type="text" style="width: 40px;"/>
+                
+                <label>Volume (PR):</label>
+                <input type="text" style="width: 40px;"/>
+
+             </div>               
+		</div>	
+		
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:270px;" align="left">
+			<h4>Display mode:</h4>
+				
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

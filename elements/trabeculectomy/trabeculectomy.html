@@ -1,0 +1,771 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+	
+	<!-- Jquery -->
+	<script src="../../scripts/jquery-1.11.1.min.js"></script>
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    
+    	var drawingEdit;
+                            
+        // Runs on page load
+        function init()
+        {
+             // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit , {scaleOn:'width'}
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../img'});
+            
+            // Instantiate a controller object
+            controller = new eyeDrawController(drawingEdit);
+            
+            // Initialise drawing
+            drawingEdit.init();
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+        }
+        
+		// Controller class
+        function eyeDrawController(_drawing)
+        {
+
+            this.drawing = _drawing;
+            
+            // Global scale factor
+            this.gsf = 0.72;
+            
+            // Specify call back function
+            this.callBack = callBack;
+            
+            // Register for notifications with drawing object
+            this.drawing.registerForNotifications(this, 'callBack', []);
+                        
+			// Show doodle controls
+			this.drawing.showDoodleControls = true;
+            
+            // Arrays to hold sutures (so that they can rotate along with flap)
+            var sutureArray = new Array();
+            
+            // Method called for notification
+            function callBack(_messageArray)
+            {
+                switch (_messageArray['eventName'])
+                {
+                    // Eye draw image files all loaded
+                    case 'ready':
+                    	// Alter scale to get wider angle view
+                    	this.drawing.globalScaleFactor = this.gsf;
+                    	
+                    	// Initial doodles
+						this.drawing.addDoodle('AntSeg');
+						this.drawing.addDoodle('ConjunctivalFlap', {}, {method:{id:'methodSelect', attribute:'value'}});
+						this.drawing.addDoodle('PI', {rotation:0});
+						this.drawing.addDoodle('SidePort', {rotation:(this.drawing.eye == ED.eye.Right?5:3) * Math.PI/4});
+                    	
+						// Add trabeculectomy flap
+						var trab = this.drawing.addDoodle('TrabyFlap', {size:'5x2'}, {
+							site:{id:'siteSelect', attribute:'value'}, 
+							size:{id:'sizeSelect', attribute:'value'}, 
+							sclerostomy:{id:'sclerostomySelect', attribute:'value'}
+						});
+
+						// Top left suture
+						var p = new ED.Point(-1 * trab.right.x * this.gsf, (trab.height + 0 * (trab.right.y - trab.height)) * this.gsf);
+						p.angle = 0;
+						p.type = 'Releasable';
+						var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type});
+						this.drawing.flipHor();
+
+						// Top right suture
+						var p = new ED.Point(1 * trab.right.x * this.gsf, (trab.height + 0 * (trab.right.y - trab.height)) * this.gsf);
+						p.angle = 0;
+						p.type = 'Releasable';
+						var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type});
+						
+						// Middle suture
+						var p = new ED.Point(0, (trab.height + 0 * (trab.right.y - trab.height)) * this.gsf);
+						p.angle = 0;
+						p.type = 'Releasable';
+						var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type}); 
+						
+                        this.drawing.deselectDoodles();
+                        break;
+                        
+                    case 'parameterChanged':
+                        var doodle = _messageArray['object'].doodle;
+                        
+                        // TrabyFlap has changed size or rotated
+                        if (doodle.className == 'TrabyFlap')
+                        {
+                        	var trab = doodle;
+
+                        	if (_messageArray['object']['parameter'] == 'rotation')
+                        	{
+                        		// Rotate sutures with flap
+								for (var i = 0; i < sutureArray.length; i++)
+								{	
+									// Get suture
+									var suture = sutureArray[i];
+									
+									// Suture may be null if one has been deleted
+									if (suture != null) {	
+										// Get current position of suture into a point object
+										var np = new ED.Point(suture.originX, suture.originY);
+
+										// Get change in rotation
+										var delta = _messageArray['object'].value - _messageArray['object'].oldValue;
+
+										// Calculate new coordinates and apply them
+										np.setWithPolars(np.length(), np.direction() + delta);
+										suture.originX = np.x;
+										suture.originY = np.y;
+								
+										// Apply rotation
+										suture.rotation += delta;
+									}
+								}
+								
+								// Also rotate a conjunctival flap if present
+								var conjFlap = this.drawing.lastDoodleOfClass('ConjunctivalFlap');
+								if (conjFlap) {
+									conjFlap.rotation = trab.rotation;
+								}
+                        	}
+                        }
+                        break;
+                     
+                    case 'doodleAdded':
+						var className = _messageArray['object'].className;
+						if (typeof(className) != 'undefined')
+						{
+							// Add a new suture to the suture array
+							if (className == 'TrabySuture') 
+							{
+								sutureArray[sutureArray.length] = _messageArray['object'];
+							}
+						}
+						break;
+						                       
+                    case 'doodleDeleted':
+						var className = _messageArray['object'];
+						if (typeof(className) != 'undefined')
+						{
+							if (className == 'TrabySuture') 
+							{	
+								// Mark removal of suture by nulling entry (***TODO*** - must be a better way!)
+								for (var i = 0; i < sutureArray.length; i++)
+                        		{
+                        			var id = sutureArray[i].id;
+                        			if (!this.drawing.doodleOfId(id))
+                        			{
+                        				sutureArray[i] = null;
+                        			}
+                        		}
+							}
+						}
+						break;
+				}
+            }
+        }
+        
+        // Get reference to the canvas elements
+        var canvasEdit2 = document.getElementById('canvasEdit2');
+
+        // Create drawing objects
+        drawingEdit2 = new ED.Drawing(canvasEdit2, ED.eye.Right, 'RPS2', true, {graphicsPath:'../../graphics/'});
+        
+        // Instantiate controller object
+        var controller2 = new eyeDrawController2(drawingEdit2);
+        
+        // Initialise drawings
+        drawingEdit2.init();
+
+        // Controller class
+        function eyeDrawController2(_drawing)
+        {
+            this.drawing = _drawing;
+            
+            // Global scale factor
+            this.gsf = 0.72;
+            
+            // Specify call back function
+            this.callBack = callBack;
+            
+            // Register for notifications with drawing object
+            this.drawing.registerForNotifications(this, 'callBack', []);
+                        
+			// Show doodle controls
+			this.drawing.showDoodleControls = true;
+            
+            // Method called for notification
+            function callBack(_messageArray)
+            {
+                switch (_messageArray['eventName'])
+                {
+                    // Eye draw image files all loaded
+                    case 'ready':
+                    	// Alter scale to get wider angle view
+                    	this.drawing.globalScaleFactor = this.gsf;
+                    	
+                    	// Initial doodles
+						this.drawing.addDoodle('AntSeg');
+						this.drawing.addDoodle('TrabyConjIncision');
+						
+						this.drawing.deselectDoodles();
+                        break;
+                        
+
+				}
+            }
+        }
+
+ 		
+ 		function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('antseg');
+			
+			repText.value = text;
+       }
+       
+		// Takes selection from a select dropdown and adds to a text area, with comma if appropriate
+		function addToTextarea(selectId, textareaId, fixed)
+		{
+			// Get references to select and textarea
+			var select = document.getElementById(selectId);
+			var textArea = document.getElementById(textareaId);
+			
+			// Get value and text from select box
+			var value = select.options[select.selectedIndex].value;
+			var text = select.options[select.selectedIndex].text;
+			
+			// If text there already, make it lower case (as long as it has no caret) and add a comma before
+			if (textArea.value.length > 0)
+			{
+				char = value.charAt(0);
+				if (char != "^")
+				{
+					text = lcfirst(text);
+				}		
+				var text = ", " + text;
+			}
+			
+			// Add to textarea
+			textArea.value = textArea.value + text;
+			
+			// Adjust height of target textarea
+			if (typeof(fixed) == 'undefined')
+			{
+				adjustHeight(textareaId, 40);
+			}
+			
+			// Reset select
+			select.selectedIndex = 0;
+		}
+		
+		// Makes automatically resizeable textarea. Style should be set with no scrollbars (overflow: hidden;)
+		function adjustHeight(id, defaultHeight)
+		{
+			// Get reference to text area
+			var textArea = document.getElementById(id);
+			
+			// Start by setting to default height
+			textArea.style.height = defaultHeight + "px";
+			
+			// Now set new height according to content
+			if (textArea.scrollHeight > textArea.clientHeight)
+			{
+				textArea.style.height = textArea.scrollHeight + "px";
+			}
+		}
+		
+		// Decapitalise first letter of a string
+		function lcfirst(str)
+		{
+		    var firstLetter = str.substr(0, 1);
+		    return firstLetter.toLowerCase() + str.substr(1);
+		}
+		
+		function toggleSecondDrawing() {
+			if (document.getElementById("secondDrawing").style.display == "none") {
+				document.getElementById("secondDrawing").style.display = "";
+				document.getElementById("secondDrawingButton").innerHTML = "Hide conjunctival closure";
+			}
+			else {
+				document.getElementById("secondDrawing").style.display = "none";
+				document.getElementById("secondDrawingButton").innerHTML = "Show conjunctival closure";
+			}
+		}
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+	
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows recording of details of a Trabeculectomy operation. Many items on the drawing are synchronised with data entry elements on the form. Sutures move with the trabeculectomy flap.</p>
+			<p>The data items are compatible with the Royal College of Ophthalmologist's draft glaucoma dataset.</p>
+			
+			<p>Status: <b style="color:red;">*** This element code is now frozen for the Glaucoma 2 release in July 2014 ***</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:530px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Drawing -->
+			<div style ="width: 310px; float:left;">
+
+				<!-- Doodle toolbar -->
+				<div class="toolbar">
+					<button class="ed-button" class="ed-button" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+	                <button class="ed-button" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		            <button class="ed-button" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	                <button class="ed-button" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+	                <button class="ed-button" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+	                <br />
+					<button class="ed-button" id="TrabySutureRPS" title="Trabeculectomy suture" onclick="drawingEdit.addDoodle('TrabySuture'); return false;" ><img src="../../graphics/TrabySuture.gif" /></button>
+					<button class="ed-button" id="piRPS" title="Peripheral iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/PI.gif" /></button>
+					<button class="ed-button" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('SidePort'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
+					<button class="ed-button" id="sidePortRPS" title="AC Maintainer" onclick="drawingEdit.addDoodle('ACMaintainer'); return false;" ><img src="../../graphics/ACMaintainer.gif" /></button>
+					<button class="ed-button" id="sidePortRPS" title="Patch" onclick="drawingEdit.addDoodle('Patch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
+					<button class="ed-button" id="sidePortRPS" title="Conjunctival suture" onclick="drawingEdit.addDoodle('ConjunctivalSuture'); return false;" ><img src="../../graphics/ConjunctivalSuture.gif" /></button>
+	                <br />	  	                    
+                </div>
+	                		
+				<!-- Canvas -->
+				<div style="position:relative;">
+					<span id="canvasTooltip"></span>
+	                <canvas id="canvasEdit" class="ed-canvas" width="300" height="300" tabindex="1"></canvas>
+					<!-- Doodle control panel -->
+					<div id="canvasEdit_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left; position:absolute; top:20px; left:310px;">
+					</div>
+				</div>
+		        
+		        <button id="secondDrawingButton" style="width:200px; height:30px;" onclick="toggleSecondDrawing();">Show conjunctival closure</button>
+		        
+			</div>
+
+
+			
+			<!-- Controls -->
+			<div style='float:left; width: 385px;height: 320px;'>
+			
+				<table cellspacing="0" width="380" style="border:1px solid gray; margin-bottom:10px;">
+					<tbody>
+						<tr>
+<!--
+							<td align="left"><p class="lable" >Stay suture:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:auto;">
+						        	<option>None</option>
+						            <option>Coated VICRYL Plus Antibacterial</option>
+						            <option>MONOCRYL Plus Antibacterial</option>
+						            <option>PDS Plus Antibacterial</option>
+						            <option>VICRYL RAPIDE</option>
+						            <option>Coated VICRYL</option>
+						            <option>MONOCRYL</option>
+						            <option>PDS II</option>
+						            <option>Surgical Gut - Chromic</option>
+						            <option>Surgical Gut - Plain</option>
+						            <option>PRONOVA Poly</option>
+						            <option>ETHIBOND EXCEL Polyester</option>
+						            <option>ETHILON Nylon</option>
+						            <option>MERSILENE Polyester Fiber</option>
+						            <option>NUROLON Nylon</option>
+						            <option>PERMA-HAND Silk</option>
+						            <option>PROLENE Polypropylene</option>
+						        </select>
+	    					 </td>
+						</tr>	
+-->
+						<tr>
+							<td align="left"><p class="lable" >Conjunctival flap:</p></td>
+							<td align="left">
+								<select id="methodSelect" style="width:auto;">
+									<option value="Fornix-based">Fornix-based</option>
+									<option value="Limbus-based">Limbus-based</option>
+								</select>
+	    					 </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Stay suture:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox" id="chk_phd" checked=true/>
+	    					 </td>
+						</tr>
+<!--
+						<tr>
+							<td align="left"><p class="lable" >Suture method:</p></td>
+							<td align="left">
+								<input type="checkbox" name="method" value="Purse string" checked="true"><span class="radio">Purse string</span>
+								<input type="checkbox" name="method" value="Mattress"><span class="radio">Mattress</span>
+	    					 </td>
+						</tr>
+-->
+<!--
+						<tr>
+
+							<td align="left"><p class="lable" >Material:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:auto;">
+						            <option>Coated VICRYL Plus Antibacterial</option>
+						            <option>MONOCRYL Plus Antibacterial</option>
+						            <option>PDS Plus Antibacterial</option>
+						            <option>VICRYL RAPIDE</option>
+						            <option>Coated VICRYL</option>
+						            <option>MONOCRYL</option>
+						            <option>PDS II</option>
+						            <option>Surgical Gut - Chromic</option>
+						            <option>Surgical Gut - Plain</option>
+						            <option>PRONOVA Poly</option>
+						            <option>ETHIBOND EXCEL Polyester</option>
+						            <option>ETHILON Nylon</option>
+						            <option>MERSILENE Polyester Fiber</option>
+						            <option selected="true">NUROLON Nylon</option>
+						            <option>PERMA-HAND Silk</option>
+						            <option>PROLENE Polypropylene</option>
+						        </select>
+	    					 </td>
+
+							<td align="left"><p class="lable" >Type:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:80px; float:left;">
+						            <option>Nylon</option>
+						            <option>Prolene</option>
+						            <option>Vicryl</option>
+						            <option>Silk</option>
+						        </select>
+						        <p class="lable" style="float:left; width:auto; padding-left:15px; padding-right:10px;" >Size:</p>
+						        <select id="staysutureSelect" style="width:60px; float:left;">
+						            <option>11/0</option>
+						            <option>10/0</option>
+						            <option>9/0</option>
+						            <option>8/0</option>
+						            <option>7/0</option>
+						            <option>6/0</option>
+						        </select>
+							</td>
+
+							
+						</tr>
+-->
+<!--
+						<tr>
+						<td align="left"><p class="lable" >Size:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:80px;">
+						            <option>7/0</option>
+						            <option>10/0</option>
+						        </select>
+							</td>
+							
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Number:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:auto;">
+						            <option>1</option>
+						            <option selected="true">2</option>
+						            <option>3</option>
+						            <option>4</option>
+						            <option>5</option>
+						            <option>6</option>
+						            <option>7</option>
+						            <option>8</option>
+						            <option>9</option>
+						            <option>10</option>
+						        </select>
+	    					 </td>
+						</tr>
+-->
+					</tbody>
+					
+				</table>
+				
+						
+				<table cellspacing="0" width="380" style="border:1px solid gray;margin-bottom:10px;">
+					<tbody>	
+						<tr>
+							<td align="left"><p class="lable" >Site:</p></td>
+							<td align="left">
+						        <select id="siteSelect" style="width:auto;">
+						            <option value="Superior">Superior</option>
+						            <option value="Superonasal">Superonasal</option>
+						            <option value="Superotemporal">Superotemporal</option>
+						        </select>
+	    					 </td>
+						</tr>
+						<tr>
+							<td align="left" width="20%"><p class="lable" >Size:</p></td>
+							<td align="left" width="60%">
+						        <select id="sizeSelect">
+						            <option value="4x3">4x3</option>
+						            <option value="5x2">5x2</option>
+						        </select>
+						        </td>
+						</tr>
+
+						<tr>
+							<td align="left"><p class="lable" >Sclerostomy:</p></td>
+							<td align="left">
+						        <select id="sclerostomySelect">
+						            <option value="Punch">Punch</option>
+						            <option value="Block">Block</option>
+						            <option value="Ex-Press shunt">Ex-Press shunt</option>
+						        </select>
+	    					 </td>
+						</tr>
+<!--					<tr>
+
+							<td align="left"><p class="lable" >27-gauge needle sclerostomy:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox" id="chk_phd"/>
+	    					 </td>
+						</tr>
+-->
+<!--
+						<tr>
+							<td align="left"><p class="lable" >AC maintainer:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox" id="chk_phd"/>
+	    					 </td>
+						</tr>
+-->
+						
+<!--
+						<tr>
+							<td align="left"><p class="lable" >Suture:</p></td>
+							<td align="left">
+						        <select id="trabysutureSelect" style="width:auto;">
+						            <option>Coated VICRYL Plus Antibacterial</option>
+						            <option>MONOCRYL Plus Antibacterial</option>
+						            <option>PDS Plus Antibacterial</option>
+						            <option>VICRYL RAPIDE</option>
+						            <option>Coated VICRYL</option>
+						            <option>MONOCRYL</option>
+						            <option>PDS II</option>
+						            <option>Surgical Gut - Chromic</option>
+						            <option>Surgical Gut - Plain</option>
+						            <option>PRONOVA Poly</option>
+						            <option>ETHIBOND EXCEL Polyester</option>
+						            <option>ETHILON Nylon</option>
+						            <option>MERSILENE Polyester Fiber</option>
+						            <option selected="true">NUROLON Nylon</option>
+						            <option>PERMA-HAND Silk</option>
+						            <option>PROLENE Polypropylene</option>
+						        </select>
+	    					 </td>
+						</tr>
+-->
+<!--
+						<tr>
+							<td align="left"><p class="lable" >Type:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:80px;">
+						            <option>Nylon</option>
+						            <option>Prolene</option>
+						        </select>
+							</td>
+						</tr>
+						<tr>
+						<td align="left"><p class="lable" >Size:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:80px;">
+						            <option>7/0</option>
+						            <option>10/0</option>
+						        </select>
+							</td>
+						</tr>
+-->
+						
+					</tbody>	
+				</table>
+				
+				<table cellspacing="0" width="380" style="border:1px solid gray;">
+					<tbody>	
+						<tr>
+							<td align="left" width="34%"><p class="lable" >Viscoelastic:</p></td>
+							<td align="left" width="66%">
+						        <select id="siteSelect" style="width:auto;">
+						            <option>None</option>
+						            <option>HPMC</option>
+						            <option>Healon</option>
+						            <option>Provisc</option>
+						        </select>
+	    					 </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Removed:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox" id="chk_phd"/>
+	    					 </td>
+						</tr>
+						<tr>
+							<td align="left" width="34%"><p class="lable" >Flow:</p></td>
+							<td align="left" width="66%">
+						        <select id="siteSelect" style="width:auto;">
+						            <option>None</option>
+						            <option>Slow</option>
+						            <option>With pressure</option>
+						        </select>
+	    					 </td>
+						</tr>
+					</tbody>	
+				</table>
+			</div>
+				
+			<!-- Other data -->
+			<div style ="width:385px; float:right;">
+					
+				<table cellspacing="0" width="380" >
+					<tbody>
+						<tr>
+							<td align="left">
+								<button class="actbutton" style="margin-top:0px;margin-bottom:6px;" onclick="addToReport(); return false;" >Report</button>
+								<textarea id="antseg" style="height:65px; width:380px;"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<select style="width:140px;" id="difficultiesSelect" onchange="addToTextarea('difficultiesSelect', 'difficulties', true)">
+									<option>Operative Difficulties</option>
+									<option>Big pupil</option>
+									<option>Ciliary Body bleeding</option>
+									<option>Conjunctival button hole</option>
+									<option>Corneal Opacity</option>
+									<option>Deep-set eye</option>
+									<option>Excessive bleeding</option>
+									<option>Flap button hole</option>
+									<option>Free Flap</option>
+									<option>Myopia</option>
+									<option>No iridotomy</option>
+									<option>Other</option>
+									<option>Partial iridotomy</option>		
+									<option>Previous scarring</option>
+									<option>Shallow anterior chamber</option>
+									<option>Small pupil</option>
+									<option>Thin Conjunctiva</option>
+									<option>Thin Flap</option>
+									<option>Thin Sclera</option>
+									<option>Uncontrolled eye movement</option>
+									<option>Uncooperative patient</option>
+								</select>	
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<textarea id="difficulties" style="height:58px; width:380px; margin-top:10px;"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<select style="width:140px;" id="complicationsSelect" onchange="addToTextarea('complicationsSelect', 'complications', true)">
+									<option>Complications</option>
+									<option>Conjunctival tear</option>
+									<option>Haemorrhage</option>
+									<option>Endothelial damage</option>
+									<option>Iris damage</option>
+									<option>Lens damage</option>
+									<option>Vitreous loss</option>
+									<option>Other</option>
+								</select>	
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<textarea id="complications" style="height:58px; width:380px; margin-top:10px;"></textarea>
+							</td>
+						</tr>
+					</tbody>
+				</table>	
+			
+			</div>	
+
+		<!-- End of Edit mode section -->
+		</div>
+
+		<!-- Second drawing section -->
+		<div class="section" id="secondDrawing" style="height:480px; display:none;" align="left">
+					
+			<!-- Drawing 2-->
+			<div style ="width: 310px; float:left;">
+
+				<!-- Doodle toolbar -->
+				<div class="toolbar">
+					<button class="ed-button" class="ed-button" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit2.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+	                <button class="ed-button" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit2.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		            <button class="ed-button" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit2.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	                <button class="ed-button" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit2.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+	                <button class="ed-button" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit2.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+	                <br />
+					<button class="ed-button" id="sidePortRPS" title="Corneal suture" onclick="drawingEdit2.addDoodle('CornealSuture'); return false;" ><img src="../../graphics/CornealSuture.gif" /></button>
+					<button class="ed-button" id="sidePortRPS" title="Conjunctival suture" onclick="drawingEdit2.addDoodle('ConjunctivalSuture'); return false;" ><img src="../../graphics/ConjunctivalSuture.gif" /></button>
+	                <br />	  	                    
+                </div>
+	                		
+				<!-- Canvas -->
+				<div style='float:left; width: 320px; height: 320px;'>
+					<span class="canvasTooltip" id="canvasEditTooltip2"></span>
+	                <canvas id="canvasEdit2" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+				</div>
+					
+		        <!-- Doodle control panel -->
+		        <div id="canvasEdit2_controls" style="background-color: #DAE6F1; float:left;">
+		        </div>
+		        
+			</div>
+		</div>
+
+		
+
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Glaucoma</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->		
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/common.js" type="text/javascript"></script>	
+	<script language="JavaScript" src="dilation.js" type="text/javascript"></script>	
+    <script type="text/javascript">
+
+		// Counter to track rows
+		var scriptCount = 0;
+		
+		// Value of last index
+		var lastIndex = 8;
+	                            
+        // Runs on page load
+        function init()
+        {
+        	//updateSelect("drugSelector", "Vitreoretinal");
+        	//document.getElementById('drugSelector').focus();
+        }
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<!-- Description section -->
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element handles the recording of dilating drops for use in an ophthalmic examination. This element will mainly be used as part of the ophthalmic examination event. It addresses items 3.61 to 3.64 of the Glaucoma national dataset.</p>
+			<p>Selection of the dropdown creates a time stamp, from which (if the date is the same day), the length of time since dilation can be calculated and displayed. This should be useful to medical staff when deciding which patients to see next in a clinic.</p>
+			<p>The contents of the drop down menu are determined at the sub-specialty level. Selecting 'Other' prompts for the name of the drug.</p>
+			<p>Status: <b style="color:red;">*** This element code is now frozen for the Glaucoma 2 release in July 2014 ***</b></p>
+		</div>
+		
+		<!-- Edit mode section -->
+		<div class="section" style="height:240px;" align="left">
+			<h4>Edit mode:</h4>
+							
+			<!-- Left column -->
+			<div style ="width: 540px; float:left;">
+				<p>Right Eye:</p>
+
+				<!-- Select for standard dilating drops -->
+				<select class="sidebar" id="drugSelector" onchange="addRow(this.value);">
+					<option value="">-- Please select --</option>
+					<option value="Atropine 1%">Atropine 1%</option>
+					<option value="Cyclopentolate 0.5%">Cyclopentolate 0.5%</option>
+					<option value="Cyclopentolate 1%">Cyclopentolate 1%</option>
+					<option value="Phenylephrine 2.5%">Phenylephrine 2.5%</option>
+					<option value="Tropicamide 0.5%">Tropicamide 0.5%</option>
+					<option value="Tropicamide 1%">Tropicamide 1%</option>
+					<option value="Other">Other</option>
+				</select>
+				
+				<!-- Only displayed if drugs in table -->
+				<span id="timeStampSpan" style="display:none">
+				
+					<!-- Clear button -->
+					<button id="clearButton" title="Deletes all entries in the dilation drops table" onclick="clearTable();">Clear</button>
+					
+					<!-- Time -->
+					<label>Time:</label><input id="timeStamp" type="text">
+
+				
+					<!-- New line -->
+					<br />
+				
+					<!-- Table -->
+					<table name="table" id="presTable" align="left" cellspacing="0" width="360">
+						<thead class="tabletitles">
+							<tr>
+								<th align="left" width="65%"><p class="tableText"><b>Drug</b></p></th>
+								<th align="left" width="20%"><p class="tableText"><b>Drops</b></p></th>
+								<th align="left" width="15%"></td>
+							</tr>
+						</thead>
+						<tbody id="tableBody">
+						</tbody>
+					</table>
+								
+				</span>
+							
+			</div>
+			
+			<!-- Right column -->
+			<div style ="width:540px; float:left;">
+				<p>Left Eye:</p>
+				
+				<p>&larr;&#32;Repeat of layout for right eye</p>
+			</div>
+				
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:120px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<!-- Left column -->
+			<div style ="width: 540px; float:left;">
+							
+				<p>G.Cyclopentolate 0.5% x 4, G.Phenylephrine 5% x 2</br>Administered at 14:30 (45 minutes ago)</p>
+				
+			</div>
+			
+			<!-- Right column -->
+			<div style ="width:540px; float:left;">
+			</div>
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Glaucoma</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

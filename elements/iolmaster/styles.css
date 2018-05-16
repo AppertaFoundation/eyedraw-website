@@ -1,0 +1,98 @@
+/* Section of development document */
+.section {
+	border-top: 1px solid gray;
+	width: 1080px;
+}
+
+/* Used for displaying adjacent columns */
+.column {
+	float: left;
+}
+
+h5 {
+	margin-top: 20px;
+}
+
+.lable {
+	width: 110px;
+	margin-right: 4px;
+	text-align: right;
+}
+
+input.checkbox {
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+.section select {
+	width: 100px;
+	height: 20px;
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
+.section textarea {
+	margin-top: 10px;
+}
+
+/* email */
+a.email {
+	display: block;
+	width: 100px;
+}
+
+textarea {
+}
+
+/* No surgery reason drop down */
+#nosurg {
+	display: none;
+}
+
+#anes {
+	display: none;
+}
+
+#mode {
+	display: none;
+}
+
+
+input {
+	height: 16px;
+	width: 50px;
+	margin: 0px;
+	margin-top: 6px;
+	padding: 0px;
+}
+
+/* Disclosure triangles */
+.drawTriangle {
+	cursor: pointer;
+}
+
+#iolTable {
+	background-color: #ddd;
+}
+
+button {
+	height: 20px;
+	width: 50px;
+	margin-top: 5px;
+	margin-left: 4px;
+}
+
+#iolTable p {
+	text-align: right;
+	margin-right: 20px;
+}
+
+p.iolDisplay {
+	font-size: 18px;
+	background-color: #ffff66;
+	border-color: gray;
+	border-width: 1px;
+	border-style: solid;
+	width: 60px;
+	padding-left: 10px;
+}

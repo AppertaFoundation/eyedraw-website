@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- 
+
+This element simulates a standard HTML select in order to display accompanying images for each selection.
+It makes us of Dropdown based on ideas from From:
+http://www.jankoatwarpspeed.com/post/2009/07/28/reinventing-drop-down-with-css-jquery.aspx
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+	
+	<!-- Styles for image drop down -->
+	<style type="text/css">        
+        
+        /* Drop down list */
+        .dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
+        .dropdown dd { position:relative; top:-25px;}
+
+        /* Select link */
+        .dropdown a, .dropdown a:visited { color:#4D4D4D; text-decoration:none; outline:none;}
+        .dropdown a:hover { color:#4D4D4D;}
+        .dropdown dt a:hover { color:#4D4D4D; border: 1px solid #A6A6A6;}
+        .dropdown dt a {font-size: 0.82em; background: url(select.gif) repeat-x scroll right center; display:block; border:1px solid #A6A6A6; border-radius: 5px; width:60px; height:18px; margin-top: 10px; margin-left: 20px;}
+        .dropdown dt a span {cursor:pointer; display:block; padding-top:3px; padding-left:6px;}
+        
+        /* List */
+        .dropdown dd ul { background:#fff none repeat scroll 0 0; border:1px solid #A6A6A6; border-radius: 5px; color:#4077EE; display:none;
+                          left:8px; padding:5px 0px; position:absolute; top:2px; width:60px; list-style:none;}
+                          
+        /* Hidden span containing option value */
+        .dropdown span.value { display:none;}
+        
+        /* Span containing check mark */
+        .dropdown span.tick { display: inline-block; margin-left: 5px; font-size: 0.82em; width: 16px; height:auto;}
+        
+        /* Options links */
+        .dropdown dd ul li a { font-size: 0.82em; padding:0px; display:block; height: 16px;}
+        .dropdown dd ul li a:hover { color:#fff; background-color:#4077EE;}
+        
+        /* Arrow image to simulate select element */
+        .dropdown img.arrows { margin-right: 0px; left: 0px; top: -13px; position: relative; float: right; vertical-align:middle; margin-left:10px; width:13px;}
+        
+        /* Span containing review image */
+        .popup { position: absolute; display:none;}
+        
+        
+    </style>
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	
+	<!-- JQuery -->
+<!--
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+-->
+	<script src="../../scripts/jquery.min.js"></script>
+	<script src="../../scripts/jquery-ui.min.js"></script>
+	
+
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        $(document).ready(function()
+        {
+        	// Runs on clicking menu header
+            $(".dropdown dt a").click(function()
+            {
+                // Construct string to describe corresponding UL and image
+                var id = $(this).parent().parent().attr('id');
+                var list = "#" + id + "List";
+                var image = "#" + id + "Image";
+                var result = "#" + id + "Result";
+                
+                // Work out selected index from hidden input value
+                var selectedIndex = parseInt($(result).attr('value'));
+                
+                // Adjust position of menu so that selected li corresponds to displayed one
+                var offset = 9;
+                var increment = 16;
+                var pos = (selectedIndex + 1) * increment + offset;
+                var top = '-' + pos.toString() + 'px';
+                $(list).parent().css({ 'top': top});
+                
+                // Put check mark next to selected item only
+                var liArray = $(list).children();
+                for (i = 0; i < liArray.length; i++)
+                {
+                	var span = $(list).children()[i].children[0].children[1];
+                	if (i == selectedIndex)
+                	{
+                		span.innerHTML = "✓";                	
+                	}
+                	else
+                	{
+                		span.innerHTML = "";                	
+                	}
+                }
+                
+                // Image has absolute positioning (so as to overlap other elements). Set position relative to menu here
+                var ddTop = parseInt($(list).parent().css('top')) + 100; // ***TODO*** arbitrary number, need to work out from position of parent
+                top = ddTop.toString() + 'px';
+                $(image).css({'top': top});
+                var ddLeft = parseInt($(list).parent().css('left'));
+                var left = ddLeft.toString() + 'px';
+                $(image).css({'left': left});
+                
+                // Show menu and image (***TODO*** fix horrible handling of 'not recorded' - currently uses empty image)
+                $(list).show();
+                $(image).show();
+                                
+                // Prevent page scrolling to top
+                return false;
+            });
+            
+            // Runs on clicking a dropdown menu item     
+            $(".dropdown dd ul li a").click(function()
+            {
+                // Get value and display of selected option
+                var valueString = $(this).children('span')[0].innerHTML;
+                var display = $(this).children('span')[2].innerHTML;
+                
+                // Get id of enclosing 'dl' element
+                var list = "#" + $(this).parent().parent().attr('id');
+
+                // Change string to point to value of menu
+                var menuValue = list.replace("List", "Value");
+
+                // Put selected value as text of menu header
+                $(menuValue).html(display); 
+                
+                // Get reference to image
+                var image = list.replace("List", "Image");
+                                
+                // Hide options and image
+                $(list).hide();
+                $(image).hide();
+                
+                // Get reference to result
+                var result = list.replace("List", "Result");
+               
+                // Store selected value (use to put value into hidden input)
+                $(result).attr('value', parseInt(valueString));
+ 
+                // Prevent page scrolling to top
+                return false;          
+            });
+            
+            // Runs when hovering over a dropdown menu item    
+            $(".dropdown dd ul li a").hover(function()
+            {
+                // Get value of option under hover
+                var value = $(this).children('span')[0].innerHTML;
+
+                 // Get id of enclosing 'dl' element
+                var root = $(this).parent().parent().attr('id');
+                root = root.replace("List", "");
+                var imageFileNameRoot = root.charAt(0).toUpperCase() + root.slice(1);
+                                
+                // Construct string with src of corresponding image
+                var src = "images/bleb" + imageFileNameRoot + "_" + value.toString() + ".png";
+                
+                // Get id of enclosing 'dl' element
+                var list = "#" + $(this).parent().parent().attr('id');
+
+                // Get reference to image
+                var image = list.replace("List", "Image") + " img";
+                                
+                // Change source of popup image
+                $(image).attr("src", src);
+
+                // Prevent page scrolling to top
+                return false;          
+            });
+
+        });
+        
+        // Respond to click outside menu to reproduce corrrect behaviour of select
+        function mouseDown()
+        {
+        	document.getElementById("centralList").style.display = "none";
+        	document.getElementById("centralImage").style.display = "none";
+        	document.getElementById("maximalList").style.display = "none";
+        	document.getElementById("maximalImage").style.display = "none";
+        	document.getElementById("heightList").style.display = "none";
+        	document.getElementById("heightImage").style.display = "none";
+        	document.getElementById("vascularityList").style.display = "none";
+        	document.getElementById("vascularityImage").style.display = "none";        	        	
+        }
+
+    </script>
+
+</head>
+
+<body onclick="mouseDown();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows the input of data using the <a href="http://blebs.net/index.htm">Moorfields Bleb Grading System</a></p>
+			<p>When a grade is selected from any of the menus, an accompanying photograph is displayed above it to remind the user of the characteristics of the grade.</p>
+			<p>Status: <b style="color:red;">*** This element code is now frozen for the Glaucoma 2 release in July 2014 ***</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:220px;" align="left">
+			<h4>Edit mode:</h4>
+			
+			<p>Right bleb assessment:</p>
+
+			<table cellspacing="0" width="520" >
+				<thead>
+					<tr>
+						<th width="25%">Area (Central)</th>
+						<th width="25%">Area (Maximal)</th>
+						<th width="25%">Height</th>
+						<th width="25%">Vascularity</th>
+					</tr>
+				</thead>
+				<tbody>		
+					<tr>
+					
+						<!-- Area (Central) -->
+						<td>			
+							<dl class="dropdown" id="central" >
+					        	<dt><a href="#"><span id="centralValue" title="Click to change selection">NR</span><img class="arrows" src="arrows.gif" alt="" /></a></dt>
+						        <dd>
+						            <ul id="centralList">
+						                <li><a href="#"><span class="value">0</span><span class="tick">✓</span><span>NR</span></a></li>
+						                <li><a href="#"><span class="value">5</span><span class="tick"></span><span>5</span></a></li>
+						                <li><a href="#"><span class="value">4</span><span class="tick"></span><span>4</span></a></li>
+						                <li><a href="#"><span class="value">3</span><span class="tick"></span><span>3</span></a></li>
+						                <li><a href="#"><span class="value">2</span><span class="tick"></span><span>2</span></a></li>
+						                <li><a href="#"><span class="value">1</span><span class="tick"></span><span>1</span></a></li>
+						            </ul>
+						        </dd>
+						    	<!-- span containing image corresponding to selection -->
+								<span id='centralImage' class="popup">
+									<img width=200 src="">
+								</span>
+					    	</dl>	    	
+					    	<input type="hidden" id="centralResult" value=0 /></br>
+						</td>
+
+						<!-- Area (Maximal) -->
+						<td>
+							<dl class="dropdown" id="maximal" >
+					        	<dt><a href="#"><span id="maximalValue" title="Click to change selection">NR</span><img class="arrows" src="arrows.gif" alt="" /></a></dt>
+						        <dd>
+						            <ul id="maximalList">
+						                <li><a href="#"><span class="value">0</span><span class="tick">✓</span><span>NR</span></a></li>
+						                <li><a href="#"><span class="value">5</span><span class="tick"></span><span>5</span></a></li>
+						                <li><a href="#"><span class="value">4</span><span class="tick"></span><span>4</span></a></li>
+						                <li><a href="#"><span class="value">3</span><span class="tick"></span><span>3</span></a></li>
+						                <li><a href="#"><span class="value">2</span><span class="tick"></span><span>2</span></a></li>
+						                <li><a href="#"><span class="value">1</span><span class="tick"></span><span>1</span></a></li>		
+						            </ul>
+						        </dd>
+						    	<!-- span containing image corresponding to selection -->
+								<span id='maximalImage' class="popup">
+									<img width=200 src="">
+								</span>
+					    	</dl>	    	
+					    	<input type="hidden" id="maximalResult" value=0 /></br>
+						</td>
+						
+						<!-- Height -->
+						<td>
+							<dl class="dropdown" id="height" >
+					        	<dt><a href="#"><span id="heightValue" title="Click to change selection">NR</span><img class="arrows" src="arrows.gif" alt="" /></a></dt>
+						        <dd>
+						            <ul id="heightList">
+						                <li><a href="#"><span class="value">0</span><span class="tick">✓</span><span>NR</span></a></li>
+						                <li><a href="#"><span class="value">1</span><span class="tick"></span><span>1</span></a></li>						                
+						                <li><a href="#"><span class="value">2</span><span class="tick"></span><span>2</span></a></li>
+						                <li><a href="#"><span class="value">3</span><span class="tick"></span><span>3</span></a></li>
+						                <li><a href="#"><span class="value">4</span><span class="tick"></span><span>4</span></a></li>	
+						            </ul>
+						        </dd>
+						    	<!-- span containing image corresponding to selection -->
+								<span id='heightImage' class="popup">
+									<img width=200 src="">
+								</span>
+					    	</dl>	    	
+					    	<input type="hidden" id="heightResult" value=0 /></br>
+						</td>
+						
+						<!-- Vascularity -->
+						<td>
+							<dl class="dropdown" id="vascularity" >
+					        	<dt><a href="#"><span id="vascularityValue" title="Click to change selection">NR</span><img class="arrows" src="arrows.gif" alt="" /></a></dt>
+						        <dd>
+						            <ul id="vascularityList">
+						                <li><a href="#"><span class="value">0</span><span class="tick">✓</span><span>NR</span></a></li>
+						                <li><a href="#"><span class="value">1</span><span class="tick"></span><span>1</span></a></li>
+						                <li><a href="#"><span class="value">2</span><span class="tick"></span><span>2</span></a></li>
+						                <li><a href="#"><span class="value">3</span><span class="tick"></span><span>3</span></a></li>
+						                <li><a href="#"><span class="value">4</span><span class="tick"></span><span>4</span></a></li> 
+						                <li><a href="#"><span class="value">5</span><span class="tick"></span><span>5</span></a></li>   
+						            </ul>
+						        </dd>
+						    	<!-- span containing image corresponding to selection -->
+								<span id='vascularityImage' class="popup">
+									<img width=200 src="">
+								</span>
+					    	</dl>	    	
+					    	<input type="hidden" id="vascularityResult" value=0 /></br>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<!-- A standard HTML select to use as a comparison -->
+			<!-- 
+			<select>
+			  <option value="volvo">Volvo</option>
+			  <option value="saab">Saab</option>
+			  <option value="opel">Opel</option>
+			  <option value="audi">Audi</option>
+			</select>
+			-->
+    					
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:160px;" align="left">
+			<h4>Display mode:</h4>
+			<p>Right bleb assessment:</p>
+			
+			<table>
+				<thead>
+					<tr>
+						<th width="25%">Area (Central)</th>
+						<th width="25%">Area (Maximal)</th>
+						<th width="25%">Height</th>
+						<th width="25%">Vascularity</th>
+					</tr>
+				</thead>
+				<tbody>		
+					<tr>
+						<td style="text-align: center;">1</td>
+						<td style="text-align: center;">2</td>
+						<td style="text-align: center;">1</td>
+						<td style="text-align: center;">4</td>
+					</tr>
+				</tbody>
+			</table>
+				
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Glaucoma</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        function init()
+        {
+        }
+  
+        // Changes visibility of selects
+        function treatChange(_sel) {
+        	if (_sel.checked) {
+	        	document.getElementById('noreason').style.display = "";
+	        	document.getElementById('maindiagnosis').style.display = "none";
+	        	document.getElementById('treatdiagnosis').style.display = "none";
+	        	document.getElementById('treatment').style.display = "none";
+	        	document.getElementById('risks').style.display = "none";
+	        	document.getElementById('fu').style.display = "none";
+	        	document.getElementById('oct').style.display = "none";
+	        	document.getElementById('comments').style.display = "none";
+        	}
+        	else {
+	        	document.getElementById('noreason').style.display = "none";
+	        	document.getElementById('maindiagnosis').style.display = "";
+	        	document.getElementById('treatdiagnosis').style.display = "";
+	        	document.getElementById('treatment').style.display = "";
+	        	document.getElementById('risks').style.display = "";
+	        	document.getElementById('fu').style.display = "none";
+	        	document.getElementById('oct').style.display = "";
+	        	document.getElementById('comments').style.display = "";
+        	}
+	    }
+	    
+	    function mainDiagnosisChanged(_value) {
+		    switch (_value) {
+		    	// None
+		    	case "none":
+		    		document.getElementById("treatmentDiagnosis").innerHTML = "";
+			    	//updateSelect("treatmentDiagnosis", []);
+			    	updateSelect("treatmentDrug", []);
+			    	break;
+			    			    		
+		    	// ARMD
+			    case "267718000":
+			    	document.getElementById("treatmentDiagnosis").innerHTML = "Choroidal retinal neovascularisation";
+			    	//updateSelect("treatmentDiagnosis", [{val:"75971007", txt:"Choroidal retinal neovascularisation"}]);
+			    	updateSelect("treatmentDrug", [{val:1, txt:"Eylea"}, {val:2, txt:"Lucentis"}]);
+			    	break;
+			    	
+			    // Myopia
+			    case "57190000":
+			    	document.getElementById("treatmentDiagnosis").innerHTML = "Choroidal retinal neovascularisation";
+			    	//updateSelect("treatmentDiagnosis", [{val:"75971007", txt:"Choroidal retinal neovascularisation"}]);
+			    	updateSelect("treatmentDrug", [{val:2, txt:"Lucentis"}]);
+			    	break;
+			    	
+			    // Diabetic Retinopathy
+			    case "4855003":
+			    	document.getElementById("treatmentDiagnosis").innerHTML = "Diabetic Macular Oedema";
+			    	//updateSelect("treatmentDiagnosis", [{val:"312912001", txt:"Diabetic Macular Oedema"}]);
+			    	updateSelect("treatmentDrug", [{val:2, txt:"Lucentis"}]);
+			    	break;
+			    	
+			    default:
+			    	document.getElementById("treatmentDiagnosis").innerHTML = "Choroidal retinal neovascularisation";
+			    	//updateSelect("treatmentDiagnosis", [{val:"75971007", txt:"Choroidal retinal neovascularisation"}]);
+			    	updateSelect("treatmentDrug", [{val:1, txt:"Eylea"}, {val:2, txt:"Lucentis"}, {val:3, txt:"Avastin"}]);
+			    	break;
+		    }
+	    }
+	    
+		// Change the options in the _select according to filters
+		function updateSelect(_selectId, _array)
+		{
+			// Get reference to the select
+			var sel = document.getElementById(_selectId);
+			
+			// Remove all options
+			sel.options.length = 0;
+			
+			for (var i = 0; i < _array.length; i++) {
+		    	sel.options[sel.options.length] = new Option(_array[i].txt, _array[i].val);
+	    	}
+		}
+
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element shows a new suggested Injection management plan, which will be a child element of the current Clinical Management element in the examination event. It will be open by default for new ARMD patients. It will also be visible and editable in the episode summary area (see episode summary page)</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!--Management Plan -->
+		<div class="section" style="height:540px;" align="left">
+			<h4>Injection Management Plan:</h4>
+			<p>(All values pre-populated from last entry)</p>			
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+				
+ 				<table width="520px;">
+					<tbody>
+						<tr>
+							<td width="20%">
+								<p style="margin-top:-5px;">No treatment:</p>
+							</td>
+							<td width="40%">
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox" onchange="treatChange(this)"/>
+							</td>
+							<td width="40%">
+								<p class="comment" ></p>
+							</td>
+						</tr>
+						<tr id='noreason' style="display:none;">
+							<td >
+								<p style="margin-top:-5px;">Reason:</p>
+							</td>
+							<td>
+								<select style="width:190px;">
+									<option value="">- Please select -</option>
+									<option value="1" data-other="0">DNA</option>
+									<option value="11" data-other="0">Infection</option>
+									<option value="21" data-other="0">CVA</option>
+									<option value="31" data-other="0">MI</option>
+									<option value="41" data-other="0">Spontaneous improvement</option>
+									<option value="51" data-other="1">Other</option>
+								</select>
+							</td>
+							<td>
+								<p class="comment" ></p>
+							</td>
+						</tr>
+						<tr id='maindiagnosis'>
+							<td >
+								<p style="margin-top:-5px;">Main diagnosis:</p>
+							</td>
+							<td>
+								<select style="width:190px;" onchange="mainDiagnosisChanged(this.value);">
+								<option value="none">- Please Select -</option>
+								<option value="267718000">Age related macular degeneration</option>
+								<option value="57190000">Myopia</option>
+								<option value="4855003">Diabetic retinopathy</option>
+								<option value="312950007">Punctate inner choroidopathy</option>
+								<option value="240740001">Ocular histoplasmosis syndrome</option>
+								<option value="314269007">Idiopathic choroidal neovascular membrane</option>
+								<option value="86103006">Angioid streaks of choroid</option>
+								<option value="255024002">Naevus of choroid</option>
+								<option value="255025001">Osteoma of choroid</option>
+								<option value="2532009">Choroidal rupture</option></select>
+							</td>
+							<td>
+								<p class="comment" >This is the same as the episode diagnosis, and will pre-populate with it</p>
+							</td>
+						</tr>
+						<tr id='treatdiagnosis'>
+							<td >
+								<p style="margin-top:-5px;">Treatment diagnosis:</p>
+							</td>
+							<td>
+								<p id="treatmentDiagnosis"></p>
+<!--
+								<select style="width:190px;" id="treatmentDiagnosis">
+									<option value="">- Please select -</option>
+									<option value="75971007">Choroidal retinal neovascularisation</option>
+									<option value="37231002" d>Macular retinal oedema</option>
+									<option value="312956001">Central serous chorioretinopathy</option>
+									<option value="313001006">Idiopathic polypoidal choroidal vasculopathy</option>
+									<option value="360455002">Coats' disease</option>
+									<option value="128473001">Uveitis</option>
+									<option value="78370002">Scleritis</option>
+								</select>
+-->
+							</td>
+							<td>
+								<p class="comment" >If there are no main diagnoses, with more than one option, then this doesn't have to be a drop down</p>
+							</td>
+						</tr>
+						<tr id='treatment'>
+							<td >
+								<p style="margin-top:-5px;">Treatment:</p>
+							</td>
+							<td>
+								<select style="width:190px;" id="treatmentDrug">
+<!--
+									<option value="">- Please select -</option>
+									<option value="1">Avastin</option>
+									<option value="2">Eylea</option>
+									<option value="3">Triamcinolone</option>
+									<option value="4">Illuvien</option>
+									<option value="5">Lucentis</option>
+									<option value="6">Macugen</option>
+									<option value="7">Ozurdex</option>
+									<option value="8">PDT</option>
+-->
+								</select>
+							</td>
+							<td>
+								<p class="comment" >This is the current treatment, which defaults to the last one</p>
+							</td>
+						</tr>
+						<tr id='risks'>
+							<td >
+								<p style="margin-top:-5px;">Risks:</p>
+							</td>
+							<td>
+								<select style="width:190px;">
+									<option value="">- Please select -</option>
+									<option value="1" data-order="1">Pre-existing glaucoma</option>
+									<option value="11" data-order="2">Previous glaucoma surgery</option>
+									<option value="21" data-order="3">Allergy to povidone iodine</option>
+									<option value="31" data-order="4">Previous interocular surgery</option>
+									<option value="41" data-order="5">CVA</option>
+									<option value="51" data-order="6">MI</option>
+								</select>
+							</td>
+							<td>
+								<p class="comment" >Selection here will add to a list as in the current system (not implemented in this demo)</p>
+							</td>
+						</tr>						
+
+						<tr id='fu'>
+							<td >
+								<p style="margin-top:-5px;">Follow up interval:</p>
+							</td>
+							<td>
+								<select>
+									<option>3 weeks</option>
+									<option>4 weeks</option>
+									<option selected=true>6 weeks</option>
+									<option>3 months</option>
+									<option>4 months</option>
+									<option>6 months</option>
+									<option>9 months</option>
+									<option>12 months</option>
+								</select>
+							</td>
+							<td>
+								<p class="comment" >The idea of this is a presumed interval that will preset the clinic outcome</p>
+							</td>
+						</tr>
+<!--
+						<tr id='oct'>
+							<td >
+								<p style="margin-top:-5px;">OCT:</p>
+							</td>
+							<td>
+								<select>
+									<option>3 weeks</option>
+									<option>4 weeks</option>
+									<option selected=true>6 weeks</option>
+									<option>3 months</option>
+									<option>4 months</option>
+									<option>6 months</option>
+									<option>9 months</option>
+									<option>12 months</option>
+								</select>
+							</td>
+							<td>
+								<p class="comment" >If OCTs are done every visit, then this is redundant</p>
+							</td>
+						</tr>
+-->
+						<tr id='comments'>
+							<td >
+								<p style="margin-top:-5px;">Comments:</p>
+							</td>
+							<td>
+								<textarea></textarea>
+							</td>
+							<td>
+								<p class="comment" ></p>
+							</td>
+						</tr>
+					</tbody>
+ 				</table>
+ 				
+   			
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+			
+		<!-- Management Plan -->
+		</div>					
+
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Medical Retina</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

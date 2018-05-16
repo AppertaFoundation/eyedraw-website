@@ -1,0 +1,492 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Strabismus.js" type="text/javascript"></script>
+    <script type="text/javascript">
+                            
+        var drawingRightEdit;
+        var drawingLeftEdit;
+        var drawingRightDisplay;
+        var drawingLeftDisplay;
+                                                
+        function init()
+        {
+            // Get reference to the edit canvas elements
+            var canvasRightEdit = document.getElementById('canvasRightEdit');
+            var canvasLeftEdit = document.getElementById('canvasLeftEdit');
+            
+            // Create drawing objects
+            drawingRightEdit = new ED.Drawing(canvasRightEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            drawingLeftEdit = new ED.Drawing(canvasLeftEdit, ED.eye.Left, 'LPS');
+            
+            // Preload any images
+            drawingRightEdit.preLoadImagesFrom('../../graphics/');
+            drawingLeftEdit.preLoadImagesFrom('../../graphics/');
+            
+            
+            // Wait for drawingEdit objects to be ready before adding objects or drawingEdits
+            drawingRightEdit.onLoaded = function()
+            {
+                drawingRightEdit.addDoodle('OrthopticEye');
+                drawingRightEdit.deselectDoodles();
+            }
+            drawingLeftEdit.onLoaded = function()
+            {
+                drawingLeftEdit.addDoodle('OrthopticEye');
+                drawingLeftEdit.deselectDoodles();
+            }
+                        
+            // Get reference to the display canvas elements
+            var canvasRightDisplay = document.getElementById('canvasRightDisplay');
+            var canvasLeftDisplay = document.getElementById('canvasLeftDisplay');
+            
+            // Create drawing objects
+            drawingRightDisplay = new ED.Drawing(canvasRightDisplay, ED.eye.Right, 'RPS', false);
+            drawingLeftDisplay = new ED.Drawing(canvasLeftDisplay, ED.eye.Left, 'LPS');
+            
+            // Preload any images
+            drawingRightDisplay.preLoadImagesFrom('../../graphics/');
+            drawingLeftDisplay.preLoadImagesFrom('../../graphics/');
+            
+            // Wait for drawingEdit objects to be ready before adding objects or drawingEdits
+            drawingRightDisplay.onLoaded = function()
+            {
+                drawingRightDisplay.addDoodle('OrthopticEye');
+                var doodle = drawingRightDisplay.addDoodle('UpDrift');
+                doodle.originX = doodle.quadrantPoint.x;
+	            doodle.originY = -doodle.quadrantPoint.y;
+	            drawingRightDisplay.addDoodle('VPattern');
+                drawingRightDisplay.deselectDoodles();
+            }
+            drawingLeftDisplay.onLoaded = function()
+            {
+                drawingLeftDisplay.addDoodle('OrthopticEye');
+                var doodle = drawingLeftDisplay.addDoodle('UpDrift');
+                doodle.originX = -doodle.quadrantPoint.x;
+	            doodle.originY = -doodle.quadrantPoint.y;
+	            drawingLeftDisplay.addDoodle('VPattern');
+                drawingLeftDisplay.deselectDoodles();
+            }
+        }
+        
+        // Add shoots or drifts
+        function shootOrDrift(_action, _eye)
+        {
+        	var doodle;
+        	
+        	if (_eye == 'Right')
+        	{
+        		doodle = drawingRightEdit.addDoodle(_action);
+	            doodle.originX = -doodle.quadrantPoint.x;
+	            doodle.originY = -doodle.quadrantPoint.y;
+	            drawingRightEdit.deselectDoodles();
+            }
+            else
+            {
+            	doodle = drawingLeftEdit.addDoodle(_action);
+	            doodle.originX = doodle.quadrantPoint.x;
+	            doodle.originY = -doodle.quadrantPoint.y;
+	            drawingLeftEdit.deselectDoodles();
+            }
+        }
+        
+        function changePattern(_type)
+        {
+        	if (_type == 'A')
+        	{
+        		drawingRightEdit.deleteDoodlesOfClass('VPattern');
+        		drawingRightEdit.addDoodle('APattern');
+        		drawingLeftEdit.deleteDoodlesOfClass('VPattern');
+        		drawingLeftEdit.addDoodle('APattern');
+        	}
+        	else if (_type == 'V')
+        	{
+        		drawingRightEdit.deleteDoodlesOfClass('APattern');
+        		drawingRightEdit.addDoodle('VPattern');
+        		drawingLeftEdit.deleteDoodlesOfClass('APattern');
+        		drawingLeftEdit.addDoodle('VPattern');
+        	}
+        	else
+        	{
+        		drawingRightEdit.deleteDoodlesOfClass('APattern');
+        		drawingLeftEdit.deleteDoodlesOfClass('APattern');
+        		drawingRightEdit.deleteDoodlesOfClass('VPattern');
+        		drawingLeftEdit.deleteDoodlesOfClass('VPattern');
+        	}
+        }
+
+        // Returns true if browser is firefox
+        function isFirefox()
+        {
+            var index = 0;
+            var ua = window.navigator.userAgent;
+            index = ua.indexOf("Firefox");
+            
+            if (index > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows the input and display of the diagrammatic form of an Orthoptic examination as described in the BIOS Guidelines for the diagrammatic documentation of strabismus.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:450px;" align="left">
+			<h4>Edit mode:</h4>
+
+			<!-- Button bar and spacers -->			
+			<div style="float:left; width:1200px; height: 40px;">
+			
+				<span style="width: 208px; display: inline-block;"></span>
+			    <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingRightEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	            <button class="imgbutton" id="shading" title="Shading" onclick="drawingRightEdit.addDoodle('Shading'); return false;" ><img src="../../graphics/Shading.gif" /></button>                           
+	            <button class="imgbutton" id="updriftR" title="Up/down drift" onclick="shootOrDrift('UpDrift', 'Right'); return false;" ><img src="../../graphics/UpDriftFromRight.gif" /></button>
+	            <button class="imgbutton" id="upshootR" title="Up/down shoot" onclick="shootOrDrift('UpShoot', 'Right'); return false;" ><img src="../../graphics/UpShootFromRight.gif" /></button>
+	            
+				<span style="width: 85px; display: inline-block;"></span>
+			    <button class="imgbutton" id="deleteDoodleRPS" title="'A' pattern" onclick="changePattern('A'); return false;" ><img src="../../graphics/APattern.gif" /></button>
+	            <button class="imgbutton" id="shading" title="'V'pattern" onclick="changePattern('V'); return false;" ><img src="../../graphics/VPattern.gif" /></button>
+	            <button class="imgbutton" id="shading" title="No pattern" onclick="changePattern('N'); return false;" ><img src="../../graphics/NoPattern.gif" /></button>
+	      
+				<span style="width: 88px; display: inline-block;"></span>
+			    <button class="imgbutton" disabled="true" id="deleteLPS" title="Delete" onclick="drawingLeftEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	            <button class="imgbutton" id="shading" title="Shading" onclick="drawingLeftEdit.addDoodle('Shading'); return false;" ><img src="../../graphics/Shading.gif" /></button>                           
+	            <button class="imgbutton" id="upshoot" title="Upshoot" onclick="shootOrDrift('UpDrift', 'Left'); return false;" ><img src="../../graphics/UpDriftFromLeft.gif" /></button>
+	            <button class="imgbutton" id="updrif" title="Updrift" onclick="shootOrDrift('UpShoot', 'Left'); return false;" ><img src="../../graphics/UpShootFromLeft.gif" /></button>
+	                                      	            
+			</div>
+						
+			<!-- Column 1 -->
+			<div style="float:left; width: 120px; height: 220px;">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="tiltTitle">Head Tilt Right:</p>
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+			</div>
+			
+			<!-- Column 2 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<select class="ocularMovementRightTop">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovementRight">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovementRight">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>				
+			</div>				   				
+
+			<!-- Column 3 -->
+			<div style="float:left; width: 220px; height: 220px;">
+				<canvas id="canvasRightEdit" width="200" height="200"></canvas>					
+			</div>
+			
+			<!-- Column 4 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<select class="ocularMovementLeftTop">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovementLeft">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovementLeft">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>			
+			</div>	
+
+			<!-- Column 5 -->
+			<div style="float:left; width: 120px; height: 220px;">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="nearTitle">Near:</p>
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+			</div>
+
+			<!-- Column 6 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<select class="ocularMovementRightTop">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovementRight">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovementRight">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>				
+			</div>				   				
+
+			<!-- Column 7 -->
+			<div style="float:left; width: 220px; height: 220px;">
+				<canvas id="canvasLeftEdit" width="200" height="200"></canvas>							
+			</div>
+			
+			<!-- Column 8 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<select class="ocularMovementLeftTop">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovementLeft">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovementLeft">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>				
+			</div>	
+
+			<!-- Column 9 -->
+			<div style="float:left; width: 120px; height: 220px;">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="tiltTitle">Head Tilt Left:</p>
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+			</div>
+						
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:320px;" align="left">
+			<h4>Display mode:</h4>
+
+			<!-- Column 1 -->
+			<div style="float:left; width: 70px; height: 220px;">
+				<p class="coverTestHor">&nbsp</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="coverTestHor">20∆ LXT</p>
+				<p class="coverTestVer">10∆ LHT</p>
+				<p class="coverTestHor">&nbsp</p>
+				<p class="coverTestVer">&nbsp</p>
+			</div>
+			
+			<!-- Column 2 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<p class="occMovRightTop">-3</p>
+				<p class="occMovRight">0</p>
+				<p class="occMovRight">+2</p>
+			</div>				   				
+
+			<!-- Column 3 -->
+			<div style="float:left; width: 220px; height: 220px;">
+				<canvas id="canvasRightDisplay" width="200" height="200"></canvas>					
+			</div>
+			
+			<!-- Column 4 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<p class="occMovLeftTop">+3</p>
+				<p class="occMovLeft">0</p>
+				<p class="occMovLeft">-2</p>
+			</div>	
+
+			<!-- Column 5 -->
+			<div style="float:left; width: 70px; height: 220px;">
+				<p class="coverTestHor">50∆ AXT</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="coverTestHor">30∆ AX(T)</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="coverTestHor">15∆ X</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="nearTitle">Near:</p>
+				<p class="coverTestHor">10∆ X</p>
+			</div>
+
+			<!-- Column 6 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<p class="occMovRightTop">+3</p>
+				<p class="occMovRight">0</p>
+				<p class="occMovRight">-2</p>		
+			</div>				   				
+
+			<!-- Column 7 -->
+			<div style="float:left; width: 220px; height: 220px;">
+				<canvas id="canvasLeftDisplay" width="200" height="200"></canvas>							
+			</div>
+			
+			<!-- Column 8 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<p class="occMovLeftTop">-3</p>
+				<p class="occMovLeft">0</p>
+				<p class="occMovLeft">+2</p>
+			</div>	
+
+			<!-- Column 9 -->
+			<div style="float:left; width: 70px; height: 220px;">
+				<p class="coverTestHor">&nbsp</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="coverTestHor">20∆ RXT</p>
+				<p class="coverTestVer">10∆ RHT</p>
+				<p class="coverTestHor">&nbsp</p>
+				<p class="coverTestVer">&nbsp</p>
+			</div>
+
+			
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Strabismus</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

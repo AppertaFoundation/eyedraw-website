@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	
+	<!-- needs EyeDraw 2 -->
+    <script language="JavaScript" src="../../eyedraw2/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_Categories.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_General.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_MedicalRetina.js" type="text/javascript"></script>	
+    <script language="JavaScript" src="../../eyedraw2/ED_VitreoRetinal.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+
+        // Variables assigned to each drawing on this page
+        var drawingEdit;
+        var drawingDisplay;
+		                                    
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the canvas elements
+            var canvasEdit = document.getElementById('canvasEdit');
+  
+            // Create drawing objects
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../graphics/'});
+            
+            // Instantiate controller object
+            var controller = new eyeDrawController(drawingEdit);
+            
+            // Initialise drawings
+            drawingEdit.init();
+
+            // Controller class
+            function eyeDrawController(_drawing)
+            {
+                this.drawing = _drawing;
+                
+                // Specify call back function
+                this.callBack = callBack;
+                
+                // Register for notifications with drawing object
+                this.drawing.registerForNotifications(this, 'callBack', []);
+                
+                // Method called for notification
+                function callBack(_messageArray)
+                {
+                    switch (_messageArray['eventName'])
+                    {
+                        // Eye draw image files all loaded
+                        case 'ready':
+                
+                        	// Fundus
+	                        this.drawing.addDoodle('Fundus');
+	                        this.drawing.addDoodle('RRD', {rotation:15 * Math.PI/8});
+	                        this.drawing.addDoodle('UTear');
+	                        this.drawing.addDoodle('UTear');
+	                        this.drawing.suppressReports();                
+                            this.drawing.deselectDoodles();
+                            
+                            break;
+                            
+                        case 'doodleAdded':
+                            var doodle = _messageArray['object'];
+                            
+                            // See whether this doodle is listed as a complication with a language specific description
+                            if (typeof(ED.Categories[doodle.className]) != 'undefined')
+                            {
+                                if (typeof(ED.Categories[doodle.className]['complication']) != 'undefined')
+                                {
+                                	// Value of complication
+                                	var addedComp = ED.Categories[doodle.className]['complication'];
+                                	
+                                	// Reference to 
+                                    var compText = document.getElementById('complications');
+                                 
+                                    // If complication not already there, add it to text box (will be OE list table widget
+                                    if (compText.value.search(addedComp) < 0) compText.value = compText.value + addedComp + '\n';			
+                                }
+                            }
+                            break;
+                            
+                        case 'doodleDeleted':
+                            var deletedClassName = _messageArray['object'];
+                            console.log(deletedClassName);
+                            
+                            // See whether this doodle is listed as a complication with a language specific description
+                            if (typeof(ED.Categories[deletedClassName]) != 'undefined')
+                            {
+                                if (typeof(ED.Categories[deletedClassName]['complication']) != 'undefined')
+                                {
+                                    // If complication has been removed, take text from text box
+                                    if (this.drawing.numberOfDoodlesOfClass(deletedClassName) < 1)
+                                    {
+	                                    // Value of complication
+	                                	var deletedComp = ED.Categories[deletedClassName]['complication'];
+	                                	
+	                                	// Reference to 
+	                                    var compText = document.getElementById('complications');
+                                    
+                                    	compText.value = compText.value.replace(deletedComp + '\n', "");
+                                    }		
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+ 		}
+ 		
+ 		function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('report');
+			
+			repText.value = text;
+       }
+                 
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element records the application of a variety of vitreoretinal procedures to the fundus. This will be part of a operation note event, and the diagram will pre-populate with the findings from a previous examination.</p>
+			<p>Procedures for which this subelement appears include Biopsy of choroid, Biopsy of retina, Biopsy of vitreous, Cryotherapy retinopexy, Delamination, Epiretinal membrane peel, Internal limiting membrane peel, Laser retinopexy, Panretinal photocoagulation, Removal of intraocular foreign body, and Retinectomy.</p> 
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:480px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 700px; height: 160px; float:left;">
+			
+				<div style='float:left; width: 400px; height: 320px;'>
+		
+	            	<!-- Doodle toolbar -->
+					<div class="toolbar">
+						<button class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+		                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/deleteSelectedDoodle.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+		                <button class="ed_img_button" id="FreehandRPS" title="Freehand" onclick="drawingEdit.addDoodle('Freehand'); drawingEdit.canvas.focus(); return false;"><img src="../../graphics/Freehand.gif"></button>
+		                <span class="squiggle" id="squiggleSpanRPS" style="display: none; ">
+			                <img class="colourWell" border="0" src="../../graphics/ColourWell.gif" usemap="#colormapRPS" alt="colormap">
+			                <map id="colormapRPS" name="colormapRPS">
+			                    <area style="cursor:pointer" shape="rect" coords="0,0,16,16" onclick="drawingEdit.setSquiggleColour('000000');">
+			                    <area style="cursor:pointer" shape="rect" coords="16,0,32,16" onclick="drawingEdit.setSquiggleColour('FF0000');">
+			                    <area style="cursor:pointer" shape="rect" coords="32,0,48,16" onclick="drawingEdit.setSquiggleColour('FF7F00');">
+			                    <area style="cursor:pointer" shape="rect" coords="0,16,16,32" onclick="drawingEdit.setSquiggleColour('0000FF');">
+			                    <area style="cursor:pointer" shape="rect" coords="16,16,32,32" onclick="drawingEdit.setSquiggleColour('00FF00');">
+			                    <area style="cursor:pointer" shape="rect" coords="32,16,48,32" onclick="drawingEdit.setSquiggleColour('FFFF00');">
+			                </map>
+			                <img class="drawingControl" border="0" src="../../graphics/DrawingControl.gif" usemap="#drawingControlRPS" alt="drawingcontrol">
+			                <map id="drawingControlRPS" name="drawingControlRPS">
+			                    <area style="cursor:pointer" shape="rect" coords="0,0,16,16" onclick="drawingEdit.setSquiggleWidth(ED.squiggleWidth.Thin);">
+			                    <area style="cursor:pointer" shape="rect" coords="16,0,32,16" onclick="drawingEdit.setSquiggleWidth(ED.squiggleWidth.Medium);">
+			                    <area style="cursor:pointer" shape="rect" coords="32,0,48,16" onclick="drawingEdit.setSquiggleWidth(ED.squiggleWidth.Thick);">
+			                    <area style="cursor:pointer" shape="rect" coords="0,16,24,32" onclick="drawingEdit.setSquiggleStyle(ED.squiggleStyle.Outline);">
+			                    <area style="cursor:pointer" shape="rect" coords="24,16,48,32" onclick="drawingEdit.setSquiggleStyle(ED.squiggleStyle.Solid);">
+			                </map>
+			                <canvas id="squiggleSettingsRPS" width="24" height="32"></canvas>
+			
+			            </span> 
+		                <br />
+
+                        <button class="imgbutton" title="ILM peel" onclick="drawingEdit.addDoodle('ILMPeel'); return false;" ><img src="../../graphics/ILMPeel.gif" /></button>
+                        <button class="imgbutton" title="Drainage retinotomy" onclick="drawingEdit.addDoodle('DrainageRetinotomy'); return false;" ><img src="../../graphics/DrainageRetinotomy.gif" /></button>
+                        <button class="imgbutton" title="Cryotherapy" onclick="drawingEdit.addDoodle('Cryo'); return false;" ><img src="../../graphics/Cryo.gif" /></button>
+                        <button class="imgbutton" title="Laser spot" onclick="drawingEdit.addDoodle('LaserSpot'); return false;" ><img src="../../graphics/LaserSpot.gif" /></button> 		                                      
+                        <button class="imgbutton" title="Laser circle" onclick="drawingEdit.addDoodle('LaserCircle'); return false;" ><img src="../../graphics/LaserCircle.gif" /></button>
+                        <button class="imgbutton" title="Laser demarcation" onclick="drawingEdit.addDoodle('LaserDemarcation'); return false;" ><img src="../../graphics/LaserDemarcation.gif" /></button>
+                        <button class="imgbutton" title="Sector PRP" onclick="drawingEdit.addDoodle('SectorPRP'); return false;" ><img src="../../graphics/SectorPRP.gif" /></button>
+                        <button class="imgbutton" title="Peripheral retinectomy" onclick="drawingEdit.addDoodle('PeripheralRetinectomy'); return false;" ><img src="../../graphics/PeripheralRetinectomy.gif" /></button>
+                        <button class="imgbutton" title="Posterior retinectomy" onclick="drawingEdit.addDoodle('PosteriorRetinectomy'); return false;" ><img src="../../graphics/PosteriorRetinectomy.gif" /></button>
+                        <button class="imgbutton" title="Biopsy site" onclick="drawingEdit.addDoodle('BiopsySite'); return false;" ><img src="../../graphics/BiopsySite.gif" /></button> 	                       	
+
+		                <br />                      
+                        <button class="imgbutton" title="Entry site break" onclick="drawingEdit.addDoodle('EntrySiteBreak'); return false;" ><img src="../../graphics/EntrySiteBreak.gif" /></button>
+                        <button class="imgbutton" title="Iatrogenic break" onclick="drawingEdit.addDoodle('IatrogenicBreak'); return false;" ><img src="../../graphics/IatrogenicBreak.gif" /></button>
+                        <button class="imgbutton" title="Retinal touch" onclick="drawingEdit.addDoodle('RetinalTouch'); return false;" ><img src="../../graphics/RetinalTouch.gif" /></button>
+                        <button class="imgbutton" title="Subretinal PFCL" onclick="drawingEdit.addDoodle('SubretinalPFCL'); return false;" ><img src="../../graphics/SubretinalPFCL.gif" /></button>                    
+	   				</div>
+
+                    <!-- Canvas tooltip -->
+                    <span id="canvasTooltip"></span>
+                    <canvas id="canvasEdit" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+				</div>
+					
+				<!-- Controls -->
+				<div style='float:right; width: 300px;height: 320px;'>
+				
+					<table cellspacing="0" width="120" >
+						<tbody>
+							
+<!--
+							<tr>
+								<td align="left" width="20%"><p class="lable" >Starting gauge:</p></td>
+								<td align="left" width="60%">
+							        <select id="gaugeSelect">
+							            <option value="20g" >20g</option>
+							            <option value="23g" selected="true">23g</option>
+							            <option value="25g">25g</option>
+							            <option value="27g">27g</option>
+							        </select>
+						        </td>
+							</tr>
+							<tr>
+								<td align="left"><p class="lable" >PVD induced:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" id="chk_phd"/>
+		    					 </td>
+							</tr>
+-->
+
+							<tr>
+								<td style="vertical-align:top; padding-top:10px;">
+									<p class="lable" >Complications:</p>
+								</td>
+								<td style="vertical-align:top; padding-top:20px;">
+									<textarea id="complications" style="height:93px;"></textarea>
+								</td>
+							</tr>
+							<tr>
+								<td align="left" style="vertical-align:top; padding-top:10px;">
+								</td>
+								<td align="left" style="vertical-align:top; padding-top:10px;">
+									<button class="actbutton" title="Creates a text report from the drawing" onclick="addToReport(); return false;" >Report</button>
+						        </td>
+							</tr>
+							<tr>
+								<td style="vertical-align:top;">
+									<p class="lable" >Operation note:</p>
+								</td>
+								<td style="vertical-align:top;">
+									<textarea name="antseg" id="report" style="height:93px;"></textarea>
+								</td>
+							</tr>
+						
+						</tbody>
+					</table>
+					
+				</div>	
+					
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width: 540px; height: 160px; float:left;">         
+					
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>					
+	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Surgical Retina</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<!--
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+-->
+</body>
+</html>

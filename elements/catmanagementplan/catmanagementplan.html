@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+    <script type="text/javascript">
+        
+        // Runs on page load
+        function init()
+        {
+        }
+        
+        // Plan
+        function plan(_value) {
+	        if (_value == 'Surgery') {
+		        document.getElementById("surgery").style.display = "";
+	        }
+	        else {
+		        document.getElementById("surgery").style.display = "none";
+	        }
+        }
+        
+        // Swap drop downs
+        function eye(_value)
+        {
+        	document.getElementById("righteye").style.display = "";
+        	document.getElementById("lefteye").style.display = "";
+        	switch (_value) {
+	        	case 'Right':
+	        		document.getElementById("lefteye").style.display = "none";
+	        		break;
+	        		
+	        	case 'Left':
+	        		document.getElementById("righteye").style.display = "none";
+	        		break;
+	        		
+	        	case '-- Please select --':
+		        	document.getElementById("righteye").style.display = "none";
+		        	document.getElementById("lefteye").style.display = "none";
+		        	break;        	
+        	}
+        }
+        
+        // Target refraction
+        function target(_value) {
+	        document.getElementById("targetValue").innerHTML = _value + " D";
+        }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<!-- Description -->
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element provides the cataract management plan, and is a child element of the 'Clinical Management' element</p>
+			<p>Comments and questions are shown in red</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Both eyes section -->
+		<div class="section" style="height:100px;" align="left">
+			<h4>Both:</h4>
+
+			<table cellspacing="0" width="200" >
+				<tbody>
+					<tr>
+						<td align="left"><p class="lable" >Eye:</p></td>
+						<td align="left" width="60%">
+							<select style="width:auto;" onchange="eye(this.value);">
+								<option>-- Please select --</option>
+								<option>Right</option>
+								<option>Left</option>
+								<option>Both</option>
+								<option>Bilateral simultaneous</option>
+								<option>Bilateral sequential - Right first</option>
+								<option>Bilateral sequential - Left first</option>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+		
+		<!-- Each eye section -->
+		<div class="section" style="height:620px;" align="left">
+											
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+				<div id="righteye" style="display:none;">
+				
+					<table cellspacing="0" width="530" >
+						<tbody>
+							<tr>
+								<td align="left" width="15%"><p class="lable" >Plan:</p></td>
+								<td align="left" width="40%">
+									<select style="width:auto;" onchange="plan(this.value);">
+										<option>-- Please select --</option>
+										<option>No indication for surgery</option>
+										<option>Refract and assess again</option>
+										<option>Surgery</option>
+									</select>
+								</td>
+								<td align="left" width="45%">
+						        	<p class="comment"></p>
+						        </td>
+							</tr>
+						</tbody>
+					</table>
+			
+					<table cellspacing="0" width="536" id="surgery" style="display:none;">
+						<tbody>		
+							<tr>
+								<td align="left" width="15%"><p class="lable" >Only eye:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
+						        </td>
+						        <td align="left" width="45%">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Site:</p></td>
+								<td align="left">
+									<input type="radio" class="radioButton" name="dm2" value="y" ><p class="radio">City Road</p>
+									<input type="radio" class="radioButton" name="dm2" value="n" ><p class="radio">Satellite</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>	
+							<tr>
+								<td align="left"><p class="lable" >Risk of IFIS:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Unable to lie flat:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Previous refractive surgery:</p></td>
+								<td align="left">
+									<input type="radio" class="radioButton" name="dm2" value="y" ><p class="radio">Yes</p>
+									<input type="radio" class="radioButton" name="dm2" value="n" ><p class="radio">No</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Vitrectomised eye:</p></td>
+								<td align="left">
+									<input type="radio" class="radioButton" name="dm2" value="y" ><p class="radio">Yes</p>
+									<input type="radio" class="radioButton" name="dm2" value="n" ><p class="radio">No</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Target refraction discussed with patient:</p></td>
+								<td align="left">
+									<input type="radio" class="radioButton" name="dm2" value="y" ><p class="radio">Yes</p>
+									<input type="radio" class="radioButton" name="dm2" value="n" ><p class="radio">No</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Target refraction:</p></td>
+								<td align="left">
+									<input type="range" name="points" min="-10" max="10" step="0.25" onchange="target(this.value);" style="float:left; margin-top:10px; margin-right:20px;"><p class="radio" id="targetValue">0 D</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Suitable for surgeon:</p></td>
+								<td align="left">
+									<select style="width:auto;">
+										<option>Please select</option>
+										<option>Consultant</option>
+										<option>Senior Surgeon</option>
+										<option>Fellow</option>
+										<option>SpR</option>
+									</select>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >PCR risk:</p></td>
+								<td align="left">
+									<p class="radio" id="targetValue">1.8%</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" >(NB does not change in this demo)</p>
+						        </td>
+							</tr>	
+							<tr>
+								<td align="left"><p class="lable" >Supervised:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
+						        </td>
+						        <td align="left"> 
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>		
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+				<div id="lefteye" style="display:none">
+					<p>Content identical to right eye</p>
+				</div>	
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Cataract</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

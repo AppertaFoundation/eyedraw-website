@@ -1,0 +1,274 @@
+/* Section of development document */
+.section {
+	border-top: 1px solid gray;
+}
+
+/* Used for displaying adjacent columns */
+.column {
+	float: left;
+}
+
+.lable {
+	width: 110px;
+	margin-right: 4px;
+	text-align: right;
+}
+
+p#RSS {
+	font-weight: bold;
+}
+
+#rightcolumn {
+	margin-left: 20px;
+}
+
+#opnote {
+	width: 220px;
+	height: 68px;
+	margin-top: 6px;
+}
+
+input.checkbox {
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+input {
+	height: 16px;
+	width: 50px;
+	margin: 0px;
+	margin-top: 6px;
+	padding: 0px;
+}
+
+/* Canvas element */
+canvas {
+	border: 1px solid gray;
+    cursor: pointer;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+canvas:focus {
+	outline: none;
+}
+
+canvas.display {
+	border: none;
+	cursor: auto;
+}
+
+.toolbar {
+	margin-top: 10px;
+}
+
+.section select {
+	width: 100px;
+	height: 20px;
+	margin-top: 10px;
+}
+
+/* email */
+a.email {
+	display: block;
+	width: 100px;
+}
+
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
+	border: solid 1px;
+	background-color: #eeeeee;
+}
+
+button.imgbutton {
+	width: 36px;
+	height: 36px;
+	border: solid 1px;
+	background-color: #eeeeee;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	overflow: visible;
+}
+
+button:hover {
+	background-color: #bbbbbb;
+	border: solid 1px;
+}
+
+button:active {
+	background-color: #888888;
+	border: solid 1px;
+}
+
+button:disabled {
+	background-color: #eeeeee;
+	border: solid 1px;
+}
+
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
+	border: solid 1px;
+	background-color: #eeeeee;
+}
+
+button img {
+	/* Margin required to centre button img - not sure why */
+	margin-left: -5px;
+	margin-top: -1px;
+	padding: 0;
+	border: none;
+	width: 32px;
+	height: 32px;
+}
+
+span.squiggle {
+	display:inline-block;
+	margin-bottom:-4px;
+}
+
+.colourWell {
+    margin-bottom: 4px;
+}
+
+.preview {
+	display: inline-table;
+    margin-bottom: 4px;
+}
+
+.thickness {
+	position: relative;
+	top: -15px;
+	display: inline-block;
+}
+
+.fill {
+	position: relative;
+	top: -5px;
+	display: inline-block;
+}
+
+.fillbutton {
+/*       display: list-item; */
+}
+
+/* Text boxes to enter cover test information */
+
+p.coverLabel {
+	display: inline;
+	margin-left: 10px;
+	width:10px;
+}
+
+p.tiltTitle {
+	margin-left: 10px;
+	margin-top: 30px;
+	width:100px;
+}
+
+p.nearTitle {
+	margin-left: 10px;
+	margin-top: 0px;
+	width:100px;
+}
+
+input.coverTestHor {
+	margin-left: 4px;
+	margin-top: 10px;
+	margin-bottom: 0px;
+	height: 14px;
+	width: 80px;
+	font-family: Courier;
+	font-size: 0.9em;
+	padding: 0.2em;
+}
+
+input.coverTestVer {
+	margin-left: 4px;
+	margin-top: 6px;
+	margin-bottom: 16px;
+	height: 14px;
+	width: 80px;
+	font-family: Courier;
+	font-size: 0.9em;
+	padding: 0.2em;
+}
+
+select.ocularMovementLeftTop {
+	margin-left: 0px;
+	margin-top: 50px;
+	margin-bottom: 0px;
+	width: 50px;
+}
+
+select.ocularMovementLeft {
+	margin-left: 0px;
+	margin-top: 32px;
+	margin-bottom: 0px;
+	width: 50px;
+}
+
+select.ocularMovementRightTop {
+	margin-left: 10px;
+	margin-top: 50px;
+	margin-bottom: 0px;
+	width: 50px;
+}
+
+select.ocularMovementRight {
+	margin-left: 10px;
+	margin-top: 32px;
+	margin-bottom: 0px;
+	width: 50px;
+}
+
+p.coverTestHor {
+	margin-left: 4px;
+	margin-top: 2px;
+	margin-bottom: 0px;
+	height: 14px;
+	width: 80px;
+}
+
+p.coverTestVer {
+	margin-left: 4px;
+	margin-top: 0px;
+	margin-bottom: 16px;
+	height: 14px;
+	width: 80px;
+}
+
+p.occMovRightTop {
+	text-align: right;
+	margin-left: 10px;
+	margin-top: 50px;
+	margin-bottom: 0px;
+
+}
+
+p.occMovRight {
+	text-align: right;
+	margin-left: 10px;
+	margin-top: 16px;
+	margin-bottom: 0px;
+
+}
+
+p.occMovLeftTop {
+	text-align: left;
+	margin-left: 10px;
+	margin-top: 50px;
+	margin-bottom: 0px;
+
+}
+
+p.occMovLeft {
+	text-align: left;
+	margin-left: 10px;
+	margin-top: 16px;
+	margin-bottom: 0px;
+
+}

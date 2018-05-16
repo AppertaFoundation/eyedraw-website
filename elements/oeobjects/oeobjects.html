@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/OE_Objects.js" type="text/javascript"></script>
+    <script type="text/javascript">
+            
+        // Assign a global variable to each object on the page
+        var slider;
+        var stepper;
+        var disclosureTriangle;
+        var beveledButtons;
+                            
+        // Runs on page load
+        function init()
+        {
+            // Create a slider
+            slider = new OE.Slider(document.getElementById('sliderCanvas'), -50, +50, 0);
+            document.getElementById('sliderValue').value = 0;
+            slider.repaint();
+            
+            slider.listener = function(_value)
+            {
+                document.getElementById('sliderValue').value = _value.toFixed(0);
+            }
+            
+            // Create a stepper
+            stepper = new OE.Stepper(document.getElementById('stepperCanvas'), -50, +50, 0);
+            document.getElementById('stepperValue').value = 0;
+            stepper.repaint();
+            
+            stepper.listener = function(_value)
+            {
+                document.getElementById('stepperValue').value = _value.toFixed(0);
+            }
+
+            // Create a disclosure triangle
+            disclosureTriangle = new OE.DisclosureTriangle(document.getElementById('disclosureTriangleCanvas'));
+            disclosureTriangle.repaint();
+            
+            disclosureTriangle.listener = function(_value)
+            {
+                //console.log("List:" + _value);
+                disclose();
+            }
+            
+            // Create beveled buttons
+            beveledButtons = new OE.BeveledButtons(document.getElementById('beveledButtonsCanvas'), 3, true);
+            beveledButtons.repaint();
+            
+            beveledButtons.listener = function(_value)
+            {
+            	document.getElementById('beveledButtonValue').value = _value.toFixed(0);
+            }
+        }
+        
+        // Set Slider property
+        function setSliderProperty(_propertyName, _value)
+        {
+            slider[_propertyName] = _value;
+            slider.repaint();
+        }
+        
+        // Set Stepper property
+        function setStepperProperty(_propertyName, _value)
+        {
+            stepper[_propertyName] = _value;
+            stepper.repaint();
+        }
+
+        // Set BeveledButtons property
+        function setBeveledButtonsProperty(_propertyName, _value)
+        {
+            beveledButtons[_propertyName] = _value;
+            beveledButtons.repaint();
+        }
+                
+        // Changes span between displayed or hidden, changing icon image appropriately
+		function disclose()
+		{
+			// Create references to document objects
+			var spanId = "demo";
+		
+			// Get document objects
+			var spanStyle = document.getElementById(spanId).style;
+			var sectionStyle = document.getElementById("disclosure").style;
+		
+			// Toggle values
+			if (spanStyle.display == "block")
+			{
+				spanStyle.display = "none";
+				sectionStyle.height = "80px";
+			}
+			else
+			{
+				spanStyle.display = "block";
+				sectionStyle.height = "120px";
+			}
+		}
+ 
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p>These are examples of OpenEyes objects. OpenEyes objects are interface elements based on the HTML5 canvas element. They are designed to replicate some of the interface widgets familiar to users of desktop applications, but not currently found in HTML.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Slider -->
+		<div class="section" style="height:180px;" align="left">
+			<h4>Slider object:</h4>
+            <canvas id="sliderCanvas" class="OEObjectSlider" style="border: 1px solid white"></canvas><br />
+            
+        	<table cellspacing="0" width="240" >
+				<tbody>		
+					<tr>
+						<td align="left" width="50%"><p class="lable" >Slider value:</p></td>
+						<td align="left">
+							<input type="text" id="sliderValue" onchange="slider.setValue(this.value); return false;"/>
+				        </td>
+					</tr>
+					<tr>
+						<td align="left"><p class="lable" >Show ticks:</p></td>
+						<td align="left">
+							<input class="checkbox" type="checkbox" id="chk_pxe" onchange="setSliderProperty('hasTickMarks', this.checked); return false;"/>
+				        </td>
+					</tr>
+					<tr>
+						<td align="left"><p class="lable" >Snap to ticks:</p></td>
+						<td align="left">
+							<input class="checkbox" type="checkbox" id="chk_pxe" onchange="setSliderProperty('onlyStopOnTickMarks', this.checked); return false;"/>
+				        </td>
+					</tr>
+				</tbody>
+			</table>
+		</div>						
+
+		<!-- Stepper -->
+		<div class="section" style="height:110px;" align="left">
+			<h4>Stepper object:</h4>            
+        	<table cellspacing="0" width="240" >
+				<tbody>		
+					<tr>
+						<td align="left" width="50%"><p class="lable" >Stepper value:</p></td>
+						<td align="right" width="10%" style="text-align: right;">
+							<input id="stepperValue" onchange="stepper.setValue(this.value); return false;"/>
+				        </td>
+				        <td align="left" width="40%">
+				             <canvas id="stepperCanvas" class="OEObjectStepper" style="border: 1px solid white"></canvas>
+				        </td>
+					</tr>
+					<tr>
+						<td align="left" width="50%"><p class="lable" >Repeat on hold:</p></td>
+						<td align="left" width="20%">
+							<input class="checkbox" type="checkbox" onchange="setStepperProperty('autoRepeat', this.checked); return false;"/>
+				        </td>
+				        <td align="left" width="30%">
+				        </td>
+					</tr>					
+				</tbody>
+			</table>
+		</div>	
+
+		<!-- Animated disclosure triangle -->
+		<div class="section" id="disclosure" style="height:80px;" align="left">
+			<h4>Animated disclosure triangle:</h4>
+			<canvas id="disclosureTriangleCanvas" class="OEObjectDisclosureTriangle" style="border: 1px white"></canvas>
+			<span class="drawSpan" id="demo" style="display:none; background-color: #eee;">
+				<p>Block of data to be shown or hidden by clicking on the disclosure triangle</p>
+			</span>         
+		</div>
+
+		
+		<!-- Beveled Buttons -->
+		<div class="section" style="height:160px;" align="left">
+			<h4>Beveled Buttons:</h4>
+			
+			<!-- Two columns here -->
+			<div style ="width:320px; float:left;">
+				
+				<!-- Canvas -->
+				<div style='float:left; width: 120px;'>
+	                <canvas id="beveledButtonsCanvas" class="OEObjectBeveledButtons" style="border: 1px solid white"></canvas>
+				</div>
+			
+				<!-- Controls -->
+				<div style='float:right; width: 200px;'>
+					<table cellspacing="0" width="150" >
+						<tbody>		
+							<tr>
+								<td align="left" width="50%"><p class="lable" >Index:</p></td>
+								<td align="left" width="10%">
+									<input id="beveledButtonValue"/>
+						        </td>
+						    </tr>
+						    <tr>
+								<td align="left" width="50%"><p class="lable" >Sticky:</p></td>				    
+								<td align="left">
+									<input class="checkbox" type="checkbox" onchange="setBeveledButtonsProperty('isSticky', this.checked); return false;"/>
+						        </td>
+							</tr>
+							<tr>
+								<td align="left" width="50%"><p class="lable" >Radio:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" onchange="setBeveledButtonsProperty('isRadio', this.checked); return false;"/>
+						        </td>
+							</tr>
+							<tr>
+								<td align="left" width="50%"><p class="lable" >Illuminated:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" onchange="setBeveledButtonsProperty('isIlluminated', this.checked); return false;"/>
+						        </td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

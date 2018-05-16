@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+	
+	<!-- Jquery -->
+	<script src="../../scripts/jquery-1.11.1.min.js"></script>
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+    <script language="JavaScript" src="PD_Family.js" type="text/javascript"></script>
+    <script language="JavaScript" src="Queue.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+    
+		// Unique variable assigned to the drawing
+        var memberSet = [
+			{"name": "Father", "father": "", "mother": "", "gender": "M", "age":57, "affected":false, "deceased":false},
+			{"name": "Mother", "father": "", "mother": "", "gender": "F", "age":58, "affected":false, "deceased":false},
+			{"name": "Proband", "father": "Father", "mother": "Mother", "gender": "M", "age":42, "affected":true, "deceased":false,"isProband":true, "condition":"POAG"},
+
+        ];
+        var canvasEdit;
+        var family;
+        var drawingEdit;
+        var canAddNewRoot = true;
+		var latestDoodleId = 0;
+        
+        // Guarantees unique name
+        var nextMemberIndex = memberSet.length + 1;
+                            
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the drawing canvas
+            canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../img'});
+            
+            // Instantiate a controller object
+            controller = new eyeDrawController(drawingEdit);
+            
+            // Initialise drawing
+            drawingEdit.init();
+               
+			// Create family and draw it
+			createFamily();
+			family.repaint();
+			
+			// Deselect doodles
+            drawingEdit.deselectDoodles();
+        }
+        
+        // Controller class
+        function eyeDrawController(_drawing)
+        {
+            this.drawing = _drawing;
+            this.gsf = 1;
+            
+            // Specify call back function
+            this.callBack = callBack;
+            
+            // Register for notifications with drawing object
+            this.drawing.registerForNotifications(this, 'callBack', []);
+            
+            // Show doodle controls
+            this.drawing.showDoodleControls = true;
+            
+            // Method called for notification
+            function callBack(_messageArray)
+            {
+                switch (_messageArray['eventName'])
+                {
+                    // Eye draw image files all loaded
+                    case 'ready':
+						//this.drawing.addDoodle('FamilyMember');																					
+						//this.drawing.deselectDoodles();
+                        break;
+                        
+                    case 'parameterChanged':
+                        var doodle = _messageArray['object'].doodle;
+                        break;
+                    
+                    case 'doodleAdded':
+						var dood = _messageArray['object'];
+						//console.log('doodle added');
+						break;
+                    
+                    case 'doodleDeleted':
+						break;
+                }
+            }
+        }
+        
+        function createFamily() {
+            // Create a family object from member data
+            family = new PD.Family(memberSet, canvasEdit, drawingEdit);
+
+            var height = 0;
+            var maximumWidth = 0;
+            
+            // Set dimensions
+            for (var i in family.descentArray)
+            {
+                var descent = family.descentArray[i];
+                //console.log(descent);
+
+                // Layout nodes using a recursive method from the rootpair
+                descent.rootNode = descent.createNode(descent.rootPair, true);
+                
+                // Create tree for this descent
+                descent.createTree(0, height);
+                
+                // See where the members of the consanguineous pair are
+                for (var j in descent.nodeArray)
+                {
+                    var member = descent.nodeArray[j].member;
+                    
+                    if (member != null)
+                    {
+                        //console.log(member.name);
+                    }
+                }
+                
+                // Calculate dimensions                   
+                descent.tree.calculateDimensions(descent.rootNode);
+                height = descent.tree.height;
+                maximumWidth = descent.tree.width > maximumWidth?descent.tree.width:maximumWidth;
+            }
+
+        }
+        
+        
+        function addChild(_gender)
+        {
+            //console.log(drawingEdit.selectedDoodle.node);
+            var motherName;
+            var fatherName;
+            var newNode;
+            var coParent;
+            var gender;
+            var coParentGender;
+            
+            // Check for a pairing (will be either right of left sibling)
+            var node = drawingEdit.selectedDoodle.node;
+            var pair = null;
+            if (node.rightSibling && node.rightSibling.type == PD.NodeType.Pair) pair = node.rightSibling;
+            if (node.leftSibling && node.leftSibling.type == PD.NodeType.Pair) pair = node.leftSibling;
+            
+            if (pair) {
+            	// Get names of mother and father from node labels - Pair is guaranteed to have left and right siblings
+            	if (pair.leftSibling.member.gender == 'F') {
+            		motherName = pair.leftSibling.label;
+            		fatherName = pair.rightSibling.label;
+            	}
+            	else {
+            		motherName = pair.rightSibling.label;
+            		fatherName = pair.leftSibling.label;
+            	}
+            	
+            	newNode = {"name": "mem" + nextMemberIndex++, "father": fatherName, "mother": motherName, "gender": _gender, "age":42, "affected":false, "deceased":false};
+            	memberSet.push(newNode);
+            }
+            else {
+            	// Determine gender of existing coparent
+            	if (node.member.gender == 'F') {
+            		motherName = node.label;
+            		var coParentGender = 'M';
+            	}
+            	else {
+            		fatherName = node.label;
+            		coParentGender = 'F';
+            	}
+            	
+            	// Add coparent 
+            	if (coParentGender == 'M') {
+            		fatherName = "mem" + nextMemberIndex++;
+            		newNode = {"name": fatherName, "father": "", "mother": "", "gender": coParentGender, "age":66, "affected":false, "deceased":false};
+            	}
+            	else {
+            		motherName = "mem" + nextMemberIndex++;
+            		newNode = {"name": motherName, "father": "", "mother": "", "gender": coParentGender, "age":66, "affected":false, "deceased":false};
+            	}
+            	memberSet.push(newNode);
+            	
+            	// Now add child
+            	newNode = {"name": "mem" + nextMemberIndex++, "father": fatherName, "mother": motherName, "gender": _gender, "age":42, "affected":false, "deceased":false};
+            	memberSet.push(newNode);                	
+            }
+
+			// Tidy up
+			drawingEdit.deleteAllDoodles();
+			
+			// Create family and draw it
+			createFamily();
+			family.repaint();
+			
+			// Deselect all doodles
+            drawingEdit.deselectDoodles();
+            
+			// Select latest one
+			var doodleId = 0;
+			for (var i = 0; i < drawingEdit.doodleArray.length; i++) {
+				if (drawingEdit.doodleArray[i].node) {
+					if (drawingEdit.doodleArray[i].node.member.name == "mem" + (nextMemberIndex - 1)) {
+						doodleId = drawingEdit.doodleArray[i].id;
+					}
+				}
+			}
+			if (doodleId > 0) {
+				drawingEdit.setDoodleAsSelected(doodleId);
+			}
+        }
+
+        function addSibling(_gender, _order)
+        {
+            var motherName;
+            var fatherName;
+            var newNode;
+            var coParent;
+            var gender;
+            var age;
+            
+            // Check for a pairing (will be either right of left sibling)
+            var node = drawingEdit.selectedDoodle.node;
+            
+            // Set age to one less than selected member
+            var modeAge = node.member.age;
+            if (_order == '<') {
+            	age = modeAge - 1;
+            }
+            else {
+            	age = modeAge + 1;
+            }
+
+            // Check for parents (currently can only add one new set of parents (resets root)
+            if (node.parent.type == PD.NodeType.Root) {
+            
+				// Create parents
+				fatherName = "mem" + nextMemberIndex++;
+				newNode = {"name": fatherName, "father": "", "mother": "", "gender": 'M', "age":44, "affected":false, "deceased":false};
+				memberSet.push(newNode);
+				motherName = "mem" + nextMemberIndex++;
+				newNode = {"name": motherName, "father": "", "mother": "", "gender": 'F', "age":44, "affected":false, "deceased":false};
+				memberSet.push(newNode);
+			
+				// Modify member to have these parents
+				var nodeMemberName = node.member.name;
+				for (var i in memberSet) {
+					if (memberSet[i].name == nodeMemberName) {
+						memberSet[i].father = fatherName;
+						memberSet[i].mother = motherName;
+					}
+				}
+			
+				// Create sibling with same parents
+				newNode = {"name": "mem" + nextMemberIndex++, "father": fatherName, "mother": motherName, "gender": _gender, "age":age, "affected":false, "deceased":false};
+				memberSet.push(newNode);     	
+            }
+            else {
+                if (!(node.member.mother == null && node.member.father == null)) {
+					// Get names of mother and father from node labels - Pair is guaranteed to have left and right siblings
+					if (node.parent.leftSibling.member.gender == 'F') {
+						motherName = node.parent.leftSibling.label;
+						fatherName = node.parent.rightSibling.label;
+					}
+					else {
+						motherName = node.parent.rightSibling.label;
+						fatherName = node.parent.leftSibling.label;
+					}
+				
+					// Create new sibling
+					newNode = {"name": "mem" + nextMemberIndex++, "father": fatherName, "mother": motherName, "gender": _gender, "age":age, "affected":false, "deceased":false};
+					memberSet.push(newNode);
+            	}
+            	else {
+            		console.log('More than one root not currently supported');
+            	}
+            }
+
+			// Tidy up
+			drawingEdit.deleteAllDoodles();
+
+			// Create family and draw it
+			createFamily();
+			family.repaint();
+			
+			// Deselect all doodles
+            drawingEdit.deselectDoodles();
+
+			// Select latest one
+			var doodleId = 0;
+			for (var i = 0; i < drawingEdit.doodleArray.length; i++) {
+				if (drawingEdit.doodleArray[i].node) {
+					if (drawingEdit.doodleArray[i].node.member.name == "mem" + (nextMemberIndex - 1)) {
+						doodleId = drawingEdit.doodleArray[i].id;
+					}
+				}
+			}
+			if (doodleId > 0) {
+				drawingEdit.setDoodleAsSelected(doodleId);
+			}
+        }
+        
+        function updateMemberSet(_name, _key, _value) {
+        	for (var i in memberSet) {
+        		if (memberSet[i].name == _name) {
+        			memberSet[i][_key] = _value;
+        		}
+        	}
+        }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows the input of a family history, and uses standard genetic pedigree symbols</p>
+			<p>Click on a family member, then click one of the buttons on the top row to add another. The pedigree redraws automatically after each addition. Selecting a family member brings up control panel where details can be edited.</p>
+			<p>Question: Should we have one pedigree for each disease, or store affected state for more than one disease on each pedigree?</p>
+			<p>NB - A current limitation is that only one chain of ancestors can be added (that is, you can't add parents to a partner of a member of the proband's family). However, this should be more than sufficient to graphically represent most family histories</p>
+			
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:600px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 1000px; float:left;">
+			
+            	<!-- Doodle toolbar -->
+				<div class="toolbar">
+			        <button class="ed-button" onclick="addChild('F');return false;" >Add daughter</button>
+					<button class="ed-button" onclick="addChild('M');return false;" >Add son</button></br>
+					<button class="ed-button" onclick="addSibling('F', '>');return false;" >Add sister &#8592;</button>
+					<button class="ed-button" onclick="addSibling('F', '<');return false;" >Add sister &#8594;</button>
+					<button class="ed-button" onclick="addSibling('M', '>');return false;" >Add brother &#8592;</button>
+					<button class="ed-button" onclick="addSibling('M', '<');return false;" >Add brother&#8594;</button></br></br>
+                </div>
+                   				
+				<!-- Canvas -->
+				<div style='float: left; width: 600px; height: 500px;'>
+	                 <canvas id="canvasEdit" class="ed-canvas" style="border: 1px solid gray;" width="600" height="450"></canvas>
+				</div>
+				
+		        <!-- Doodle control panel -->
+		        <div id="canvasEdit_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;">
+		        </div>
+   			
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<!--
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+-->
+</body>
+</html>

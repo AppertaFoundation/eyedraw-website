@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <script type="text/javascript">
+        
+        // Runs on page load
+        function init()
+        {
+        }
+        
+		// Takes selection from a select dropdown and adds to a text area, with comma if appropriate
+		function addToTextarea(selectId, textareaId)
+		{
+			// Get references to select and textarea
+			var select = document.getElementById(selectId);
+			var textArea = document.getElementById(textareaId);
+			
+			// Get value and text from select box
+			var value = select.options[select.selectedIndex].value;
+			var text = select.options[select.selectedIndex].text;
+			
+			// If text there already, make it lower case (as long as it has no caret) and add a comma before
+			if (textArea.value.length > 0)
+			{
+				char = value.charAt(0);
+				if (char != "^")
+				{
+					text = lcfirst(text);
+				}		
+				var text = ", " + text;
+			}
+			
+			// Add to textarea
+			textArea.value = textArea.value + text;
+			
+			// Adjust height of target textarea
+			//adjustHeight(textareaId, 20);
+			
+			// Reset select
+			select.selectedIndex = 0;
+		}
+		
+		// Makes automatically resizeable textarea. Style should be set with no scrollbars (overflow: hidden;)
+		function adjustHeight(id, defaultHeight)
+		{
+			// Get reference to text area
+			var textArea = document.getElementById(id);
+			
+			// Start by setting to default height
+			textArea.style.height = defaultHeight + "px";
+			
+			// Now set new height according to content
+			if (textArea.scrollHeight > textArea.clientHeight)
+			{
+				textArea.style.height = textArea.scrollHeight + "px";
+			}
+		}
+		
+		// Decapitalise first letter of a string
+		function lcfirst(str)
+		{
+		    var firstLetter = str.substr(0, 1);
+		    return firstLetter.toLowerCase() + str.substr(1);
+		}
+		    
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<!-- Description -->
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element collects and displays textual information about any adnexal comorbidity relevant to cataract surgery. Only half the element is shown, as the other half dealing with the fellow eye is identical.</p>
+			<p> It uses the standard approach within OpenEyes of a drop down menu containing predefined common descriptions. Selection of an item in the menu adds it to the text box which contains the description to be saved. The text can be added to by placing the cursor in the box (or tabbing from the drop down menu), and typing.</p>
+			<p>The text box can take an unlimited amount of text, but is kept intentionally small to allow maximum use of the screen area for other elements in the cataract examination. If more text is required, it automatically enlarges as text is entered.</p>
+			<p>Note that the first entry on the drop down doubles as the lable for the data being entered in the text box.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:320px;" align="left">
+					
+			<!-- Use exactly half the maximum event width -->
+			<div style ="width:540; float:left;">
+				<h4>Edit mode:</h4>
+				
+				<h4>Option 1:</h4>
+				<!-- drop down -->
+				<div style='float:left; width: 160px; height: 120px;'>
+					<select id="HPCSelect" style="width:150px;" onchange="addToTextarea('HPCSelect', 'HPCTextarea')">
+						<option>Adnexal comorbidity:</option>
+						<option value="Blepharitis">Blepharitis</option>
+						<option value="Blepharospasm">Blepharospasm</option>
+						<option value="Conjunctivitis">Conjunctivitis</option>
+						<option value="Difficult access">Difficult access</option>
+						<option value="Ectropion">Ectropion</option>
+						<option value="Entropion">Entropion</option>
+						<option value="Squint">Squint</option>
+					</select>
+				</div>
+		
+			
+				<!-- Textarea -->
+				<div style='float:right; width: 240px;height: 120px;'>
+					<textarea name="history" id="HPCTextarea" style="height:60px;width:220px;" onkeydown="adjustHeight('HPCTextarea', 20);"></textarea>
+				</div>
+				
+				<h4>Option 2:</h4>
+				<!-- drop down -->
+				<div style='float:left; width: 160px; height: 60px;'>
+					<input class="checkbox" type="checkbox" />Blepharitis</br>
+					<input class="checkbox" type="checkbox" />Blepharospasm</br>
+					<input class="checkbox" type="checkbox" />Conjunctivitis</br>
+					<input class="checkbox" type="checkbox" />Difficult access</br>
+					<input class="checkbox" type="checkbox" />Ectropion</br>
+					<input class="checkbox" type="checkbox" />Entropion</br>
+					<input class="checkbox" type="checkbox" />Squint</br>
+				</div>
+			
+				<!-- Textarea -->
+				<div style='float:right; width: 240px;height: 120px;'>
+					<p>Comments:</p>
+					<textarea name="history" id="HPCTextarea" style="height:60px;width:220px;"></textarea>
+				</div>
+			</div>
+
+		</div>
+		
+		<!-- Display mode section -->
+		<div class="section" style="height:80px;" align="left">
+		
+			<!-- Use exactly half the maximum event width -->
+			<div style ="width:540; float:left;">
+				<h4>Display mode:</h4>
+				<p><b>Adnexal comorbidity:</b> Blepharospasm, Difficult access (may need a canthotomy)</p>
+			</div>
+	
+		</div>	
+
+		<!-- Steering group section -->
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Cataract</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

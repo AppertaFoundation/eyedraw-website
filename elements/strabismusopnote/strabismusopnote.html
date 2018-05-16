@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Strabismus.js" type="text/javascript"></script>
+    <script type="text/javascript">
+            
+        // Variables assigned to each drawingEdit on this page
+        var drawingEdit;
+        var drawingDisplay;
+        
+        // Muscle doodles
+        var medialRectus;
+        var lateralRectus;
+                            
+        // Runs on page load
+        function init()
+        {
+            // Get reference to canvas
+            var canvas = document.getElementById('canvas');
+            
+            // Create blank drawing
+            drawingEdit = new ED.Drawing(canvas, ED.eye.Right, 'RPS', true, 0, 0);
+
+            // Preload images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+			// Set focus to canvas
+            canvas.focus();
+            
+            // Display canvas
+            var canvasDisplay = document.getElementById('canvasDisplay');
+            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS', true, 0, 0);
+            drawingDisplay.addDoodle('StrabOpTemplate');
+			medialRectus = drawingDisplay.addDoodle('Rectus');
+			lateralRectus = drawingDisplay.addDoodle('Rectus');
+			medialRectus.rotation = Math.PI/2;
+			lateralRectus.rotation = -Math.PI/2;
+			medialRectus.apexY = -300;
+			medialRectus.hangback = true;
+			lateralRectus.apexY = -100;
+            drawingDisplay.deselectDoodles();
+            //drawingDisplay.repaint();
+            
+            // Wait for drawing object to be ready before adding objects or drawings
+            drawingEdit.onLoaded = function()
+	        {
+	        	// Template
+				drawingEdit.addDoodle('StrabOpTemplate');
+				medialRectus = drawingEdit.addDoodle('Rectus');
+				lateralRectus = drawingEdit.addDoodle('Rectus');
+				
+				// Put recti in correct position for eye
+				if (drawingEdit.eye == ED.eye.Right)
+				{
+				    medialRectus.rotation = Math.PI/2;
+				    lateralRectus.rotation = -Math.PI/2;
+				}
+				else
+				{
+				    medialRectus.rotation = -Math.PI/2;
+				    lateralRectus.rotation = Math.PI/2;                        
+				}
+				
+				// Draw doodles
+				drawingEdit.deselectDoodles();
+				drawingEdit.repaint();
+	        }
+            
+            // Function to detect changes in parameters (eg from mouse dragging)
+	        drawingEdit.parameterListener = function()
+	        {
+				if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'Rectus')
+				{
+					if (typeof(medialRectus) != 'undefined' && medialRectus.isSelected)
+					{
+						document.getElementById('mr_value').value = medialRectus.getParameter('recession');
+					}
+					
+					if (typeof(lateralRectus) != 'undefined' && lateralRectus.isSelected)
+					{
+						document.getElementById('lr_value').value = lateralRectus.getParameter('recession');
+					}
+					
+					if (typeof(medialRectus) != 'undefined' && medialRectus.isSelected)
+					{
+						document.getElementById('mrt_value').value = medialRectus.getParameter('transposition');
+					}
+					
+					if (typeof(lateralRectus) != 'undefined' && lateralRectus.isSelected)
+					{
+						document.getElementById('lrt_value').value = lateralRectus.getParameter('transposition');
+					}					
+				}
+	        }          
+        }
+        
+		// Sets suture type
+		function sutureType(_muscle, _value)
+		{
+			switch (_muscle)
+			{
+				case 'mr':
+					if (_value != 'Fixed') medialRectus.hangback = true;
+					else medialRectus.hangback = false;
+				break;
+				case 'lr':
+					if (_muscle == 'lr' && _value != 'Fixed') lateralRectus.hangback = true;
+					else lateralRectus.hangback = false;
+				break;
+			}
+			drawingEdit.repaint();
+		}
+            	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element facilitates the data input for the strabismus operation note. As with other elements, users can either enter data manually, or using the diagram which is kept in sync with the numerical data.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:360px;" align="left">
+			<h4>Edit mode:</h4>
+			
+			<!-- Drawing -->
+			<div style ="width:660px; float:left;">			
+
+				<!-- Canvas -->
+				<div style='float:left; width: 320px; height: 320px;'>
+	                <canvas id="canvas" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+				</div>
+			
+				<!-- Controls -->
+				<div style='float:right; width: 340px;height: 320px;'>
+				
+	            	<!-- Doodle toolbar -->
+<!-- 
+					<div class="toolbar">
+						<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+		                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+		                <br />
+	                </div>
+ -->
+				
+					<table cellspacing="0" width="240" >
+						<tbody>	
+							<tr>
+								<td align="left" width="50%">
+									<p>LR recess/resect:</p>
+								</td>
+								<td align="left" width="50%">
+									<p>MR recess/resect:</p>
+								</td>
+							</tr>	
+							<tr>
+								<td align="left" width="50%">
+									<select style="width:90px" onchange="sutureType('lr', this.value)">
+										<option value="Fixed">Fixed</option>
+										<option value="Hangback">Hangback</option>
+										<option value="Adjustable">Adjustable</option>
+									</select>
+								</td>
+								<td align="left" width="50%">
+									<select style="width:90px" onchange="sutureType('mr', this.value)">
+										<option value="Fixed">Fixed</option>
+										<option value="Hangback">Hangback</option>
+										<option value="Adjustable">Adjustable</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" id="lr_value" value="0.0" onchange="lateralRectus.setParameter('recession', this.value);drawingEdit.repaint();"/>
+								</td>
+								<td>
+									<input type="text" id="mr_value" value="0.0" onchange="medialRectus.setParameter('recession', this.value);drawingEdit.repaint();"/>
+								</td>
+							</tr>
+							<tr>
+								<td align="left" width="50%">
+									<p>LR transposition:</p>
+								</td>
+								<td align="left" width="50%">
+									<p>MR transposition:</p>
+								</td>
+							<tr>
+								<td>
+									<input type="text" id="lrt_value" value="0.0" onchange="lateralRectus.setParameter('transposition', this.value);drawingEdit.repaint();"/>
+								</td>
+								<td>
+									<input type="text" id="mrt_value" value="0.0" onchange="medialRectus.setParameter('transposition', this.value);drawingEdit.repaint();"/>
+								</td>
+							</tr>								
+							</tr>								
+						</tbody>	
+					</table>					
+				</div>
+				
+			</div>
+			
+			<!-- Other data -->
+<!-- 
+			<div style ="width:400px; float:left;">
+				<textarea name="history" id="complications" style="margin-top:10px;" height="300"></textarea>  				
+			</div>
+ -->
+		
+		<!-- End of edit mode div -->
+		</div>						
+
+		<!-- Display mode section -->
+		<div class="section" style="height:270px;" align="left">
+		
+			<!-- Overall width -->
+			<div style ="width:540; float:left;">
+				<h4>Display mode:</h4>
+				<div style="float:left; width: 220px; height: 220px;">
+					<canvas class="display" id="canvasDisplay" width="200" height="200" tabindex="1"></canvas>
+				</div>
+				<div style="float:right; width: 320px; height: 220px;">
+					<p>&nbsp</p>
+					<p>Right medial rectus recession 5mm</p>
+					<p>(hangback suture)</p>
+					<p>&nbsp</p>
+					<p>Right lateral rectus resection 5mm</p>
+					<p>(fixed suture)</p>
+				</div>
+			</div>
+	
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Strabismus</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<!-- 
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+ -->
+</body>
+</html>

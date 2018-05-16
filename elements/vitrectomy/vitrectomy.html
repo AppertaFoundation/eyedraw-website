@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_AntSeg.js" type="text/javascript"></script>	
+    <script language="JavaScript" src="../../eyedraw2/ED_VitreoRetinal.js" type="text/javascript"></script>	
+	
+    <script type="text/javascript">
+        
+        // Variables assigned to each drawing on this page
+        var drawingEdit;
+        var drawingDisplay;
+		                                    
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the canvas elements
+            var canvasEdit = document.getElementById('canvasEdit');
+  
+            // Create drawing objects
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../graphics/'});
+            
+            // Instantiate controller object
+            var controller = new eyeDrawController(drawingEdit);
+            
+            // Initialise drawings
+            drawingEdit.init();
+
+            // Controller class
+            function eyeDrawController(_drawing)
+            {
+                this.drawing = _drawing;
+                
+                // Specify call back function
+                this.callBack = callBack;
+                
+                // Register for notifications with drawing object
+                this.drawing.registerForNotifications(this, 'callBack', []);
+                
+                // Method called for notification
+                function callBack(_messageArray)
+                {
+                    switch (_messageArray['eventName'])
+                    {
+                        // Eye draw image files all loaded
+                        case 'ready':
+                        	// Alter scale to get wider angle view
+                        	this.drawing.globalScaleFactor = 0.72;
+                        	
+                        	// Anterior segment
+                        	this.drawing.addDoodle('AntSeg');
+                        	
+                        	// Working ports
+	                        this.drawing.addDoodle('Sclerostomy', {gauge:'20g'}, {overallGauge:{id:'gaugeSelect', attribute:'value'}});
+	                        this.drawing.addDoodle('Sclerostomy', {gauge:'20g', rotation:Math.PI/3}, {overallGauge:{id:'gaugeSelect', attribute:'value'}});
+	                        
+	                        // Infusion port
+	                        var rot = this.drawing.eye == ED.eye.Right?4 * Math.PI/3:2 * Math.PI/3;
+	                        this.drawing.addDoodle('Sclerostomy', {gauge:'20g', rotation:rot}, {overallGauge:{id:'gaugeSelect', attribute:'value'}});
+                        
+                            this.drawing.deselectDoodles();
+                            break;
+                    }
+                }
+            }
+ 		}
+ 		
+ 		function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('antseg');
+			
+			repText.value = text;
+       }
+
+
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows recording of details of a pars plana vitrectomy. Sclerostomies can be moved, and edited using the handle, which alters gauge. Sclerostomies can be marked as sutured by selecting them, and clicking the suture button.</p>
+			<p>Procedures for which this subelement appears include Fragmatome lensectomy, Removal of gas, Removal of oil, Vitrectomy, and Biopsy of vitreous.</p> 
+			
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:400px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 700px; float:left;">
+			
+				<p>Right eye:</p>
+		
+				<!-- Canvas -->
+				<div style='float:left; width: 320px; height: 320px;'>
+					<span id="canvasTooltip"></span>
+	                <canvas id="canvasEdit" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+				</div>
+			
+				<!-- Controls -->
+				<div style='float:right; width: 380px;height: 320px;'>
+
+					<!-- Doodle toolbar -->
+					<div class="toolbar">
+						<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+		                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+		                <br />
+						<button class="imgbutton" id="sidePortRPS" title="Pocket incision" onclick="drawingEdit.addDoodle('PhakoIncision'); return false;" ><img src="../../graphics/PhakoIncision.gif" /></button>
+						<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('SidePort'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
+						<button class="imgbutton" id="scleralIncisionRPS" title="Scleral incision" onclick="drawingEdit.addDoodle('ScleralIncision'); return false;" ><img src="../../graphics/ScleralIncision.gif" /></button>
+						<button class="imgbutton" id="irishookRPS" title="Iris hook" onclick="drawingEdit.addDoodle('IrisHook'); return false;" ><img src="../../graphics/IrisHook.gif" /></button>
+						<button class="imgbutton" id="cutterPIRPS" title="Cutter PI" onclick="drawingEdit.addDoodle('CutterPI'); return false;" ><img src="../../graphics/CutterPI.gif" /></button>
+						<button class="imgbutton" id="SclerostomyRPS" title="Sclerostomy" onclick="drawingEdit.addDoodle('Sclerostomy'); return false;" ><img src="../../graphics/Sclerostomy.gif" /></button>
+						<button class="imgbutton" id="ChandelierSingleRPS" title="Chandelier" onclick="drawingEdit.addDoodle('ChandelierSingle'); return false;" ><img src="../../graphics/ChandelierSingle.gif" /></button>
+						<button class="imgbutton" id="ChandelierDoubleRPS" title="Chandelier Double" onclick="drawingEdit.addDoodle('ChandelierDouble'); return false;" ><img src="../../graphics/ChandelierDouble.gif" /></button>
+						<button class="imgbutton" id="CornealAbrasionRPS" title="Corneal erosion" onclick="drawingEdit.addDoodle('CornealErosion'); return false;" ><img src="../../graphics/CornealErosion.gif" /></button>   
+		                <br />		
+						<button class="imgbutton" id="SutureRPS" title="Click to toggle suture on selected sclerostomy" onclick="var dood = drawingEdit.selectedDoodle; if (dood) dood.setParameterWithAnimation('isSutured', dood.isSutured?false:true); drawingEdit.repaint(); return false;" ><img src="../../graphics/MattressSuture.gif" /></button>
+	  	                    
+	                </div>
+                			
+					<table cellspacing="0" width="120" >
+						<tbody>		
+							<tr>
+								<td align="left" width="20%"><p class="lable" >Starting gauge:</p></td>
+								<td align="left" width="60%">
+							        <!-- Input element -->
+							        <select id="gaugeSelect">
+							            <option value="20g" >20g</option>
+							            <option value="23g" selected="true">23g</option>
+							            <option value="25g">25g</option>
+							            <option value="27g">27g</option>
+							        </select>
+						        </td>
+							</tr>
+							<tr>
+								<td align="left"><p class="lable" >PVD induced:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" id="chk_phd"/>
+		    					 </td>
+							</tr>
+						<tr>
+							<td align="left"><p class="lable" >Note:</p></td>
+							<td align="left">
+								<button class="actbutton" title="Creates a text report from the drawing" onclick="addToReport(); return false;" >Report</button>
+					        </td>
+						</tr>
+						<tr>
+							<td>
+							</td>
+							<td>
+								<textarea name="antseg" id="antseg" style="height:93px;"></textarea>
+							</td>
+						</tr>
+						</tbody>	
+					</table>
+					
+				</div>			
+				   			
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">				
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>
+
+		<!-- Display mode section -->
+		<div class="section" style="height:110px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<!-- Right eye -->
+			<div style ="width:540px; float:left;">
+				<p>Right eye:</p>
+
+
+			</div>
+			
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+				
+			</div>				
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Vitreoretinal</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

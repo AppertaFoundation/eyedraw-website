@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->		
+<!-- 	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script> -->
+
+	<script language="JavaScript" src="drugs.js" type="text/javascript"></script>	
+    <script type="text/javascript">
+
+		// Common Drugs (written out here from database with principal eye inserted where appropriate). Last is placeholder for search selection
+		var commonDrugSet = 
+		[
+			{id: 0, name: "Chloramphenicol", route: "RE", frequency: "qid", duration: "1 week", type: "Antibacterial", no_pres: false, is_ophthalmic: true},
+			{id: 1, name: "Dexamethasone 0.1%", route: "RE", frequency: "qid", duration: "1 month", type: "Steroid", no_pres: false, is_ophthalmic: true},
+			{id: 2, name: "Acular 0.5%", route: "RE", frequency: "did", duration: "1 month", type: "Non-steroidal anti-inflammatory", no_pres: false, is_ophthalmic: true},
+			{id: 3, name: "Cyclopentolate 1%", route: "RE", frequency: "qid", duration: "1 month", type: "Mydriatic", no_pres: false, is_ophthalmic: true},
+			{id: 4, name: "Apraclonidine 0.5%", route: "RE", frequency: "tid", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: true},
+			{id: 5, name: "Betagan 0.5%", route: "RE", frequency: "bd", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: true},
+			{id: 6, name: "Acetazolamide 250mg", route: "PO", frequency: "od", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: false},
+			{id: 7, name: "G Chloramphenicol", route: "RE", frequency: "qid", duration: "1 week", type: "Antibacterial", no_pres: true, is_ophthalmic: true},
+			{id: 8, name: "", route: "", frequency: "", duration: "", type: "Any", no_pres: false, is_ophthalmic: true}
+		];
+
+		// Counter to track rows
+		var scriptCount = 0;
+		
+		// Value of last index
+		var lastIndex = 8;
+		
+		// Principal eye
+		var principalEye = 'LE';
+	                            
+        // Runs on page load
+        function init()
+        {
+        	updateSelect("drugSelector", "Vitreoretinal");
+        	document.getElementById('drugSelector').focus();
+        }
+        
+        // Called by click on no preservative checkbox or change in drug type selector
+        function changeDrugSelect()
+        {
+        	updateSelect("drugSelector", "Vitreoretinal");
+        	document.getElementById('drugSelector').focus();
+        }
+        
+        function onKeyPress(e) {
+	        if (e.keyCode != 13) {
+	        	alert('Incremental text search not implemented for demo');
+	        }
+        }
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<!-- Description section -->
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element lists all medications that the patient has or is taking, and will appear as a child element to the history element of the examination event. It will be mirrored on the patient summary page. It is similar in layout to the prescription event. Drugs are added with the default settings (as for prescriptions) where possible, and an editable start date (Fuzzy date). The list includes three categories of drugs:</p>
+			<ol>
+			  <li>Drugs taken in the past (those with an end date)</li>
+			  <li>Drugs currently taken (those without an and date)</li>
+			  <li>Drugs that are part of the sub-specialty management plan</li>
+			</ol>
+			<p>Drugs in the last category will be displayed in the management plan view, and may be automatically pulled in to the prescription event</p>
+			<p>If a drug previously on the list is no longer taken, the 'End' button is clicked and a reason for stopping must be entered</p>
+			<p>NB - in the live version each of the dates would be editable with a date picker as in the live version of OpenEyes</p>
+			
+			<p>Status: <b style="color:red;">*** This element code is now frozen for the Glaucoma 2 release in July 2014 ***</b></p>
+		</div>
+		
+		<!-- Edit mode section -->
+		<div class="section" style="height:340px;" align="left">
+			<h4>Edit mode:</h4>
+							
+			<!-- Left column -->
+			<div style ="width: 220px; float:left;">
+								
+				<!-- Select for common diagnoses -->
+				<select class="sidebar" id="drugSelector" style="width: 170px;" onchange="addRow(this.value);">
+				</select>
+				
+				<!-- New line -->
+				<br />		
+				
+				<!-- text box for incremental search -->
+				<input type="text" class="entrytext" id="is_entry" title="Any drug can be found by typing here" onkeyup="onKeyPress(event);">	
+						
+				<!-- Results of search -->
+				<br />
+				<div id="results"></div>
+			
+			</div>
+			
+			<!-- Right column -->
+			<div style ="width:1040px; float:left;">
+			
+				<!-- Dug history -->
+				<table name="table" id="drugTable" align="center" cellspacing="0" width="1040">
+					<thead class="tabletitles">
+						<tr>
+							<th align="left" width="18%"><p class="tableText"><b>Drug</b></p></th>
+							<th align="left" width="7%"><p class="tableText"><b>Dose</b></p></th>
+							<th align="left" width="12%"><p class="tableText"><b>Route</b></p></th>
+							<th align="left" width="6%"><p class="tableText"><b>Options</b></p></th>
+							<th align="left" width="10%"><p class="tableText"><b>Frequency</b></p></th>
+							<th align="left" width="10%"><p class="tableText"><b>Start</b></p></th>
+							<th align="left" width="10%"><p class="tableText"><b>End</b></p></th>
+							<th align="left" width="16%"><p class="tableText"><b>Reason for stopping</b></p></th>
+							<th align="left" width="4%"><p class="tableText"><b>MP</b></p></td>
+							<th align="left" width="7%"></td>
+						</tr>
+					</thead>
+					<tbody id="tableBody">
+					</tbody>
+				</table>
+				</br>
+				
+				<label>Adherence:&nbsp</label>			
+				<select class="sidebar" style="width: 170px;">
+					<option>Never misses drops</option>
+					<option>Occasionally misses drops (monthly)</option>
+					<option>Frequently misses drops (weekly)</option>
+					<option>Usually misses drops (daily)</option>
+					<option>Not putting in drops as per record</option>
+				</select>
+				</br>
+				<textarea style='margin-top:20px;'></textarea>
+			
+			</div>
+				
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Glaucoma</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

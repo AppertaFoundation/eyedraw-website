@@ -1,0 +1,69 @@
+/* Section of development document */
+.section {
+	border-top: 1px solid gray;
+}
+
+/* Used for displaying adjacent columns */
+.column {
+	float: left;
+}
+
+/* Canvas element */
+canvas {
+	border: 1px solid gray;
+	margin-top: 10px;
+	margin-left: 77px;
+    cursor: pointer;
+}
+
+/* email */
+a.email {
+	display: block;
+	width: 100px;
+}
+
+/* Edit styles */
+#EXE_hertel {
+
+}
+
+#EXE_transverse {
+	margin-top: 20px;
+	margin-left: 0px;
+	width: 30px;
+}
+
+#EXE_rightExoph {
+	margin-left: 10px;
+	width: 30px;
+}
+
+#EXE_leftExoph {
+	margin-left: 310px;
+	width: 30px;
+}
+
+/* Display styles */
+
+#EXD_hertel {
+	position: absolute;
+	float: left;
+	margin-top: -20px;
+}
+
+#EXD_transverse {
+	margin-top: 20px;
+	margin-left: 190px;
+}
+
+#EXD_rightExoph {
+	margin-top: 20px;
+	margin-left: 18px;
+	float: left;
+}
+
+#EXD_leftExoph {
+	margin-top: 20px;
+	margin-left: 336px;
+	float: left;
+}

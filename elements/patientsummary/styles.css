@@ -1,0 +1,245 @@
+/* Section of development document */
+.section {
+	border-top: 1px solid gray;
+}
+
+/* Used for displaying adjacent columns */
+.column {
+	float: left;
+}
+
+.lable {
+	width: 110px;
+	margin-right: 4px;
+	text-align: right;
+}
+
+p#RSS {
+	font-weight: bold;
+}
+
+#rightcolumn {
+	margin-left: 20px;
+}
+
+#opnote {
+	width: 220px;
+	height: 68px;
+	margin-top: 6px;
+}
+
+input.checkbox {
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+input {
+	height: 16px;
+	width: 50px;
+	margin: 0px;
+	margin-top: 6px;
+	padding: 0px;
+}
+
+/* Canvas element */
+canvas {
+	border: 1px solid gray;
+    cursor: pointer;
+	margin-top: 10px;
+}
+
+canvas:focus {
+	outline: none;
+}
+
+canvas.display {
+	border: none;
+	cursor: auto;
+}
+
+.toolbar {
+	margin-top: 10px;
+}
+
+.section select {
+	width: 100px;
+	height: 20px;
+	margin-top: 10px;
+}
+
+/* email */
+a.email {
+	display: block;
+	width: 100px;
+}
+
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
+	border: solid 1px;
+	background-color: #eeeeee;
+}
+
+button.imgbutton {
+	width: 36px;
+	height: 36px;
+	border: solid 1px;
+	background-color: #eeeeee;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	overflow: visible;
+}
+
+button:hover {
+	background-color: #bbbbbb;
+	border: solid 1px;
+}
+
+button:active {
+	background-color: #888888;
+	border: solid 1px;
+}
+
+button:disabled {
+	background-color: #eeeeee;
+	border: solid 1px;
+}
+
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
+	border: solid 1px;
+	background-color: #eeeeee;
+}
+
+button img {
+	/* Margin required to centre button img - not sure why */
+	margin-left: -5px;
+	margin-top: -1px;
+	padding: 0;
+	border: none;
+	width: 32px;
+	height: 32px;
+}
+
+span.squiggle {
+	display:inline-block;
+	margin-bottom:-4px;
+}
+
+.colourWell {
+    margin-bottom: 4px;
+}
+
+.preview {
+	display: inline-table;
+    margin-bottom: 4px;
+}
+
+.thickness {
+	position: relative;
+	top: -15px;
+	display: inline-block;
+}
+
+.fill {
+	position: relative;
+	top: -5px;
+	display: inline-block;
+}
+
+.fillbutton {
+/*       display: list-item; */
+}
+
+/* ====== BOXES ====== */
+#content .whiteBox, #content .alertBox, #content .blueBox, #content .fullBox, #content .patientBox { margin-bottom: 15px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
+#content .whiteBox > p, #content .alertBox > p, #content .blueBox > p, #content .eventBox > p  { background: none; padding:0; margin-bottom:8px; }
+#content .whiteBox 	{ background: #fafafa; padding:10px; }
+#content .alertBox 	{ background: #ffe6b2 url(../img/_elements/icons/warning.png) top left no-repeat; padding:10px 10px 10px 50px; }
+#content .blueBox	{ background: #dae6f1; color:#4d5155; padding:10px;}
+#content .fullBox	{ background: #dae6f1; }
+/* specific content */
+#content .patientBox  { position: relative; padding:10px; background: transparent url(../img/_elements/gradients/bg_patientID.jpg) bottom left repeat-x; border: 2px solid #ffb212; }
+#content .eventBox { background: #fafafa; padding:10px; }
+#content .watermarkBox { background:#fafafa; padding:5px 10px 10px 10px; }
+/* icons for boxes */
+#content .withIcon { padding-left: 40px; }
+#content .boxIcon { position: absolute; top:5px; left:0; }
+
+.adminMode .list-view .items .view { margin:10px 0; padding-bottom:10px; border-bottom:1px dotted #999; }
+.adminMode .list-view .items .view b { display:inline-block; width:120px; color:#777; }
+.adminMode .list-view .items .view a { font-weight: bold;}
+
+/* GRID VIEW - used by SEARCH RESULTS, RECENT EPISODES */
+.grid-view table { width:100%; } 
+.grid-view table th { text-align: left; background:#ddd; color: #444; font-size: 11px; min-width:50px; padding:10px; border-right:1px solid #bbb;   }
+.grid-view table th:last-child { border-right: none; }
+.grid-view table td { text-align: left; padding:10px; border-right:1px solid #ccc;   }
+.grid-view table th:last-child, .grid-view td:last-child { border-right: none; }
+/* change properties for closed rows */
+.grid-view table .closed > td {  padding: 6px 10px; border-right-color: #bbb; color: #666; }
+
+/* GRID VIEW - used by SEARCH RESULTS, RECENT EPISODES */
+.grid-view-waitinglist table { width:100%; }
+.grid-view-waitinglist table th { text-align: left; background:#ddd; color: #444; font-size: 11px; min-width:16px; padding:6px; border-right:1px solid #bbb;   }
+.grid-view-waitinglist table th:last-child { border-right: none; }
+.grid-view-waitinglist table td { text-align: left; padding:6px; border-right:1px solid #ccc; border-bottom: 1px solid #ccc;}
+.grid-view-waitinglist table th:last-child, .grid-view-waitinglist td:last-child { border-right: none; }
+/* change properties for closed rows */
+.grid-view-waitinglist table .closed > td {  padding: 6px 10px; border-right-color: #bbb; color: #666; }
+
+/* hack to help with in page CSS for add Operation */
+table#procedure_list tbody tr { background-color: #edf4f9; }
+
+/* make sure default pager is hidden! */
+#patient-grid .pager { display: none !important; visibility: hidden; }
+/* my pagination */
+.resultsPagination { text-align:right; background: #ddd; padding:10px;  }
+.resultsPagination span:after { content: "\00a0\00a0 |\00a0\00a0 "; color: #999; }
+.resultsPagination .showingPage { color:#000; font-weight: bold;}
+
+
+/* ====== TABLES - GENERAL ====== */
+table 	{ border-collapse: collapse; }
+.odd 	{ background-color: #edf4f9; border-bottom: 1px solid #ccd; }
+.even	{ background-color: #e1eef9; border-bottom: 1px solid #ccd; }
+.odd:hover, .even:hover { background-color: #ffe6b2; border-bottom-color: #999; }
+/* overwritten by if closed */
+.odd.closed { background-color: #c5cfdb; border-bottom: 1px solid #bbb; font-size:11px; }
+.even.closed { background-color: #b9c3ce; border-bottom: 1px solid #bbb; font-size:11px; }
+.odd.closed:hover, .even.closed:hover { background-color: #ffe8b7; border-bottom-color: #999; }
+/* close table */
+table tr:last-child { border-bottom: none; }
+.table_endRow{ background: #ddd; height:15px; }
+
+/* GRID VIEW - used by SEARCH RESULTS, RECENT EPISODES */
+.grid-view table { width:100%; } 
+.grid-view table th { text-align: left; background:#ddd; color: #444; font-size: 11px; min-width:50px; padding:10px; border-right:1px solid #bbb;   }
+.grid-view table th:last-child { border-right: none; }
+.grid-view table td { text-align: left; padding:10px; border-right:1px solid #ccc;   }
+.grid-view table th:last-child, .grid-view td:last-child { border-right: none; }
+/* change properties for closed rows */
+.grid-view table .closed > td {  padding: 6px 10px; border-right-color: #bbb; color: #666; }
+
+/* GRID VIEW - used by SEARCH RESULTS, RECENT EPISODES */
+.grid-view-waitinglist table { width:100%; }
+.grid-view-waitinglist table th { text-align: left; background:#ddd; color: #444; font-size: 11px; min-width:16px; padding:6px; border-right:1px solid #bbb;   }
+.grid-view-waitinglist table th:last-child { border-right: none; }
+.grid-view-waitinglist table td { text-align: left; padding:6px; border-right:1px solid #ccc; border-bottom: 1px solid #ccc;}
+.grid-view-waitinglist table th:last-child, .grid-view-waitinglist td:last-child { border-right: none; }
+/* change properties for closed rows */
+.grid-view-waitinglist table .closed > td {  padding: 6px 10px; border-right-color: #bbb; color: #666; }
+
+/* hack to help with in page CSS for add Operation */
+table#procedure_list tbody tr { background-color: #edf4f9; }
+
+/* make sure default pager is hidden! */
+#patient-grid .pager { display: none !important; visibility: hidden; }
+/* my pagination */
+.resultsPagination { text-align:right; background: #ddd; padding:10px;  }
+.resultsPagination span:after { content: "\00a0\00a0 |\00a0\00a0 "; color: #999; }
+.resultsPagination .showingPage { color:#000; font-weight: bold;}
+

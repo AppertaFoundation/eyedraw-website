@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/common.js" type="text/javascript"></script>	
+	<script language="JavaScript" src="../../scripts/incrementalSearch.js" type="text/javascript"></script>
+	<script language="JavaScript" src="diagnoses.js" type="text/javascript"></script>
+		    
+    <!--   This script handles the drawings for the page   -->
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        function init()
+        {
+        	// Set focus to text search
+        	document.getElementById("common").focus();
+        }
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows the rapid entry of one of more coded diagnoses. Searching for diagnoses among a large set of possible values has two potential problems, Firstly browsing for diagnoses is slow compared with direct text entry, and secondly users may choose different diagnoses for the same condition which may have undesirable consequences for searching. For example, SNOMED CT has 94 terms containing the word cataract.</p>
+			<p>The approach illustrated here is based on the "90:10" rule, and the fact that most medical sub-specialties have a limited number of common diagnoses which they encounter 90% of the time. In this example, those common diagnoses (in this case for vitreoretinal surgery) are available in a drop down menu, and all ophthalmic diagnoses are available using the incremental search box.</p>
+			<p>Power users who are familiar with the system can enter a diagnosis with a minimum of key strokes (For example to enter 'epiretinal membrane' just type 'e' and 'carriage return'). New users can simply select from the drop down menu. For rarer diagnoses tab to the incremental search box and start typing any letters from the diagnosis.</p>
+			<p>Possible enhancements would include a full hierarchical diagnosis browser.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:310px;" align="left">
+
+			<!-- Overall width -->
+			<div style ="width:620; float:left;">			
+				<h4>Edit mode:</h4>
+				
+					<!-- Two column layout -->
+					<div style="float:left; width: 220px; height: 120px;">
+					
+						<!-- Select for common diagnoses -->
+						<select class="sidebar" id="common" title="Common diagnoses for your specialty" onchange="setDiagnosis(this.selectedIndex)" onkeyup="selectKeyUp(event);">
+							<option value="">Ophthalmic diagnoses</option>
+							<option value="57190000">Myopia</option>
+							<option value="3577000">Lattice degeneration</option>
+							<option value="247081001">Posterior Vitreous Detachment</option>
+							<option value="31341008">Vitreous haemorrhage</option>
+							<option value="193341001">Retinal tear</option>
+							<option value="232003005">Retinal dialysis</option>
+							<option value="193340000">Round hole</option>
+							<option value="232004004">Giant retinal tear</option>
+							<option value="232009009">Rhegmatogenous retinal detachment - macula off</option>
+							<option value="232008001">Rhegmatogenous retinal detachment - macula on</option>
+							<option value="232016005">Proliferative vitreoretinopathy</option>
+							<option value="59276001">Proliferative diabetic retinopathy</option>
+							<option value="34711008">Traction detachment of retina</option>
+							<option value="232006002">Macular hole</option>
+							<option value="367649002">Epiretinal membrane</option>
+							<option value="312696001">Retained lens matter in vitreous</option>
+							<option value="193570009">Cataract</option>
+							<option value="53889007">Nuclear cataract</option>
+							<option value="193576003">Cortical cataract</option>
+							<option value="315353005">Posterior subcapsular cataract</option>
+							<option value="95217000">Pseudophakia</option>
+						</select>
+						
+						<!-- text box for incremental search -->
+						<input type="text" class="entrytext" id="is_entry" title="Any diagnosis can be found by typing here" onkeyup="entryKeyUp(event);"><br/>	
+						<div id="results"></div>
+					</div>
+					<div style="float:right; width: 320px; height: 120px;">
+						<table cellspacing="0" width="540" >
+						<tbody>		
+							<tr height="40px">
+								<td align="left" width="20%">Diagnosis:</td>
+								<td align="left" width="80%" style="border: 1px solid blue; padding-left: 8px; padding-bottom: 4px;">
+									<p id="diagnosis_display"></p>
+						        </td>
+						    </tr>
+						    <tr>
+						    	<td></td>
+								<td align="left"><button id="clearButton" style="padding: 5px;margin: 0px; display:none;" onclick="clearDiagnosis();">Clear</button></td>
+							</tr>
+						</tbody>	
+						</table>
+					</div>				
+			</div>
+		</div>						
+
+		<!-- Display mode section -->
+		<div class="section" style="height:70px;" align="left">
+		
+			<!-- Overall width -->
+			<div style ="width:540; float:left;">
+				<h4>Display mode:</h4>
+				<div style="float:left; width: 120px; height: 50px;">
+					<p>Diagnosis:</p>
+				</div>
+				<div style="float:right; width: 420px; height: 50px;">
+					<p>Rhegmatogenous retinal detachment - macula on</p>
+				</div>
+			</div>
+	
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

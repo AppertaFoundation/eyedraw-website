@@ -1,0 +1,171 @@
+/* Section of development document */
+.section {
+	border-top: 1px solid gray;
+	width: 1080px;
+}
+
+/* Used for displaying adjacent columns */
+.column {
+	float: left;
+}
+
+.lable {
+	width: 110px;
+	margin-right: 4px;
+	text-align: right;
+}
+
+.complable {
+	margin-right: 4px;
+	text-align: right;
+}
+
+p#RSS {
+	font-weight: bold;
+}
+
+#rightcolumn {
+	margin-left: 20px;
+}
+
+#opnote {
+	width: 220px;
+	height: 68px;
+	margin-top: 6px;
+}
+
+input.checkbox {
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+
+input {
+	height: 16px;
+	width: 50px;
+	margin: 0px;
+	margin-top: 6px;
+	padding: 0px;
+}
+
+/* Canvas element */
+canvas {
+	border: 1px solid gray;
+    cursor: pointer;
+	margin-top: 10px;
+}
+
+canvas:focus {
+	outline: none;
+}
+
+canvas.display {
+	border: none;
+	cursor: auto;
+}
+
+.toolbar {
+	margin-top: 10px;
+}
+
+.section select {
+	width: 100px;
+	height: 20px;
+	margin-top: 10px;
+}
+
+/* email */
+a.email {
+	display: block;
+	width: 100px;
+}
+
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
+	border: solid 1px;
+	background-color: #eeeeee;
+}
+
+button.imgbutton {
+	width: 36px;
+	height: 36px;
+	border: solid 1px;
+	background-color: #eeeeee;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	overflow: visible;
+}
+
+button:hover {
+	background-color: #bbbbbb;
+	border: solid 1px;
+}
+
+button:active {
+	background-color: #888888;
+	border: solid 1px;
+}
+
+button:disabled {
+	background-color: #eeeeee;
+	border: solid 1px;
+}
+
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
+	border: solid 1px;
+	background-color: #eeeeee;
+}
+
+button img {
+	/* Margin required to centre button img - not sure why */
+	margin-left: -5px;
+	margin-top: -1px;
+	padding: 0;
+	border: none;
+	width: 32px;
+	height: 32px;
+}
+
+span.squiggle {
+	display:inline-block;
+	margin-bottom:-4px;
+}
+
+.colourWell {
+    margin-bottom: 4px;
+}
+
+.preview {
+	display: inline-table;
+    margin-bottom: 4px;
+}
+
+.thickness {
+	position: relative;
+	top: -15px;
+	display: inline-block;
+}
+
+.fill {
+	position: relative;
+	top: -5px;
+	display: inline-block;
+}
+
+.fillbutton {
+/*       display: list-item; */
+}
+
+/* History text area */
+textarea {
+	margin-top: 10px;
+	margin-bottom: 0px;
+	height: 40px;
+	width: 300px;
+	overflow: hidden;
+}

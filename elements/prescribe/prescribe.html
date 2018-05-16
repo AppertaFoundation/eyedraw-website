@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->		
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/common.js" type="text/javascript"></script>	
+	<script language="JavaScript" src="../../scripts/incrementalSearch.js" type="text/javascript"></script>
+	<script language="JavaScript" src="prescribe.js" type="text/javascript"></script>	
+    <script type="text/javascript">
+
+		// Common Drugs (written out here from database with principal eye inserted where appropriate). Last is placeholder for search selection
+		var commonDrugSet = 
+		[
+			{id: 0, name: "Chloramphenicol", route: "RE", frequency: "qid", duration: "1 week", type: "Antibacterial", no_pres: false, is_ophthalmic: true},
+			{id: 1, name: "Dexamethasone 0.1%", route: "RE", frequency: "qid", duration: "1 month", type: "Steroid", no_pres: false, is_ophthalmic: true},
+			{id: 2, name: "Acular 0.5%", route: "RE", frequency: "did", duration: "1 month", type: "Non-steroidal anti-inflammatory", no_pres: false, is_ophthalmic: true},
+			{id: 3, name: "Cyclopentolate 1%", route: "RE", frequency: "qid", duration: "1 month", type: "Mydriatic", no_pres: false, is_ophthalmic: true},
+			{id: 4, name: "Apraclonidine 0.5%", route: "RE", frequency: "tid", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: true},
+			{id: 5, name: "Betagan 0.5%", route: "RE", frequency: "bd", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: true},
+			{id: 6, name: "Acetazolamide 250mg", route: "PO", frequency: "od", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: false},
+			{id: 7, name: "G Chloramphenicol (no preservative)", route: "RE", frequency: "qid", duration: "1 week", type: "Antibacterial", no_pres: true, is_ophthalmic: true},
+			{id: 8, name: "", route: "", frequency: "", duration: "", type: "Any", no_pres: false, is_ophthalmic: true}
+		];
+
+		// Counter to track rows
+		var scriptCount = 0;
+		
+		// Value of last index
+		var lastIndex = 8;
+		
+		// Principal eye
+		var principalEye = 'LE';
+	                            
+        // Runs on page load
+        function init()
+        {
+        	updateSelect("drugSelector", "Vitreoretinal");
+        	document.getElementById('drugSelector').focus();
+        }
+        
+        // Called by click on no preservative checkbox or change in drug type selector
+        function changeDrugSelect()
+        {
+        	updateSelect("drugSelector", "Vitreoretinal");
+        	document.getElementById('drugSelector').focus();
+        }
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+
+		<!-- Description section -->
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element handles the prescribing of ophthalmic drops and other drugs. It is linked to a formulary of approved drugs for any particular site. The formulary contains useful information like the standard dosage, and whether the drug contains preservative or not. A specialty may have a list of drugs that they commonly prescribe, and these are available with a single click from a drop down menu. All other drugs in the formulary can be prescribed by using the incremental search box. The drop down and the search can both be filtered to return drugs of a certain type, or drops without preservative.</p>
+			<p>Any aspect of the prescription for each drug can be altered by editing the appropriate drop-down in the table.</p>
+			<p>Saved sets of drugs (such as a standard post-operative prescription) can be set up and prescribed with one click using the 'Standard Sets' drop down menu.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Settings section -->
+<!--
+		<div class="section" style="height:130px;" align="left">
+			<h4>Settings:</h4>
+			<table cellspacing="0" width="620" >
+				<tbody>				
+					<tr>
+						<td align="left" width="60%"><p class="complable" >Select:</p></td>
+						<td align="left" width="40%">
+							<select style="width: auto;">
+								<option>Option</option>
+							</select>
+				        </td>
+					</tr>
+					<tr>
+						<td align="left"><p class="complable" >Check box:</p></td>
+						<td align="left">
+							<input class="checkbox" type="checkbox" id="chk_pxe" onchange="someFunction(this.checked);"/>
+				        </td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+-->
+		
+		<!-- Edit mode section -->
+		<div class="section" style="height:340px;" align="left">
+			<h4>Edit mode:</h4>
+							
+			<!-- Left column -->
+			<div style ="width: 220px; float:left;">
+
+				<!-- Select for standard sets -->
+				<select class="sidebar" id="setSelector" style="width: 170px;" onchange="runMacro(this.value);">
+					<option value="">Standard Sets</option>
+					<option value="Post-op">Post-op</option>
+					<option value="First clinic">First clinic</option>
+					<option value="High pressure">High pressure</option>
+				</select>
+								
+				<!-- Select for common diagnoses -->
+				<select class="sidebar" id="drugSelector" style="width: 170px;" onchange="addRow(this.value);">
+				</select>
+				
+				<!-- New line -->
+				<br />		
+				
+				<!-- text box for incremental search -->
+				<input type="text" class="entrytext" id="is_entry" title="Any drug can be found by typing here" onkeyup="entryKeyUp(event);">	
+						
+				<!-- Results of search -->
+				<br />
+				<div id="results"></div>
+			
+			</div>
+			
+			<!-- Right column -->
+			<div style ="width:860px; float:left;">
+			
+				<!-- Checkbox for preservatives -->
+				<p style="margin-left: 40px; display: inline;">No preservative:</p><input class="checkbox" type="checkbox" id="chk_pres" onchange="changeDrugSelect();"/>
+				
+				<!-- Category of drop -->
+				<p style="margin-left: 40px; display: inline;">Type:</p>
+				<select id="drugCategory" onchange="changeDrugSelect();">
+					<option value="Any">Any</option>
+					<option value="Analgesia">Analgesia</option>
+					<option value="Antibacterial">Antibacterial</option>
+					<option value="Antifungal">Antifungal</option>
+					<option value="Antiviral">Antiviral</option>
+					<option value="Antihistamine">Antihistamine</option>
+					<option value="Steroid">Steroid</option>
+					<option value="Non-steroidal anti-inflammatory">Non-steroidal anti-inflammatory</option>
+					<option value="Mydriatic">Mydriatic</option>
+					<option value="Glaucoma">Glaucoma</option>
+					<option value="Tear film supplement">Tear film supplement</option>
+					<option value="Miscellaneous">Miscellaneous</option>			
+				</select>
+
+				<!-- Repeat button -->
+				<button id="clearButton" style="margin-left: 40px; width: 50px; height: 20px; display:inline;" title="Repeats last prescription for this episode" onclick="clearTable();">Repeat</button>
+				
+				<!-- Clear button -->
+				<button id="clearButton" style="margin-left: 40px; width: 50px; height: 20px; display:inline;" title="Deletes all entries in the prescription table" onclick="clearTable();">Clear</button>
+			
+				<!-- Prescription -->
+				<table name="table" id="presTable" align="center" cellspacing="0" width="860">
+					<thead class="tabletitles">
+						<tr>
+							<th align="left" width="41%"><p class="tableText"><b>Drug</b></p></th>
+							<th align="left" width="8%"><p class="tableText"><b>Number</b></p></th>
+							<th align="left" width="13%"><p class="tableText"><b>Route</b></p></th>
+							<th align="left" width="7%"><p class="tableText"><b>Eye</b></p></th>
+							<th align="left" width="11%"><p class="tableText"><b>Frequency</b></p></th>
+							<th align="left" width="11%"><p class="tableText"><b>Duration</b></p></th>
+							<th align="left" width="9%"></td>
+						</tr>
+					</thead>
+					<tbody id="tableBody">
+					</tbody>
+				</table>
+			
+			</div>
+				
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:120px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<table style="border: none;" width="300">
+				<tbody>
+					<tr>
+						<td style="border: none;" align="left" width="60%">G Chloramphenicol</td>
+						<td style="border: none;" align="left" width="10%">qid</td>
+						<td style="border: none;" align="left" width="10%">RE</td>
+						<td style="border: none;" align="left" width="20%">1 month</td>
+					</tr>
+					<tr>
+						<td style="border: none;" align="left">G Dexamethasone 0.1%</td>
+						<td style="border: none;" align="left">qid</td>
+						<td style="border: none;" align="left">RE</td>
+						<td style="border: none;" align="left">1 week</td>
+					</tr>
+				</tbody>
+			</table>	
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

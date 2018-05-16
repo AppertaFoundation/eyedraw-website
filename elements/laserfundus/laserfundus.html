@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	
+	<!-- needs EyeDraw 2 -->
+    <script language="JavaScript" src="js/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="js/ED_MedicalRetina.js" type="text/javascript"></script>
+    <script language="JavaScript" src="js/ED_VitreoRetinal.js" type="text/javascript"></script>
+    <script language="JavaScript" src="js/ED_Tooltips.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+
+	    // Unique variable assigned to the drawing
+	    var drawingEdit;
+	    var drawingDisplay;
+	        
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            
+            // Instantiate a controller object
+            var controller = new eyeDrawController(drawingEdit);
+            
+            // Preload any images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+        }
+        
+            
+        // Controller class
+        function eyeDrawController(_drawing)
+        {
+            // Assign controller properties
+            this.drawing = _drawing;
+            
+            // Specify call back function
+            this.callBack = callBack;
+            
+            // Register for notifications with drawing
+            this.drawing.registerForNotifications(this, 'callBack', []);
+            
+            // Method called for notification
+            function callBack(_messageArray)
+            {
+                //console.log("Notified for event: " + _messageArray['eventName']);
+
+                switch (_messageArray['eventName'])
+                {
+                    // Eye draw image files all loaded
+                    case 'ready':
+                    	if (this.drawing.IDSuffix == 'RPS')
+                    	{
+	                    	this.drawing.addDoodle('Fundus');
+	                        this.drawing.addDoodle('UTear');
+	                        this.drawing.addDoodle('PeripheralRRD');
+	                        this.drawing.addDoodle('RoundHole',{originX:-430, originY:40});
+	                        this.drawing.deselectDoodles();
+                        }
+                        break;
+                }
+            }
+        }
+                 
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element records the application of laser treatment to the fundus. This will be part of a laser treatment event, and the diagram will pre-populate with the findings in a previous examination.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:520px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; height: 160px; float:left;">
+				<p>Drawing:</p>			
+	            	<!-- Doodle toolbar -->
+					<div class="toolbar">
+						<button class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+		                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/deleteSelectedDoodle.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+		                <br />
+
+                        <button class="imgbutton" title="Laser spot" onclick="drawingEdit.addDoodle('LaserSpot'); return false;" ><img src="../../graphics/LaserSpot.gif" /></button> 		                
+                        <button class="imgbutton" title="Focal laser" onclick="drawingEdit.addDoodle('FocalLaser'); return false;" ><img src="../../graphics/FocalLaser.gif" /></button>                        
+                        <button class="imgbutton" title="Laser circle" onclick="drawingEdit.addDoodle('LaserCircle'); return false;" ><img src="../../graphics/LaserCircle.gif" /></button>
+                        <button class="imgbutton" title="Laser demarcation" onclick="drawingEdit.addDoodle('LaserDemarcation'); return false;" ><img src="../../graphics/LaserDemarcation.gif" /></button>
+                        <button class="imgbutton" title="Sector PRP" onclick="drawingEdit.addDoodle('SectorPRP'); return false;" ><img src="../../graphics/SectorPRP.gif" /></button>
+	                    
+	   				</div>
+
+                    <!-- Canvas tooltip -->
+                    <span id="canvasTooltip"></span>
+                            
+					<!-- Canvas -->
+					<div style='float:left; width: 320px; height: 320px;'>
+		                <canvas id="canvasEdit" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+					</div>
+					
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width: 540px; height: 160px; float:left;">         
+					
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>					
+	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Surgical Retina</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

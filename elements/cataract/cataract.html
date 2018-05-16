@@ -1,0 +1,446 @@
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+
+	<script language="JavaScript" src="../../scripts/EX_Main.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_General.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_VitreoRetinal.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_AntSeg.js" type="text/javascript"></script>
+    
+    <!--   This script handles the drawings for the page   -->
+    <script type="text/javascript">
+    
+    	// RSS calculations
+    	var rssPupil = 1.0;
+    	var rssPXE = 1.0;
+    	var rssNuclear = 1.0;
+    	var rssCortical = 1.0;
+    	var rssPhakoDonesis = 1.0;
+    	var rssSurgeon = 1.0;
+        
+        // Variables assigned to each drawing on this page
+        var drawingEdit;
+        var drawingDisplay;
+                    
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawing
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            
+            // Preload images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+            
+            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
+            drawingEdit.onLoaded = function()
+            {
+                drawingEdit.addDoodle('AntSeg');
+                drawingEdit.deselectDoodles();
+	            drawingEdit.repaint();
+            }
+
+			// Get reference to the drawingDisplay canvas
+            var canvasDisplay = document.getElementById('canvasDisplay');
+            
+            // Create blank drawing
+            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS', false);
+            
+            // Preload any images
+            drawingDisplay.preLoadImagesFrom('../../graphics/');
+                        
+            drawingDisplay.onLoaded = function()
+            {            
+	            drawingDisplay.addDoodle('AntSeg');
+	            drawingDisplay.addDoodle('NuclearCataract');
+	            drawingDisplay.addDoodle('Bleb');
+	            drawingDisplay.addDoodle('PI');
+	            drawingDisplay.deselectDoodles();
+	            drawingDisplay.repaint();
+            }
+                       
+            // Function to detect changes in parameters (eg from mouse dragging)
+            drawingEdit.parameterListener = function()
+            {
+                var input;
+
+                // Anterior segment (pupil)
+                input = document.getElementById('pupil');
+                
+                // Check doodle of appropriate classname is selected
+                if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'AntSeg')
+                {
+                    //input.value = drawingEdit.selectedDoodle.getGrade();
+                    input.value = drawingEdit.selectedDoodle.getParameter('grade');
+                }
+                                    
+                // Nuclear cataract
+                input = document.getElementById('nuclear');
+                
+                if (!drawingEdit.hasDoodleOfClass('NuclearCataract'))
+                {
+                    input.value = 'None';
+                }
+                else
+                {
+                    // Check doodle of appropriate classname is selected
+                    if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'NuclearCataract')
+                    {
+                        //input.value = drawingEdit.selectedDoodle.getGrade();
+                        input.value = drawingEdit.selectedDoodle.getParameter('grade');
+                    }
+                }
+                
+                // Cortical cataract
+                input = document.getElementById('cortical');
+                
+                if (!drawingEdit.hasDoodleOfClass('CorticalCataract'))
+                {
+                    input.value = 'None';
+                }
+                else
+                {
+                    // Check doodle of appropriate classname is selected
+                    if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'CorticalCataract')
+                    {
+                        //input.value = drawingEdit.selectedDoodle.getGrade();
+                        input.value = drawingEdit.selectedDoodle.getParameter('grade');
+                    }
+                }
+            }
+
+        }
+
+/*
+        function updateAntSeg(_value)
+        {
+            // Get reference to doodle
+            var doodle = drawingEdit.firstDoodleOfClass('AntSeg');
+                
+            // Set grade
+            doodle.setGrade(_value);
+            
+            drawingEdit.repaint();
+        }
+*/
+                    
+        function updateNuclearCataract(_value)
+        {
+            if (_value == 'None')
+            {
+                drawingEdit.deleteDoodlesOfClass('NuclearCataract');
+            }
+            else
+            {
+                var doodle = drawingEdit.firstDoodleOfClass('NuclearCataract');
+                if (!doodle)
+                {
+                    var doodle = drawingEdit.addDoodle('NuclearCataract');
+                    drawingEdit.deselectDoodles();
+                }
+                
+                // Set grade
+                //doodle.setGrade(_value);
+                doodle.setParameterWithAnimation('grade', _value);
+            }
+            drawingEdit.repaint();
+        }
+        
+        function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('antseg');
+			
+			// ***TEMP***
+			repText.value = "";
+			
+			// If text there already, make it lower case and add a comma before
+			if (repText.value.length > 0)
+			{
+				text = ", " + text.toLowerCase();
+			}
+			
+			// Handle phacodonesis separately for now
+			var input = document.getElementById('chk_phd');
+			if (input.checked) text+= ", phacodonesis";
+			
+			// Add to existing text in text area
+			repText.value += text;
+			            
+            // Get reference to RRS score
+            var rss = document.getElementById("RSS");
+            
+            // Pupil size
+            input = document.getElementById('pupil');    
+            rssPupil = 1.0;
+            if (input.value == 'Medium') rssPupil = 1.14;
+            if (input.value == 'Small') rssPupil = 1.15;
+            
+            // PXE
+            input = document.getElementById('chk_pxe');
+            rssPXE = input.checked?2.92:1;
+            
+            // Nuclear
+            input = document.getElementById('nuclear');
+            rssNuclear = input.value == 'Brunescent'?2.99:1.0;
+            
+            // Cortical 
+            input = document.getElementById('cortical');
+            rssCortical = input.value == 'White'?2.99:1.0;
+            
+            // Phakodonesis           
+            input = document.getElementById('chk_phd');
+            rssPhakoDonesis = input.checked?2.92:1;
+            
+            // Surgeon          
+            input = document.getElementById('surgeon');
+            rssSurgeon = +input.value;
+            
+            // Calculate total          
+            var CombinedOR = rssPupil * rssPXE * rssNuclear * rssCortical * rssPhakoDonesis * rssSurgeon;
+            
+            var p1 = 0.00736;
+            var p = CombinedOR *(p1/(1-p1));
+            var p2 = 100 * p/(1 + p);
+            
+            // Display updated value
+            rss.innerHTML = p2.toFixed(2) + "%";
+        }
+    
+        function togglePXE(_value)
+        {
+            var doodle = drawingEdit.firstDoodleOfClass('AntSeg');
+            doodle.setParameter('pxe', _value);
+            drawingEdit.repaint();
+        }
+                    
+        function updateCorticalCataract(_value)
+        {
+            if (_value == 'None')
+            {
+                drawingEdit.deleteDoodlesOfClass('CorticalCataract');
+            }
+            else
+            {
+                var doodle = drawingEdit.firstDoodleOfClass('CorticalCataract');
+                if (!doodle)
+                {
+                    var doodle = drawingEdit.addDoodle('CorticalCataract');
+                    drawingEdit.deselectDoodles();
+                }
+                
+                // Set grade
+                //doodle.setGrade(_value);
+                doodle.setParameterWithAnimation('grade', _value);
+            }
+            drawingEdit.repaint();
+        }
+
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p><b> fiant sollemnes in futurum.</b></p>
+			<p>This element facilitates the data input for various aspects of the anterior segment for a cataract clinical examination. Only half the element is shown (right eye), as the appearance and behaviour of the left eye is identical.</p>
+			<p>The drawing is made up of a number of intelligent 'doodles', which can be added from the tool bar. When selected, existing doodles can be controlled by movements of the yellow handles, or by the controls on the toolbar.The doodles are synchronised to various properties, which can also be changed using conventional controls to the right of the diagram.</p>
+			<p>When the diagram is finished, a textual description can be evoked by pressing the 'Report' button. This will also calculate the Composite Odds Ratio, from which the PCR risk can be calculated. NB: not all the required factors (e.g. age, surgeon grade) are collected on this demo page.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:480px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+			
+				<p>Right anterior segment:</p>
+			
+            	<!-- Doodle toolbar -->
+				<div class="toolbar">
+					<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+	                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+	                <br />
+
+	                <button class="imgbutton" id="NuclearCataractRPS" title="Nuclear Cataract" onclick="drawingEdit.addDoodle('NuclearCataract'); return false;" ><img src="../../graphics/NuclearCataract.gif" /></button>
+	                <button class="imgbutton" id="CorticalCataractRPS" title="Cortical Cataract" onclick="drawingEdit.addDoodle('CorticalCataract'); return false;" ><img src="../../graphics/CorticalCataract.gif" /></button>
+	                <button class="imgbutton" id="PostSubcapCataractRPS" title="Posterior Subcapsular Cataract" onclick="drawingEdit.addDoodle('PostSubcapCataract'); return false;" ><img src="../../graphics/PostSubcapCataract.gif" /></button>
+	                <button class="imgbutton" id="PCIOLRPS" title="Posterior Chamber IOL" onclick="drawingEdit.addDoodle('PCIOL'); return false;" ><img src="../../graphics/PCIOL.gif" /></button>
+	                <button class="imgbutton" id="ACIOLRPS" title="Anterior Chamber IOL" onclick="drawingEdit.addDoodle('ACIOL'); return false;" ><img src="../../graphics/ACIOL.gif" /></button>
+	                <button class="imgbutton" id="BlebRPS" title="Trabeculectomy bleb" onclick="drawingEdit.addDoodle('Bleb'); return false;" ><img src="../../graphics/Bleb.gif" /></button>
+	                <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/PI.gif" /></button>
+	                <button class="imgbutton" id="FuchsRPS" title="Fuch's Endothelial Dystrophy" onclick="drawingEdit.addDoodle('Fuchs'); return false;" ><img src="../../graphics/Fuchs.gif" /></button>
+					<button class="imgbutton" id="RKRPS" title="Radial keratotomy" onclick="drawingEdit.addDoodle('RK'); return false;" ><img src="../../graphics/RK.gif" /></button> 
+					<button class="imgbutton" id="LasikFlapRPS" title="Lasik Flap" onclick="drawingEdit.addDoodle('LasikFlap'); return false;" ><img src="../../graphics/LasikFlap.gif" /></button>                            
+					<button class="imgbutton" id="CornealScarRPS" title="Corneal Scar" onclick="drawingEdit.addDoodle('CornealScar'); return false;" ><img src="../../graphics/CornealScar.gif" /></button>
+   				</div>
+   				
+				<!-- Canvas -->
+				<div style='float: left; width: 320px; height: 320px;'>
+	                <canvas id="canvasEdit" width="300" height="300" tabindex="1"></canvas>
+				</div>
+   				
+				<!-- Controls -->
+				<div style='float: right; width: 220px; height: 320px;'>
+
+					<table cellspacing="0" width="120" >
+					<tbody>		
+						<tr>
+							<td align="left" width="40%"><p class="lable" >Pupil size:</p></td>
+							<td align="left" width="60%">
+								<!-- <select name="pupil" id="pupil" onclick="updateAntSeg(this.value);" > -->
+								<select name="pupil" id="pupil" onchange="drawingEdit.setParameterForDoodleOfClass('AntSeg', 'grade', this.value);">
+						            <option value="Large">Large</option>
+						            <option value="Medium">Medium</option>
+						            <option value="Small">Small</option>
+						        </select>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Nuclear cataract:</p></td>
+							<td align="left">
+						        <select name="nuclear" id="nuclear" onclick="updateNuclearCataract(this.value);" >
+						            <option value="None">None</option>
+						            <option value="Mild">Mild</option>
+						            <option value="Moderate">Moderate</option>
+						            <option value="Brunescent">Brunescent</option>
+						        </select>
+					        </td>
+						</tr>			
+						<tr>
+							<td align="left"><p class="lable" >Cortical cataract:</p></td>
+							<td align="left">
+						        <select name="cortical" id="cortical" onclick="updateCorticalCataract(this.value);" >
+						            <option value="None">None</option>
+						            <option value="Mild">Mild</option>
+						            <option value="Moderate">Moderate</option>
+						            <option value="White">White</option>
+						        </select>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >PXE:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox" id="chk_pxe" onchange="togglePXE(this.checked);"/>
+					        </td>
+						</tr>	
+						<tr>
+							<td align="left"><p class="lable" >Phakodonesis:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox" id="chk_phd"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Text description:</p></td>
+							<td align="left">
+								<button class="actbutton" title="Creates a text description of the drawing and updates the PCR risk" onclick="addToReport(); return false;" >Report</button>
+					        </td>
+						</tr>
+					</tbody>	
+					</table>
+
+			        <textarea name="antseg" id="antseg"></textarea>
+			        
+			        <table cellspacing="0" width="120" >
+					<tbody>
+						<td align="left"><p class="lable" >Surgeon:</p></td>
+							<td align="left">
+						        <select name="surgeon" id="surgeon" >
+						            <option value="1.0">Consultant</option>
+						            <option value="1.65">Fellow</option>
+						            <option value="1.60">SpR year 4-7</option>
+						            <option value="3.73">SpR year 1-3</option>
+						            <option value="0.36">Staff grade</option>
+						            <option value="0.87">Associate Specialist</option>
+						        </select>
+					        </td>	
+						<tr>
+							<td align="left" width="40%"><p class="lable" >PCR risk:</p></td>
+							<td align="left" width="60%"><p id="RSS"></p></td>
+						</tr>
+					</tbody>	
+					</table>
+									
+				</div>   				
+   			
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left anterior segment:</p>
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>
+
+		<!-- Display mode section -->
+		<div class="section" style="height:270px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<!-- Right eye -->
+			<div style ="width:540; float:left;">
+				<p>Right anterior segment:</p>
+				<div style="float:left; width: 220px; height: 220px;">
+					<canvas class="display" id="canvasDisplay" width="200" height="200" tabindex="1"></canvas>
+				</div>
+				<div style="float:right; width: 320px; height: 220px;">
+					<p>Mild nuclear cataract, trabeculectomy bleb at 12 o'clock, peripheral iridectomy</p>
+					<p>PCR risk: <b>0.74%</b></p>
+				</div>
+			</div>
+			
+			<!-- Left eye -->
+			<div style ="width:540; float:left;">
+				<p>Left anterior segment:</p>					
+			</div>				
+
+		<!-- End of Display mode section -->
+		</div>	
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

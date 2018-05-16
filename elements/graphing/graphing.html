@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/EyeGraph.js" type="text/javascript"></script>
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the drawing canvas
+            var canvas = document.getElementById('canvas');
+            
+            // Create a drawing linked to the canvas
+            eyeGraph = new EG.Graph(canvas);
+            
+            // Set x axis details
+            eyeGraph.axisXArray = [[0,'Jan'], [50, 'Feb'], [100, 'Mar'], [150, 'Apr'], [200, 'May'], [250,'Jun'], [300, 'Jul'], [350, 'Aug'], [400, 'Sep'], [450, 'Oct'], [500, 'Nov'], [550, 'Dec']];
+
+            // Set y axis details
+            eyeGraph.axisYArray = [[0,'6/6'], [50, '6/12'], [100, '6/18'], [150, '6/24'], [200, '6/36'], [250,'6/60'], [300, 'CF'], [350, 'HM'], [400, 'PL']];
+            
+            // Add a series of points
+            eyeGraph.addSeries("LineGraph", [
+                                [0, 250, "", "25/01/2011\nJohn Saunders"], 
+                                [50, 240, ""], 
+                                [100, 250], 
+                                [150, 255], 
+                                [200, 245],
+                                [250, 250,"", "13/06/2011\nJohn Saunders"],
+                                [300, 50],
+                                [350, 60],
+                                [400, 55],
+                                [450, 65],
+                                [500, 70],
+                                [550, 65, "", "10/12/2011\nJohn Saunders"]
+                                ], {colour:'red'});
+
+            eyeGraph.addSeries("LineGraph", [[0, 155], [50, 135], [100, 145], [150, 150], [200, 148], [250, 155], [300, 155], [350, 145], [400, 159], [450, 160], [500, 165], [550, 165]], {type:'vertical', colour:'green'});
+            
+            //eyeGraph.addSeries("BarChart", [[50, 50], [100, 100], [150, 150]], {type:'vertical', colour:'red'});
+            
+            eyeGraph.addSeries("TimePoints", [[80, 320, "Diagnosis"], [250, 320, "Phako/IOL"]], null);
+            eyeGraph.addSeries("TimeBlocks", [[100, 300, 100, "Betagan"], [280, 340, 100, "Lumigan"]], null);
+            
+            // Draw graph
+            eyeGraph.draw();
+        }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This page shows the graphing package developed for OpenEyes. There are many situations where it is useful to have a graphical display of one or more parameters related to the patient over time, for example IOP or visual acuity. The display should also have the ability to include significant events, such as changes in drug treatment, or operations.</p>
+			<p>The graph below shows an example. Hovering over a point can give additional information (try hovering over the January or June data points for the left eye). In a real application, clicking on a point would navigate to the event containing the data.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:480px;" align="left">
+			<h4>Graphing:</h4>
+						
+	        <!-- Canvas element -->
+	        <canvas id="canvas" class="eg_graph" width="1080" height="400" tabindex="1"></canvas>
+
+		<!-- End of Edit mode section -->
+		</div>					
+
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>General</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

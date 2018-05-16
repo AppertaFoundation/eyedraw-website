@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->
+    <script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_General.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_VitreoRetinal.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_MedicalRetina.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	    
+	    // Unique variable assigned to the drawing
+	    var drawingEdit;
+	    var drawingDisplay;
+	    
+	    // Runs on page load
+        function init()
+        {
+            // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            
+            // Preload any images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+            
+            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
+            drawingEdit.onLoaded = function()
+            {
+                drawingEdit.addDoodle('PostPole');
+                resetEdit();
+            }
+            
+           	// Function to detect changes in parameters (eg from mouse dragging)
+	        drawingEdit.parameterListener = function()
+	        {
+                // Get reference to form inputs
+                var cdRatio = document.getElementById('cdRatio');
+                
+                // Check doodle of appropriate classname is selected
+                if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'PostPole')
+                {
+                    cdRatio.value = drawingEdit.selectedDoodle.getParameter('cdRatio');
+                }
+	        }
+            
+            // Get reference to the drawingEdit canvas
+            var canvasDisplay = document.getElementById('canvasDisplay');
+            
+            // Create a drawing
+            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS', false);
+            
+            // Preload any images
+            drawingDisplay.preLoadImagesFrom('../../graphics/');
+            
+            // Wait for drawing object to be ready before adding objects or drawingEdits
+            drawingDisplay.onLoaded = function()
+            {
+	            drawingDisplay.addDoodle('PostPole');
+	            drawingDisplay.addDoodle('DiabeticNV');
+	            drawingDisplay.addDoodle('Circinate');
+                drawingDisplay.deselectDoodles();          
+                drawingDisplay.drawAllDoodles();
+            }
+        }
+        
+        // Clears edit drawing and resets template
+        function resetEdit()
+        {
+        	drawingEdit.deleteAllDoodles();
+            drawingEdit.deselectDoodles();          
+            drawingEdit.drawAllDoodles();
+            
+            // Clear diagnosis menu and text area
+            //document.getElementById('diagnosisSelect').selectedIndex = 0;
+            document.getElementById('postseg').value = "";
+        } 
+                      	    
+	    // Updates Posterior segment parameters
+/*
+	    function updatePostSeg(_value)
+        {
+            // Get reference to doodle
+            var doodle = drawingEdit.firstDoodleOfClass('PostPole');
+                
+            // Set grade
+            doodle.setGrade(_value);
+            
+            drawingEdit.repaint();
+        }
+*/
+        
+        function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			//text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('postseg');
+			
+			// ***TEMP***
+			repText.value = "";
+			
+			// If text there already, make it lower case and add a comma before
+			if (repText.value.length > 0)
+			{
+				text = ", " + text.toLowerCase();
+			}
+			
+			// Add to existing text in text area
+			repText.value += text;
+        }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<br />
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element facilitates the data input for various aspects of the posterior segment for a cataract clinical examination. Only half the element is shown, as the other half dealing with the fellow eye is identical.</p>
+			<p>The drawing is made up of a number of intelligent 'doodles', which can be added from the tool bar. When selected, existing doodles can be controlled by movements of the yellow handles, or by the controls on the toolbar.The doodles are synchronised to various properties, which can also be changed using conventional controls to the right of the diagram.</p>
+			<p>When the diagram is finished, a textual description can be evoked by pressing the 'Report' button.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:480px;" align="left">
+				<h4>Edit mode:</h4>
+
+				<!-- Right eye -->
+				<div style ="width: 540px; float:left;">
+					<p>Right posterior segment:</p>
+							
+	            	<!-- Doodle toolbar -->
+					<div class="toolbar">
+						<button class="imgbutton" disabled="true" id="moveToFrontEdit" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+		                <button class="imgbutton" disabled="true" id="moveToBackEdit" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="deleteEdit" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="lockEdit" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="unlockEdit" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+		                <br />
+		                
+		                <button class="imgbutton" id="geographicEdit" title="Geographic atrophy" onclick="drawingEdit.addDoodle('Geographic'); return false;" ><img src="../../graphics/Geographic.gif" /></button>
+	                    <button class="imgbutton" id="vitreousOpacityEdit" title="Vitreous Opacity" onclick="drawingEdit.addDoodle('VitreousOpacity'); return false;" ><img src="../../graphics/VitreousOpacity.gif" /></button>
+	                    <button class="imgbutton" id="diabeticNVEdit" title="Diabetic new vessels" onclick="drawingEdit.addDoodle('DiabeticNV'); return false;" ><img src="../../graphics/DiabeticNV.gif" /></button>
+	                    <button class="imgbutton" id="cNVEdit" title="Choroidal neovascularisation" onclick="drawingEdit.addDoodle('CNV'); return false;" ><img src="../../graphics/CNV.gif" /></button>
+	                    <button class="imgbutton" id="circinateEdit" title="Circinate maculopathy" onclick="drawingEdit.addDoodle('Circinate'); return false;" ><img src="../../graphics/Circinate.gif" /></button>  
+	   				</div>
+
+					<!-- Canvas -->
+					<div style='float:left; width: 320px; height: 320px;'>
+		                <canvas id="canvasEdit" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+					</div>
+			
+					<!-- Controls -->
+					<div style='float:right; width: 220px;height: 320px;'>
+					
+						<table cellspacing="0" width="120" >
+						<tbody>		
+							<tr>
+								<td align="left" width="40%"><p class="lable" >C/D ratio:</p></td>
+								<td align="left" width="60%">
+									<select name="cdRatio" id="cdRatio" onclick="drawingEdit.setParameterForDoodleOfClass('PostPole', 'cdRatio', this.value);" >
+							            <option value=1>1.0</option>
+							            <option value=0.9>0.9</option>
+							            <option value=0.8>0.8</option>
+							            <option value=0.7>0.7</option>
+							            <option value=0.6>0.6</option>
+							            <option value=0.5>0.5</option>
+							            <option value=0.4>0.4</option>
+							            <option value=0.3>0.3</option>
+							            <option value=0.2>0.2</option>
+							      		<option value=0.1>0.1</option>
+							        </select>
+						        </td>
+							</tr>
+							<tr>
+								<td align="left"><p class="lable" >Text description:</p></td>
+								<td align="left">
+									<button class="actbutton" title="Creates a text description of the drawing and updates the PCR risk" onclick="addToReport(); return false;" >Report</button>
+						        </td>
+							</tr>
+						</tbody>	
+						</table>
+	
+				        <textarea name="postseg" id="postseg"></textarea>
+				        <button class="actbutton" title="Clear drawing and start again" onclick="resetEdit(); return false;" >Clear</button>
+	
+					</div>
+				</div>
+				
+				<!-- Left eye -->
+				<div style ="width:540px; float:left;">
+					<p>Left posterior segment:</p>	
+				</div>
+
+		<!-- End of Edit mode section -->
+		</div>
+
+		<!-- Display mode section -->
+		<div class="section" style="height:270px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<!-- Right eye -->
+			<div style ="width:540; float:left;">
+				<p>Right posterior segment:</p>
+				<div style="float:left; width: 220px; height: 220px;">
+					<canvas class="display" id="canvasDisplay" width="200" height="200" tabindex="1"></canvas>
+				</div>
+				<div style="float:right; width: 320px; height: 220px;">
+					<p>Cup-disk ratio of 0.6, diabetic new vessels at the disk, circinate maculopathy superotemporal to the fovea</p>
+				</div>
+			</div>
+			
+			<!-- Left eye -->
+			<div style ="width:540; float:left;">
+				<p>Left posterior segment:</p>					
+			</div>				
+
+		<!-- End of Display mode section -->
+		</div>
+			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Cataract</p>
+			<p>
+			<a class="email" href="mailto:openeyes_cataract_users@aylwards.co.uk?Subject=Comment on Cataract Element">Email comment</a>
+			<a class="email" href="mailto:openeyes_cataract_users-request@aylwards.co.uk?Subject=Request to join mailing list">Join mailing list</a>
+			</p>
+
+		</div>
+		<div class="section">
+			<h4>Contributors:</h4>
+			<p>Openeyes Cataract Collaborative Group</p>
+		</div>
+				
+		<!-- Site Meter -->
+		<p> </p>
+		<script type="text/javascript" src="http://s47.sitemeter.com/js/counter.js?site=s47OpenEyes">
+		</script>
+		<noscript>
+		<a href="http://s47.sitemeter.com/stats.asp?site=s47OpenEyes" target="_top">
+		<img src="http://s47.sitemeter.com/meter.asp?site=s47OpenEyes" alt="Site Meter" border="0"/></a>
+		</noscript>
+		<!-- Copyright (c)2009 Site Meter -->
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>
