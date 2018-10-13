@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../css/openeyes.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../scripts/eyedraw.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    
+    	var drawingEdit;
+                            
+        // Runs on page load
+        function init()
+        {
+             // Get reference to the drawingEdit canvas
+            //var canvasEdit = document.getElementById('canvasEdit');
+            // clearnac = (140 - age)(wt)/72 * mg/100ml
+            // if female multiply by 0.85
+            // mmol - 0.0113122
+            
+
+        }
+        
+
+		function calculate() {
+
+        	var age = document.getElementById('age').value;
+        	var weight = document.getElementById('weight').value;
+        	var creatinine = document.getElementById('creatinine').value;
+        	
+        	var result = calculateCreatinineClearance(age, weight, creatinine);
+        	
+			var resultDisplay = document.getElementById('result');
+			
+			resultDisplay.innerHTML = result.toString();
+		}
+		
+       	function calculateCreatinineClearance(_age, _weight, _creatinine)
+        {
+	        var result = 0;
+	        
+	        if (_creatinine != 0) {
+
+				var result = ((140 - _age) * _weight)/(72 * _creatinine * 0.0113122);
+			}
+			else {
+				// Generate error in some way
+				alert("Creatinine cannot be zero");
+			}
+			
+			return result;
+		}
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+	
+	<p>Age (yrs):</p>
+	<input type="text" id="age">
+	</br>
+	<p>Weight (kg):</p>
+	<input type="text" id="weight">
+	</br>
+	<p>Creatinine (ummol/l):</p>
+	<input type="text" id="creatinine">
+	</br>
+	</br>
+	<button style="width:100px;" onclick="calculate()"/>Calculate</button>
+	</br>
+	<p id="result" style="color: #0000FF;"></p>
+
+
+</body>
+</html>
