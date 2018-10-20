@@ -1,0 +1,241 @@
+
+/* Zero margins and padding */
+* {
+	margin:0;
+	padding:0;
+}
+
+/* Div fills browser window */
+#screen {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+/* Div contains website content centred in screen */
+#content {
+	/* background-color: yellow; */	/* Put in a background colour for testing */
+	height: 50px;
+	margin-left: 0px;
+}
+
+/* Logo image*/
+#logo {
+	margin-top: 11px;
+	margin-bottom: 5px;
+	height: 59px;
+}
+
+/* Navigation bars contain links to other pages */
+#main_nav {
+	clear: left;					/* Start on a new line */
+	border-right-color: #999;
+	height: 41px;					/* make same as line height for a with additonal pixel to merger with border */
+	border-right:1px solid;
+	border-bottom:1px solid #999;
+}
+
+#main_nav li {
+	border-top: 1px solid #999;
+	border-left: 1px solid #999;
+	float:left;						/* float ensures buttons stretch out horizontally */
+	list-style:none;
+}
+
+#main_nav a {
+	font-weight: bold;
+	font-size: 11pt;
+	font-family: Helvetica, Verdana, Arial, sans-serif;
+	background-repeat: no-repeat;
+	color:#666666;
+	text-decoration:none;
+	height: 40px;
+	display:block;
+	line-height:40px;
+	text-align:center;
+}
+
+/* Styles for each navigation button */
+#home {
+	min-width: 124px;
+	background-image: url(../images/gray_gradient.png);
+}
+
+#home_selected {
+	min-width: 124px;
+	background-image: url(../images/green_gradient.png);
+}
+
+#news {
+	min-width: 120px;
+	background-image: url(../images/gray_gradient.png);
+}
+
+#news_selected {
+	min-width: 120px;
+	background-image: url(../images/blue_gradient.png);
+}
+
+#screenshots {
+	min-width: 174px;
+	background-image: url(../images/gray_gradient.png);
+}
+
+#screenshots_selected {
+	min-width: 174px;
+	background-repeat: no-repeat;
+	background-image: url(../images/pink_gradient.png);
+}
+
+#documentation {
+	min-width: 184px;
+	background-image: url(../images/gray_gradient.png);
+}
+
+#documentation_selected {
+	min-width: 184px;
+	background-repeat: no-repeat;
+	background-image: url(../images/grayblue_gradient.png);
+}
+
+#contributors {
+	min-width: 166px;
+	background-image: url(../images/gray_gradient.png);
+}
+
+#contributors_selected {
+	min-width: 166px;
+	background-repeat: no-repeat;
+	background-image: url(../images/mauve_gradient.png);
+}
+
+#development {
+	min-width: 155px;
+	background-image: url(../images/gray_gradient.png);
+}
+
+#development_selected {
+	min-width: 155px;
+	background-repeat: no-repeat;
+	background-image: url(../images/yellow_gradient.png);
+}
+#contact {
+	min-width: 149px;
+	background-image: url(../images/gray_gradient.png);
+}
+
+#contact_selected {
+	min-width: 149px;
+	background-repeat: no-repeat;
+	background-image: url(../images/graygreen_gradient.png);
+}
+
+/* Banner image*/
+#banner {
+	width: 1080px;
+	margin-top: 6px;
+}
+
+/* Text */
+body,td,th {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #000;
+}
+
+h2 {
+	color: #68C00B;
+	text-align: left;
+	padding-top: 18px;
+	padding-bottom: 5px;
+}
+
+h3 {
+	text-align: left;
+}
+
+
+h4 {
+	text-align: left;
+	padding-top: 4px;
+}
+
+.h2OpenEyes {
+	color: #7E7E7E;
+}
+
+p {
+	color: #666666;
+	padding-top: 10px;
+	text-align: left;
+	padding-bottom: 5px;
+}
+
+label {
+	color: #666666;
+	padding-top: 10px;
+	text-align: left;
+	padding-bottom: 5px;
+	margin-left: 10px;
+}
+
+/* Site meter */
+#sitemeter {
+	margin-top: 30px;
+}
+
+
+a:link {
+	color: #000;
+}
+a:visited {
+	color: #0C3604;
+}
+a:hover {
+	color: #73BC1C;
+}
+a:active {
+	color: #73BC1C;
+}
+
+h2 {
+	color: #434288;
+}
+td {
+	text-align: left;
+	color: #434288;
+	height: 30px;
+}
+
+/* Canvas tooltip */
+/*
+#canvasTooltip {
+    display: none;
+    position: absolute;
+    width: auto;
+    height: auto;
+    padding: 5px;
+    border-radius: 5px 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; 
+    box-shadow: 1px 3px 8px 1px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 1px 3px 8px 1px rgba(0, 0, 0, 0.3); -moz-box-shadow: 1px 3px 8px 1px rgba(0, 0, 0, 0.3);
+    font-family: Calibri, Tahoma, Geneva, sans-serif;
+    font-size: 0.8em;
+    background: #FFFFAA; border: 1px solid #AAAAAA; 
+}
+*/
+
+/* Canvas tooltip */
+.canvasTooltip {
+	display: none;
+	position: absolute;
+	width: auto;
+	height: auto;
+	padding: 4px 6px;
+	box-shadow: 1px 3px 8px 1px rgba(0, 0, 0, 0.3);
+	font-family: sans-serif;
+	font-size: 12px;
+	background: #fff;
+	border: 1px solid #ccc; 
+	z-index:99;
+}
