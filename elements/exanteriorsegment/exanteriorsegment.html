@@ -16,90 +16,355 @@
 	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
     <script type="text/javascript">
     
-    	var drawingEdit;
-                            
-        // Runs on page load
-        function init()
-        {
-             // Get reference to the drawingEdit canvas
-            var canvasEdit = document.getElementById('canvasEdit');
+    	// Unique variable assigned to the drawing
+            var drawingEdit1;
+            var drawingEdit2;
             
-            // Create a drawingEdit , {scaleOn:'width'}
-            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../img'});
-            
-            // Instantiate a controller object
-            controller = new eyeDrawController(drawingEdit);
-            
-            // Initialise drawing
-            drawingEdit.init();
-            
-            // Set focus to canvasEdit element
-            canvasEdit.focus();
-        }
-        
-		// Controller class
-        function eyeDrawController(_drawing)
-        {
-            this.drawing = _drawing;
-            
-            // Specify call back function
-            this.callBack = callBack;
-            
-            // Register for notifications with drawing object
-            this.drawing.registerForNotifications(this, 'callBack', []);
-            
-			// Show doodle controls
-			this.drawing.showDoodleControls = true;
-            
-            // Method called for notification
-            function callBack(_messageArray)
+            // Runs on page load
+            function init()
             {
-                switch (_messageArray['eventName'])
+                // Get reference to the drawingEdit canvas
+                var canvasEdit1 = document.getElementById('canvasEdit1');
+                
+                // Create a drawingEdit
+                drawingEdit1 = new ED.Drawing(canvasEdit1, ED.eye.Left, 'RPS', true, {graphicsPath:'../../graphics/'});
+                
+                // Instantiate a controller object
+                var controller = new eyeDrawController(drawingEdit1);
+                
+                // Initialise drawing
+                drawingEdit1.init();
+                
+                // Set focus to canvasEdit element
+                canvasEdit1.focus();
+ 
+                // Get reference to the drawingEdit canvas
+                var canvasEdit2 = document.getElementById('canvasEdit2');
+                
+                // Create a drawingEdit
+                drawingEdit2 = new ED.Drawing(canvasEdit2, ED.eye.Right, 'LPS', true, {graphicsPath:'../../graphics/'});
+                
+                // Instantiate a controller object
+                var controller2 = new eyeDrawController(drawingEdit2);
+                
+                // Initialise drawing
+                drawingEdit2.init();
+            }
+            
+            // Controller class
+            function eyeDrawController(_drawing)
+            {
+                var self = this;
+                
+                var masterDoodle;
+
+                this.drawing = _drawing;
+                
+                // Specify call back function
+                this.callBack = callBack;
+                
+                // Show doodle controls
+				this.drawing.showDoodleControls = true;
+			
+                // Register for notifications with drawing object
+                this.drawing.registerForNotifications(this, 'callBack', []);
+                
+                // Create an array of synchronisations
+                var syncArray = new Array();
+                if (_drawing.idSuffix == 'RPS')
                 {
-                    // Eye draw image files all loaded
-                    case 'ready':
+                    syncArray['LPS'] = {
+                        AntSeg:{AntSegCrossSection:{parameters:['apexY']}},
+                        Lens:{LensCrossSection:{parameters:['originY'],}},
+                        ACIOL:{ACIOLCrossSection:{parameters:['originY']}},
+                        PCIOL:{PCIOLCrossSection:{parameters:['originY', 'fx']}},
+                        ToricPCIOL:{PCIOLCrossSection:{parameters:['originY']}},
+                        NuclearCataract:{NuclearCataractCrossSection:{parameters:['apexY']}},
+                        CorticalCataract:{CorticalCataractCrossSection:{parameters:['apexY']}},
+                        PostSubcapCataract:{PostSubcapCataractCrossSection:{parameters:['apexY']}},
+                        CornealOpacity:{CornealOpacityCrossSection:{parameters:['yMidPoint','d','h','w','iW','originY','maxY','minY']}},
+                        CornealOedema:{CornealOedemaCrossSection:{parameters:['apexY','apexX','originY','i', 'epi','str','endo']}},
+						Hyphaema:{HyphaemaCrossSection:{parameters:['apexX','apexY']}},
+						Hypopyon:{HypopyonCrossSection:{parameters:['apexY']}}
+                    };
 
-						// Add anterior segment doodle and lens
-						this.drawing.addDoodle('AntSeg');
-						this.drawing.addDoodle('Lens');
-						//this.drawing.addDoodle('PhakoIncision', {'incisionMeridian':180}, {incisionMeridian:{id:'incisionMeridian'}});	
-						
-						this.drawing.deselectDoodles();
-						
-						addToReport();
-						break;
-						
-					case 'doodleAdded':
-						//console.log('doodle added');
-						addToReport();
-						break;					
+                    syncArray['RPS'] = {
+                        Lens:{
+                            NuclearCataract:{parameters:['originX', 'originY']},
+                            CorticalCataract:{parameters:['originX', 'originY']},
+                            PostSubcapCataract:{parameters:['originX', 'originY']},
+                        },
+                        NuclearCataract:{Lens:{parameters:['originX', 'originY']}},
+                        CorticalCataract:{Lens:{parameters:['originX', 'originY']}},
+                    };
+                }
+                if (_drawing.idSuffix == 'LPS')
+                {
+                    syncArray['RPS'] = {
+                        AntSegCrossSection:{AntSeg:{parameters:['apexY']}},
+                        LensCrossSection:{Lens:{parameters:['originY']}},
+                        ACIOLCrossSection:{ACIOL:{parameters:['originY']}},
+                        PCIOLCrossSection:{PCIOL:{parameters:['originY', 'fx']}},
+                        NuclearCataractCrossSection:{NuclearCataract:{parameters:['apexY']}},
+                        CorticalCataractCrossSection:{CorticalCataract:{parameters:['apexY']}},
+                        CornealOpacityCrossSection:{CornealOpacity:{parameters:[]}}
+                    };
+                    
+                    syncArray['LPS'] = {
+                        LensCrossSection:{
+                            NuclearCataractCrossSection:{parameters:['originX', 'originY']},
+                            CorticalCataractCrossSection:{parameters:['originX', 'originY']},
+                            PostSubcapCataractCrossSection:{parameters:['originX', 'originY']}
+                        },
+                        NuclearCataractCrossSection:{LensCrossSection:{parameters:['originX', 'originY']}},
+                        CorticalCataractCrossSection:{LensCrossSection:{parameters:['originX', 'originY']}},
+                    };
+                }
+                
+                // Array of paired doodles which add and delete together between the two diagrams
+                var pairArray = new Array();
+/*
+                if (_drawing.idSuffix == 'RPS')
+                {
+*/
+                    pairArray = {
+                        Lens:'LensCrossSection',
+                        CorticalCataract:'CorticalCataractCrossSection',
+                        NuclearCataract:'NuclearCataractCrossSection',
+                        PostSubcapCataract:'PostSubcapCataractCrossSection',
+                        PCIOL:'PCIOLCrossSection',
+                        ACIOL: 'ACIOLCrossSection',
+                        CornealOpacity: 'CornealOpacityCrossSection',
+                        ToricPCIOL: 'PCIOLCrossSection',
+                        CornealOedema: 'CornealOedemaCrossSection',
+                        Hyphaema: 'HyphaemaCrossSection',
+                        Hypopyon: 'HypopyonCrossSection'
+                    };
+//                 }
+                                
+                // Method called for notification
+                function callBack(_messageArray)
+                {
+                    switch (_messageArray['eventName'])
+                    {
+                        // Eye draw image files all loaded
+                        case 'ready':
+                            if (self.drawing.idSuffix == 'RPS')
+                            {
+                            	this.drawing.addDoodle('Lens');
+                                this.drawing.addDoodle('AntSeg');
+//                             	this.drawing.addDoodle('AntSegAngleMarks');
+                            }
+                            if (self.drawing.idSuffix == 'LPS')
+                            {
+                                doodle = this.drawing.addDoodle('CorneaCrossSection');
+                                doodle = this.drawing.addDoodle('AntSegCrossSection');
+                            }
+                            this.drawing.deselectDoodles();
+                            addToReport();
+                            break;
+                        
+                        case 'doodleSelected':
+                        
+                            // Ensure that selecting a doodle in one drawing de-deselects the others
+                            var otherDrawing = (_messageArray['selectedDoodle'].drawing.idSuffix == 'RPS')?drawingEdit2:drawingEdit1;
+                            otherDrawing.deselectDoodles();
+                            break;
+                        
+                        case 'doodleAdded':
+                        
+                            // Newly added doodle is passed in message object
+                            var newDoodle = _messageArray['object'];
+                            
+                            // Remove biological lens if IOL inserted
+                            if (newDoodle.className == 'ACIOL' || newDoodle.className == 'PCIOL' || newDoodle.className =='ToricPCIOL') {
+	                            var biologicalLens = newDoodle.drawing.lastDoodleOfClass('Lens');
+	                            if (biologicalLens) {
+		                            newDoodle.drawing.deleteDoodlesOfClass(biologicalLens.className);
+	                            }
+	                            if (newDoodle.className == 'ToricPCIOL') {
+		                            newDoodle.drawing.addDoodle('AntSegAngleMarks'); // only required in op note
+		                        }
+                            }
+                            
+                            // Get other drawing (New doodles are only added to first drawing)
+                            var otherDrawing = drawingEdit2;
+                        
+                            // Check pair array
+                            for (var className in pairArray)
+                            {
+                                // Only consider array entries for newly added doodle
+                                if (newDoodle.className == className)
+                                {
+                                    slaveClassName = pairArray[className];
 
-					case 'doodleDeleted':
-						//console.log('doodle deleted');
-						addToReport();
-						break;	
-												
-					case 'parameterChanged':
-						//console.log('parameterChanged');
-						break;
-						
-					case 'mouseup':
-						//console.log('mouseUp');
-						addToReport();
-						break;
-						
-					case 'setParameterWithAnimationComplete':
-						//console.log('setParameterWithAnimationComplete');
-						addToReport();
-						break;		
+                                    // Check it doesn't already exist
+                                    if (!otherDrawing.hasDoodleOfClass(slaveClassName))
+                                    {
+                                        otherDrawing.addDoodle(slaveClassName);
+                                        otherDrawing.deselectDoodles();
+                                    }
+                                }
+                            }
+                        
+                            // Adjust position in relation to other doodles (array defined in the doodle subclass)
+                            for (var i = 0; i < newDoodle.inFrontOfClassArray.length; i++)
+                            {
+                                newDoodle.drawing.moveNextTo(newDoodle, newDoodle.inFrontOfClassArray[i], true)
+                            }
+                        
+                            // Sync with any parent doodle
+                            var parentDoodle = newDoodle.drawing.firstDoodleOfClass(newDoodle.parentClass);
+                            if (parentDoodle)
+                            {                     
+                                for (var className in syncArray[newDoodle.drawing.idSuffix])
+                                {
+                                    if (className == parentDoodle.className)
+                                    {
+                                        for (var slaveClassName in syncArray[newDoodle.drawing.idSuffix][className])
+                                        {
+                                            if (slaveClassName == newDoodle.className)
+                                            {
+                                                // Get array of parameters to sync
+                                                var parameterArray = syncArray[newDoodle.drawing.idSuffix][className][slaveClassName]['parameters'];
+                                                
+                                                if (typeof(parameterArray) != 'undefined')
+                                                {
+                                                    // Iterate through parameters to sync
+                                                    for (var i = 0; i < parameterArray.length; i++)
+                                                    {
+                                                        // Sync slave parameter to value of master
+                                                        newDoodle.setSimpleParameter(parameterArray[i], parentDoodle[parameterArray[i]]);
+                                                        newDoodle.updateDependentParameters(parameterArray[i]);
+                                                        
+                                                        // Update any bindings associated with the slave doodle
+                                                        newDoodle.drawing.updateBindings(newDoodle);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            addToReport();
+                            break;
+
+                        
+                        case 'doodleDeleted':
+                        
+                            // Class of deleted doodle
+                            var deletedDoodleClass = _messageArray['object'];
+                            
+                            // Get drawings (doodles can only deleted from first drawing)
+                            var thisDrawing = drawingEdit1;
+                            var otherDrawing = drawingEdit2;
+                            
+                            // Check pair array
+                            for (var className in pairArray)
+                            {
+ 	                            slaveClassName = pairArray[className];
+	                            
+                                // Only consider array entries for newly added doodle
+                                if (deletedDoodleClass == className)
+                                {                                    
+                                    // Check it exists
+                                    if (otherDrawing.hasDoodleOfClass(slaveClassName))
+                                    {
+                                        otherDrawing.deleteDoodlesOfClass(slaveClassName);
+                                    }
+                                }
+                                else if (deletedDoodleClass == slaveClassName) {
+                                	if (thisDrawing.hasDoodleOfClass(className))
+                                    {
+                                        thisDrawing.deleteDoodlesOfClass(className);
+                                    }
+                                }
+                            }
+                        
+                            // Look for any doodles which are children of the deleted one
+                            var drawing = (_drawing.idSuffix == 'RPS')?thisDrawing:otherDrawing;
+                            for (var i = 0; i < drawing.doodleArray.length; i++)
+                            {
+                                if (deletedDoodleClass == drawing.doodleArray[i].parentClass)
+                                {
+                                    drawing.deleteDoodlesOfClass(drawing.doodleArray[i].className);
+                                }
+                            }
+							addToReport();
+                            break;
+
+                        case 'parameterChanged':
+//                         	console.log(_messageArray['object'].parameter);
+                        	
+                            // Master doodle
+                            var masterDoodle = _messageArray['object'].doodle;
+                            
+                            // Iterate through syncArray for each syncronised drawing
+                            for (var idSuffix in syncArray)
+                            {
+                                // Define which drawing is slave
+                                var slaveDrawing = idSuffix == 'RPS'?drawingEdit1:drawingEdit2;
+                                
+                                // Iterate through each specified className doing syncronisation
+                                for (var className in syncArray[idSuffix])
+                                {
+                                    // Iterate through slave class names
+                                    for (var slaveClassName in syncArray[idSuffix][className])
+                                    {
+                                        // Slave doodle (uses first doodle in the drawing matching the className)
+                                        var slaveDoodle = slaveDrawing.firstDoodleOfClass(slaveClassName);
+
+                                        // Check that doodles exist, className matches, and sync is allowed
+                                        if (masterDoodle && masterDoodle.className == className && slaveDoodle && slaveDoodle.willSync)
+                                        {
+                                            // Get array of parameters to sync
+                                            var parameterArray = syncArray[idSuffix][className][slaveClassName]['parameters'];
+                                            
+                                            if (typeof(parameterArray) != 'undefined')
+                                            {
+                                                // Iterate through parameters to sync
+                                                for (var i = 0; i < parameterArray.length; i++)
+                                                {
+                                                    // Check that parameter array member matches changed parameter
+                                                    if (parameterArray[i] == _messageArray.object.parameter)
+                                                    {
+	                                                    
+                                                        // Avoid infinite loop by checking values are not equal before setting 
+                                                        if (masterDoodle[_messageArray.object.parameter] != slaveDoodle[_messageArray.object.parameter])
+                                                        {
+                                                            var increment = _messageArray.object.value - _messageArray.object.oldValue;
+                                                            var newValue = slaveDoodle[_messageArray.object.parameter] + increment;
+                                                            
+                                                            // Sync slave parameter to value of master
+                                                            slaveDoodle.setSimpleParameter(_messageArray.object.parameter, newValue);
+                                                            slaveDoodle.updateDependentParameters(_messageArray.object.parameter);
+                                                            
+                                                            // Update any bindings associated with the slave doodle
+                                                            slaveDrawing.updateBindings(slaveDoodle);
+                                                            
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                // Refresh slave drawing
+                                slaveDrawing.repaint();
+                            }
+                            addToReport();							
+                        	break;
+                    }
                 }
             }
-        }
+        
+    
         
        	function addToReport()
         {
         	// Get text from the applet and force into string type
-			var text = drawingEdit.report();
+			var text = drawingEdit1.report();
 		
 			// Use a RegEx to remove final comma and space
 			text = text.replace(/, +$/, '');
@@ -121,7 +386,8 @@
 
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element allows editing and display of anterior segment findings for the specialty of Cornea. Clicking on the 'doodle' buttons adds them to the drawing. When the drawing is finished, clicking the report button will create a text description of the findings, and also select a diagnosis from a drop down list of common corneal diagnoses</p>
+			<p>This element allows editing and display of anterior segment findings for the specialty of Cornea. Clicking on the 'doodle' buttons adds them to the drawing. The report is automatically generated when the contents of the drawing changes.</p>
+			<p>Current developments: Corneal graft drawing</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -147,30 +413,29 @@
 			            <br />
 		                
 		                <!-- Doodle selection toolbar -->
-		                <button class="imgbutton" id="NuclearCataractRPS" title="Lens" onclick="drawingEdit.addDoodle('Lens'); return false;" ><img src="../../graphics/Lens.gif" /></button>
-		                <button class="imgbutton" id="PCIOLRPS" title="Posterior Chamber IOL" onclick="drawingEdit.addDoodle('IOL'); return false;" ><img src="../../graphics/IOL.gif" /></button>
-		                <button class="imgbutton" id="BlebRPS" title="Trabeculectomy bleb" onclick="drawingEdit.addDoodle('PhakoIncision'); return false;" ><img src="../../graphics/Bleb.gif" /></button>
-		                <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/PI.gif" /></button>
-		                 <button class="imgbutton" id="FuchsRPS" title="Fuch's Endothelial Dystrophy" onclick="drawingEdit.addDoodle('Fuchs'); return false;" ><img src="../../graphics/Fuchs.gif" /></button>
-		                 <button class="imgbutton" id="RKRPS" title="Radial keratotomy" onclick="drawingEdit.addDoodle('RK'); return false;" ><img src="../../graphics/RK.gif" /></button> 
-		                 <button class="imgbutton" id="LasikFlapRPS" title="Lasik Flap" onclick="drawingEdit.addDoodle('LasikFlap'); return false;" ><img src="../../graphics/LasikFlap.gif" /></button>
-		                <button class="imgbutton" id="CornealInlayRPS" title="Corneal inlay" onclick="drawingEdit.addDoodle('CornealInlay'); return false;" ><img src="../../graphics/CornealInlay.gif" /></button>                                       
-		                 <button class="imgbutton" id="CornealScarRPS" title="Corneal Scar" onclick="drawingEdit.addDoodle('CornealScar'); return false;" ><img src="../../graphics/CornealScar.gif" /></button>
-		                 <button class="imgbutton" id="CornealOedemaRPS" title="Corneal Oedema" onclick="drawingEdit.addDoodle('CornealOedema'); return false;" ><img src="../../graphics/CornealOedema.gif" /></button>
-		                 <button class="imgbutton" id="CornealPigmentationRPS" title="Corneal Pigmentation" onclick="drawingEdit.addDoodle('CornealPigmentation'); return false;" ><img src="../../graphics/CornealPigmentation.gif" /></button>
-		                 <button class="imgbutton" id="CornealGraftRPS" title="Corneal Graft" onclick="drawingEdit.addDoodle('CornealGraft'); return false;" ><img src="../../graphics/CornealGraft.gif" /></button>
+		                 <button class="imgbutton" id="CornealGraftRPS" title="Corneal Graft" onclick="drawingEdit1.addDoodle('CornealGraft'); return false;" ><img src="../../graphics/CornealGraft.gif" /></button>
+		                 <button class="imgbutton" id="CornealSutureRPS" title="Corneal Suture" onclick="drawingEdit1.addDoodle('CornealSuture'); return false;" ><img src="../../graphics/CornealSuture.gif" /></button>
 
 		                <br /> 		                
 		            </div>
 	
 					<!-- Canvas -->
-					<div style="position:relative;">
-						<span id="canvasTooltip"></span>
-		                <canvas id="canvasEdit" class="ed-canvas" width="300" height="300" tabindex="1"></canvas>
-						<!-- Doodle control panel -->
-						<div id="canvasEdit_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left; position:absolute; top:20px; left:310px;">
-						</div>
-					</div>
+				<div style="">
+				<span id="canvasTooltip"></span>
+
+                <canvas id="canvasEdit1" class="ed-canvas" width="300" height="300" tabindex="1"></canvas>
+                <canvas id="canvasEdit2" class="ed-canvas" width="180" height="300" tabindex="1"></canvas>
+				</div>
+				
+                <!-- Doodle control panel -->
+		        <div id="canvasEdit_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;">
+		        </div>
+				
+                <!-- Doodle control panel -->
+		        <div id="canvasEdit2_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;">
+		        </div>
+                    <div id="canvasEdit1_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;"></div>
+                    <div id="canvasEdit2_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;"></div>
 
 				</div>
 				
