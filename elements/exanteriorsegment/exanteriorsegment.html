@@ -85,7 +85,9 @@
                         CornealOpacity:{CornealOpacityCrossSection:{parameters:['yMidPoint','d','h','w','iW','originY','maxY','minY']}},
                         CornealOedema:{CornealOedemaCrossSection:{parameters:['apexY','apexX','originY','i', 'epi','str','endo']}},
 						Hyphaema:{HyphaemaCrossSection:{parameters:['apexX','apexY']}},
-						Hypopyon:{HypopyonCrossSection:{parameters:['apexY']}}
+						Hypopyon:{HypopyonCrossSection:{parameters:['apexY']}},
+						CornealGraft:{CornealGraftCrossSection:{parameters:['originY','apexY']}},
+						
                     };
 
                     syncArray['RPS'] = {
@@ -107,7 +109,8 @@
                         PCIOLCrossSection:{PCIOL:{parameters:['originY', 'fx']}},
                         NuclearCataractCrossSection:{NuclearCataract:{parameters:['apexY']}},
                         CorticalCataractCrossSection:{CorticalCataract:{parameters:['apexY']}},
-                        CornealOpacityCrossSection:{CornealOpacity:{parameters:[]}}
+                        CornealOpacityCrossSection:{CornealOpacity:{parameters:[]}},
+                        CornealGraftCrossSection:{CornealGraft:{parameters:[]}}
                     };
                     
                     syncArray['LPS'] = {
@@ -138,7 +141,8 @@
                         ToricPCIOL: 'PCIOLCrossSection',
                         CornealOedema: 'CornealOedemaCrossSection',
                         Hyphaema: 'HyphaemaCrossSection',
-                        Hypopyon: 'HypopyonCrossSection'
+                        Hypopyon: 'HypopyonCrossSection',
+                        CornealGraft: 'CornealGraftCrossSection'
                     };
 //                 }
                                 
@@ -176,17 +180,6 @@
                             // Newly added doodle is passed in message object
                             var newDoodle = _messageArray['object'];
                             
-                            // Remove biological lens if IOL inserted
-                            if (newDoodle.className == 'ACIOL' || newDoodle.className == 'PCIOL' || newDoodle.className =='ToricPCIOL') {
-	                            var biologicalLens = newDoodle.drawing.lastDoodleOfClass('Lens');
-	                            if (biologicalLens) {
-		                            newDoodle.drawing.deleteDoodlesOfClass(biologicalLens.className);
-	                            }
-	                            if (newDoodle.className == 'ToricPCIOL') {
-		                            newDoodle.drawing.addDoodle('AntSegAngleMarks'); // only required in op note
-		                        }
-                            }
-                            
                             // Get other drawing (New doodles are only added to first drawing)
                             var otherDrawing = drawingEdit2;
                         
@@ -197,7 +190,6 @@
                                 if (newDoodle.className == className)
                                 {
                                     slaveClassName = pairArray[className];
-
                                     // Check it doesn't already exist
                                     if (!otherDrawing.hasDoodleOfClass(slaveClassName))
                                     {
