@@ -21151,7 +21151,8 @@ ED.CornealGraft = function(_drawing, _parameterJSON) {
 	this.diameter = 9;
 	
 	// Other parameters
-	this.depth = 'Full';
+	this.depth = 100;
+	this.d = 100;
 // 	this.type = 'Penetrating';
 /*    // Reference to sutures removed throughout as to be a separate doodle
 	this.showSutures = true;
@@ -21161,10 +21162,10 @@ ED.CornealGraft = function(_drawing, _parameterJSON) {
 // 	this.opaque = false;
 
 	// Saved parameters
-	this.savedParameterArray = ['originX', 'originY', 'apexY', 'depth', /* 'type', */ /* 'showSutures', 'sutureType', 'numberOfSutures',  *//* 'opaque' */];
+	this.savedParameterArray = ['originX', 'originY', 'apexY', 'depth','d' /* 'type', */ /* 'showSutures', 'sutureType', 'numberOfSutures',  *//* 'opaque' */];
 
 	// Parameters in doodle control bar (parameter name: parameter label)
-	this.controlParameterArray = {'depth':'Depth', /* 'type':'Type', */ /* 'showSutures':'Show Sutures', 'sutureType':'Suture type', 'numberOfSutures':'Sutures',  *//* 'opaque':'Opaque' */};
+	this.controlParameterArray = {'depth':'Depth (%)', /* 'type':'Type', */ /* 'showSutures':'Show Sutures', 'sutureType':'Suture type', 'numberOfSutures':'Sutures',  *//* 'opaque':'Opaque' */};
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -21189,16 +21190,31 @@ ED.CornealGraft.prototype.setHandles = function() {
  */
 ED.CornealGraft.prototype.setPropertyDefaults = function() {
 	this.isRotatable = false;
-	this.isUnique = true;
+	this.isUnique = false;
 
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-11.9 * this.pixelsPerMillimetre/2, -6.5 * this.pixelsPerMillimetre/2);
 
 	// Add complete validation arrays for derived parameters
+/*
 	this.parameterValidationArray['depth'] = {
 		kind: 'derived',
 		type: 'string',
 		list: ['Full', 'Partial (DALK)'],
+		animate: false
+	};
+*/
+	this.parameterValidationArray['depth'] = {
+		kind: 'derived',
+		type: 'int',
+		range: new ED.Range(1, 100),
+		precision: 1,
+		animate: false
+	};
+	this.parameterValidationArray['d'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(1, 100),
 		animate: false
 	};
 /*
@@ -21220,7 +21236,6 @@ ED.CornealGraft.prototype.setPropertyDefaults = function() {
 		kind: 'derived',
 		type: 'float',
 		range: new ED.Range(6.5, 12),
-		precision: 1,
 		animate: true
 	};
 /*
@@ -21325,6 +21340,11 @@ ED.CornealGraft.prototype.dependentParameterValues = function(_parameter, _value
 			}
 			this.setSimpleParameter('originX', newX);
 			break;
+			
+		case 'depth':
+			returnArray['d'] = parseInt(_value);
+			break;
+			
 	}
 
 	return returnArray;
@@ -21447,7 +21467,8 @@ ED.CornealGraft.prototype.snomedCode = function() {
 ED.CornealGraft.prototype.description = function() {
 	var strng = "Penetrating keratoplasty";
 	
-	if (this.depth !== "Full") strng = "Deep anterior lamellar keratoplasty";
+	if (this.depth<100) strng = "Deep anterior lamellar keratoplasty";
+// 	if (this.depth !== "Full") strng = "Deep anterior lamellar keratoplasty";
 	
 	return strng;
 }
@@ -21490,10 +21511,10 @@ ED.CornealGraftCrossSection = function(_drawing, _parameterJSON) {
 	this.diameter = 9;
 	
 	// Other parameters
-	this.depth = "Full";
+	this.d = 100;
 	
 	// Saved parameters
-	this.savedParameterArray = ['originX', 'originY', 'apexY', 'depth'];
+	this.savedParameterArray = ['originX', 'originY', 'apexY','d'];
 	
 	// Parameters in doodle control bar
 	this.controlParameterArray = {};
@@ -21503,7 +21524,7 @@ ED.CornealGraftCrossSection = function(_drawing, _parameterJSON) {
 	
 	this.linkedDoodleParameters = {
         'CornealGraftCrossSection': {
-            source: ['originY','apexY','depth']
+            source: ['originY','apexY','d']
         }
     };
 }
@@ -21526,17 +21547,17 @@ ED.CornealGraftCrossSection.prototype.setHandles = function() {
  */
 ED.CornealGraftCrossSection.prototype.setPropertyDefaults = function() {
 	this.isSelectable = false;
-	this.isUnique = true;
+	this.isUnique = false;
 	this.isFilled = false;
 		
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-12.0 * this.pixelsPerMillimetre/2, -6.5 * this.pixelsPerMillimetre/2);
 
 	// Add complete validation arrays for derived parameters
-	this.parameterValidationArray['depth'] = {
-		kind: 'derived',
-		type: 'string',
-		list: ['Full', 'Partial (DALK)'],
+	this.parameterValidationArray['d'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(1, 100),
 		animate: false
 	};
 	
@@ -21576,6 +21597,10 @@ ED.CornealGraftCrossSection.prototype.dependentParameterValues = function(_param
 		case 'diameter':
 			returnArray['apexY'] = -_value * this.pixelsPerMillimetre/2;
 			break;
+		
+		case 'd':
+			returnArray['d'] = parseInt(_value);
+			break;
 			
 	}
 
@@ -21589,7 +21614,7 @@ ED.CornealGraftCrossSection.prototype.dependentParameterValues = function(_param
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
  */
 ED.CornealGraftCrossSection.prototype.draw = function(_point) {
-	
+
 	// Get context
 	var ctx = this.drawing.context;
 
@@ -21627,10 +21652,10 @@ ED.CornealGraftCrossSection.prototype.draw = function(_point) {
 			superiorBezier.CP2 = new ED.Point(cornea.apexX, cornea.apexY - 100 - this.originY);
 			superiorBezier.EP = new ED.Point(cornea.apexX, cornea.apexY - this.originY);
 			
-			superiorBezierBack.SP = new ED.Point(-120 + 120, -380 - this.originY);
-			superiorBezierBack.CP1 = new ED.Point(-240 + 160, -260 - this.originY);
-			superiorBezierBack.CP2 = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY - 120 - this.originY);
-			superiorBezierBack.EP = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY - this.originY);
+			superiorBezierBack.SP = new ED.Point(-120 + 120*this.d/100, -380 - this.originY);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 160*this.d/100, -260 - this.originY);
+			superiorBezierBack.CP2 = new ED.Point(cornea.apexX + cornealThickness*this.d/100, cornea.apexY - 120 - this.originY);
+			superiorBezierBack.EP = new ED.Point(cornea.apexX + cornealThickness*this.d/100, cornea.apexY - this.originY);
 		}
 		else if (cornea && cornea.shape == "Keratoglobus") {
 			superiorBezier.SP = new ED.Point(-120, -380 - this.originY);
@@ -21638,10 +21663,10 @@ ED.CornealGraftCrossSection.prototype.draw = function(_point) {
 			superiorBezier.CP2 = new ED.Point(-380, -100 - this.originY);
 			superiorBezier.EP = new ED.Point(-380, 100 - this.originY);
 			
-			superiorBezierBack.SP = new ED.Point(-120 + 120, -380 - this.originY);
-			superiorBezierBack.CP1 = new ED.Point(-240 + 120, -200 - this.originY);
-			superiorBezierBack.CP2 = new ED.Point(-380 + 100, -140 - this.originY);
-			superiorBezierBack.EP = new ED.Point(-380 + 100, 100 - this.originY);
+			superiorBezierBack.SP = new ED.Point(-120 + 120*this.d/100, -380 - this.originY);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 120*this.d/100, -200 - this.originY);
+			superiorBezierBack.CP2 = new ED.Point(-380 + 100*this.d/100, -140 - this.originY);
+			superiorBezierBack.EP = new ED.Point(-380 + 100*this.d/100, 100 - this.originY);
 		}
 		else {
 			superiorBezier.SP = new ED.Point(-120, -380 - this.originY);
@@ -21649,10 +21674,10 @@ ED.CornealGraftCrossSection.prototype.draw = function(_point) {
 			superiorBezier.CP2 = new ED.Point(-320, -160 - this.originY);
 			superiorBezier.EP = new ED.Point(-320, 0 - this.originY);
 			
-			superiorBezierBack.SP = new ED.Point(-120 + 120, -380 - this.originY);
-			superiorBezierBack.CP1 = new ED.Point(-240 + 160, -260 - this.originY);
-			superiorBezierBack.CP2 = new ED.Point(-320 + 100, -160 - this.originY);
-			superiorBezierBack.EP = new ED.Point(-320 + 100, 0 - this.originY);
+			superiorBezierBack.SP = new ED.Point(-120 + 120*this.d/100, -380 - this.originY);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 160*this.d/100, -260 - this.originY);
+			superiorBezierBack.CP2 = new ED.Point(-320 + 100*this.d/100, -160 - this.originY);
+			superiorBezierBack.EP = new ED.Point(-320 + 100*this.d/100, 0 - this.originY);
 		}
 		
 			
@@ -21768,10 +21793,10 @@ ED.CornealGraftCrossSection.prototype.draw = function(_point) {
 			inferiorBezier.CP2 = new ED.Point(-240, 260 - this.originY);
 			inferiorBezier.EP = new ED.Point(-120, 380 - this.originY);
 			
-			inferiorBezierBack.SP = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY - this.originY);
-			inferiorBezierBack.CP1 = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY + 120 - this.originY);
-			inferiorBezierBack.CP2 = new ED.Point(-240 + 160, 260 - this.originY);
-			inferiorBezierBack.EP = new ED.Point(-120 + 120, 380 - this.originY);
+			inferiorBezierBack.SP = new ED.Point(cornea.apexX + cornealThickness*this.d/100, cornea.apexY - this.originY);
+			inferiorBezierBack.CP1 = new ED.Point(cornea.apexX + cornealThickness*this.d/100, cornea.apexY + 120 - this.originY);
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160*this.d/100, 260 - this.originY);
+			inferiorBezierBack.EP = new ED.Point(-120 + 120*this.d/100, 380 - this.originY);
 		}
 		else if (cornea && cornea.shape == "Keratoglobus") {
 			inferiorBezier.SP = new ED.Point(-380, 100 - this.originY);
@@ -21779,10 +21804,10 @@ ED.CornealGraftCrossSection.prototype.draw = function(_point) {
 			inferiorBezier.CP2 = new ED.Point(-240, 360 - this.originY);
 			inferiorBezier.EP = new ED.Point(-120, 380 - this.originY);
 			
-			inferiorBezierBack.SP = new ED.Point(-380 + 100, 100 - this.originY);
-			inferiorBezierBack.CP1 = new ED.Point(-380 + 120, 220 - this.originY);
-			inferiorBezierBack.CP2 = new ED.Point(-240 + 160, 260 - this.originY);
-			inferiorBezierBack.EP = new ED.Point(-120 + 120, 380 - this.originY);
+			inferiorBezierBack.SP = new ED.Point(-380 + 100*this.d/100, 100 - this.originY);
+			inferiorBezierBack.CP1 = new ED.Point(-380 + 120*this.d/100, 220 - this.originY);
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160*this.d/100, 260 - this.originY);
+			inferiorBezierBack.EP = new ED.Point(-120 + 120*this.d/100, 380 - this.originY);
 		}
 		else {
 			inferiorBezier.SP = new ED.Point(-320, -0 - this.originY);
@@ -21790,10 +21815,10 @@ ED.CornealGraftCrossSection.prototype.draw = function(_point) {
 			inferiorBezier.CP2 = new ED.Point(-240, 260 - this.originY);
 			inferiorBezier.EP = new ED.Point(-120, 380 - this.originY);
 			
-			inferiorBezierBack.SP = new ED.Point(-320 + 100, -0 - this.originY);
-			inferiorBezierBack.CP1 = new ED.Point(-320 + 100, 160 - this.originY);
-			inferiorBezierBack.CP2 = new ED.Point(-240 + 160, 260 - this.originY);
-			inferiorBezierBack.EP = new ED.Point(-120 + 120, 380 - this.originY);
+			inferiorBezierBack.SP = new ED.Point(-320 + 100*this.d/100, -0 - this.originY);
+			inferiorBezierBack.CP1 = new ED.Point(-320 + 100*this.d/100, 160 - this.originY);
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160*this.d/100, 260 - this.originY);
+			inferiorBezierBack.EP = new ED.Point(-120 + 120*this.d/100, 380 - this.originY);
 		}			
 		
 		
@@ -21892,10 +21917,16 @@ ED.CornealGraftCrossSection.prototype.draw = function(_point) {
 	}
 	
 	if (inferiorBezier) {
-		ctx.moveTo(inferiorBezierBack.EP.x, inferiorBezierBack.EP.y);
-		ctx.lineTo(inferiorBezier.EP.x, inferiorBezier.EP.y);	
+		ctx.moveTo(inferiorBezier.EP.x, inferiorBezier.EP.y);	
+		ctx.lineTo(inferiorBezierBack.EP.x, inferiorBezierBack.EP.y);
+		if (this.d<100) ctx.bezierCurveTo(inferiorBezierBack.CP2.x, inferiorBezierBack.CP2.y, inferiorBezierBack.CP1.x, inferiorBezierBack.CP1.y, inferiorBezierBack.SP.x, inferiorBezierBack.SP.y);
+		ctx.moveTo(inferiorBezier.EP.x, inferiorBezier.EP.y);
 	}
 	if (superiorBezier) {
+		if (this.d<100) {
+			ctx.moveTo(superiorBezierBack.EP.x, superiorBezierBack.EP.y);
+			ctx.bezierCurveTo(superiorBezierBack.CP2.x, superiorBezierBack.CP2.y, superiorBezierBack.CP1.x, superiorBezierBack.CP1.y, superiorBezierBack.SP.x, superiorBezierBack.SP.y);
+		}
 		ctx.moveTo(superiorBezierBack.SP.x, superiorBezierBack.SP.y);
 		ctx.lineTo(superiorBezier.SP.x, superiorBezier.SP.y);
 	}

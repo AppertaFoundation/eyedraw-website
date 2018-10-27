@@ -70,6 +70,7 @@
                 this.drawing.registerForNotifications(this, 'callBack', []);
                 
                 // Create an array of synchronisations
+                var syncArrayIDs = new Array();
                 var syncArray = new Array();
                 if (_drawing.idSuffix == 'RPS')
                 {
@@ -86,7 +87,7 @@
                         CornealOedema:{CornealOedemaCrossSection:{parameters:['apexY','apexX','originY','i', 'epi','str','endo']}},
 						Hyphaema:{HyphaemaCrossSection:{parameters:['apexX','apexY']}},
 						Hypopyon:{HypopyonCrossSection:{parameters:['apexY']}},
-						CornealGraft:{CornealGraftCrossSection:{parameters:['originY','apexY']}},
+						CornealGraft:{CornealGraftCrossSection:{parameters:['originY','apexY','d']}},
 						
                     };
 
@@ -169,7 +170,6 @@
                             break;
                         
                         case 'doodleSelected':
-                        
                             // Ensure that selecting a doodle in one drawing de-deselects the others
                             var otherDrawing = (_messageArray['selectedDoodle'].drawing.idSuffix == 'RPS')?drawingEdit2:drawingEdit1;
                             otherDrawing.deselectDoodles();
@@ -190,12 +190,24 @@
                                 if (newDoodle.className == className)
                                 {
                                     slaveClassName = pairArray[className];
+/*
                                     // Check it doesn't already exist
                                     if (!otherDrawing.hasDoodleOfClass(slaveClassName))
                                     {
+*/
                                         otherDrawing.addDoodle(slaveClassName);
+                                        
+                                        // add doodle id pair to array
+                                        var pair = {
+	                                        classRPS: className,
+	                                        classLPS: slaveClassName,
+	                                        RPS:newDoodle.id,
+	                                        LPS: otherDrawing.lastDoodleOfClass(slaveClassName).id
+                                        }
+                                        syncArrayIDs.push(pair);
+                                        
                                         otherDrawing.deselectDoodles();
-                                    }
+//                                     }
                                 }
                             }
                         
@@ -262,13 +274,39 @@
                                     // Check it exists
                                     if (otherDrawing.hasDoodleOfClass(slaveClassName))
                                     {
-                                        otherDrawing.deleteDoodlesOfClass(slaveClassName);
+	                                    // find id pair
+	                                    var syncedDoodleID;
+	                                    for (var i=0; i<syncArrayIDs.length; i++) {
+		                                    if (syncArrayIDs[i].classRPS == deletedDoodleClass) {
+												// has the synced doodle been removed?
+			                                    if (!thisDrawing.doodleOfId(syncArrayIDs[i].RPS)) {
+				                                    syncedDoodleID = syncArrayIDs[i].LPS;
+				                                    // remove from syncArrayIDs
+				                                    syncArrayIDs.splice(i, 1);
+// 				                                    break;
+				                                }
+				                            }
+	                                    }
+                                        // otherDrawing.deleteDoodlesOfClass(slaveClassName);
+                                        otherDrawing.deleteDoodleOfId(syncedDoodleID);
                                     }
                                 }
                                 else if (deletedDoodleClass == slaveClassName) {
                                 	if (thisDrawing.hasDoodleOfClass(className))
                                     {
-                                        thisDrawing.deleteDoodlesOfClass(className);
+	                                    var syncedDoodleID;
+	                                    for (var i=0; i<syncArrayIDs.length; i++) {
+		                                    if (syncArrayIDs[i].classRPS == deletedDoodleClass) {
+												if (!thisDrawing.doodleOfId(syncArrayIDs[i].LPS)) {
+													syncedDoodleID = syncArrayIDs[i].LPS;
+													// remove from syncArrayIDs
+					                                syncArrayIDs.splice(i, 1);
+	// 												break;
+												}
+											}
+	                                    }
+	                                    thisDrawing.deleteDoodleOfId(syncedDoodleID);
+//                                         thisDrawing.deleteDoodlesOfClass(className);
                                     }
                                 }
                             }
@@ -304,8 +342,21 @@
                                     for (var slaveClassName in syncArray[idSuffix][className])
                                     {
                                         // Slave doodle (uses first doodle in the drawing matching the className)
-                                        var slaveDoodle = slaveDrawing.firstDoodleOfClass(slaveClassName);
+                                        //var slaveDoodle = slaveDrawing.firstDoodleOfClass(slaveClassName);
+                                        
+                                        // Slave doodle (matched IDs in syncArrayIDs
+                                        var syncedDoodleID;
+	                                    for (var i=0; i<syncArrayIDs.length; i++) {
+		                                    if (syncArrayIDs[i].classRPS == masterDoodle.className && syncArrayIDs[i].RPS == masterDoodle.id) {
+			                                    syncedDoodleID = syncArrayIDs[i].LPS;
+			                                }
+											else if (syncArrayIDs[i].classLPS == masterDoodle.className && syncArrayIDs[i].LPS == masterDoodle.id) {
+												syncedDoodleID = syncArrayIDs[i].RPS;
 
+											}
+	                                    }
+	                                    var slaveDoodle = slaveDrawing.doodleOfId(syncedDoodleID);
+	                                    
                                         // Check that doodles exist, className matches, and sync is allowed
                                         if (masterDoodle && masterDoodle.className == className && slaveDoodle && slaveDoodle.willSync)
                                         {
@@ -395,13 +446,13 @@
 				
 		        	<!-- Doodle toolbar -->
 		        	<div class="toolbar">
-						<button class="ed-button" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics//moveToFront.gif"/></button>
-			            <button class="ed-button" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics//moveToBack.gif" /></button>
-			            <button class="ed-button" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
-			            <button class="ed-button" id="flipVerRPS" title="Flip around vertical axis" onclick="drawingEdit.flipVer(); return false;" ><img src="../../graphics/flipVer.gif" /></button>
-			            <button class="ed-button" id="flipHorRPS" title="Flip around horizontal axis" onclick="drawingEdit.flipHor(); return false;" ><img src="../../graphics/flipHor.gif" /></button>
-			            <button class="ed-button" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
-			            <button class="ed-button" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
+						<button class="ed-button" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit1.moveToFront(); return false;" ><img src="../../graphics//moveToFront.gif"/></button>
+			            <button class="ed-button" id="moveToBackRPS" title="Move to back" onclick="drawingEdit1.moveToBack(); return false;" ><img src="../../graphics//moveToBack.gif" /></button>
+			            <button class="ed-button" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit1.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+			            <button class="ed-button" id="flipVerRPS" title="Flip around vertical axis" onclick="drawingEdit1.flipVer(); return false;" ><img src="../../graphics/flipVer.gif" /></button>
+			            <button class="ed-button" id="flipHorRPS" title="Flip around horizontal axis" onclick="drawingEdit1.flipHor(); return false;" ><img src="../../graphics/flipHor.gif" /></button>
+			            <button class="ed-button" id="lockRPS" title="Lock" onclick="drawingEdit1.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
+			            <button class="ed-button" id="unlockRPS" title="Unlock" onclick="drawingEdit1.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
 			            <br />
 		                
 		                <!-- Doodle selection toolbar -->
