@@ -20412,8 +20412,8 @@ ED.ContinuousCornealSuture.prototype.draw = function(_point) {
 		ctx.lineWidth = 4;
 		ctx.strokeStyle = "rgba(0,0,0,0.8)";
 		if (this.removed) ctx.strokeStyle = "rgba(150,150,150,0.5)";
-		else if (this.suture == "Vicryl") ctx.strokeStyle = "rgba(55,0,123,1)";
-		else if (this.suture == "Prolene") ctx.strokeStyle = "rgba(0,15,90,1)";
+		else if (this.suture == "Vicryl") ctx.strokeStyle = "rgba(100,0,150,0.7)";
+		else if (this.suture == "Prolene") ctx.strokeStyle = "rgba(0,0,120,0.7)";
 		ctx.stroke();
 	}
 
