@@ -20229,7 +20229,7 @@ ED.ContinuousCornealSuture = function(_drawing, _parameterJSON) {
 	this.removed = false;
 	this.sutureBites = 16;
 	this.biteLength = 2;
-	this.sutureLength = 160;
+	this.sutureLength = this.biteLength * this.pixelsPerMillimetre; // correct default!
 
 
 	// Saved parameters
@@ -20261,7 +20261,7 @@ ED.ContinuousCornealSuture.prototype.setPropertyDefaults = function() {
 	this.parameterValidationArray['suture'] = {
 		kind: 'derived',
 		type: 'string',
-		list: ['Nylon 10-0', 'Nylon 11-0'],
+		list: ['Nylon 10-0', 'Nylon 11-0','Prolene','Vicryl'],
 		animate: false
 	};
 	this.parameterValidationArray['removed'] = {
@@ -20291,20 +20291,31 @@ ED.ContinuousCornealSuture.prototype.setParameterDefaults = function() {
 	this.setParameterFromString('tension', 'Tight');
 	this.setParameterFromString('proudKnot', 'False');
 */
-	
+	// defaults
+	this.radius = 374;
+	this.setRotationWithDisplacements(0, 30); // rotation always dispalced for subsequent doodles
+
+	// if corneal graft, set properties to match
 	this.cornealGraft = this.drawing.lastDoodleOfClass("CornealGraft");
 	if (this.cornealGraft) {
-		this.radius = this.cornealGraft.diameter * this.pixelsPerMillimetre/2;
-		var theta = 360/this.cornealGraft.sutureBites;
-		this.setRotationWithDisplacements(0, -theta);
-		
+		this.radius = this.cornealGraft.diameter * this.pixelsPerMillimetre/2;		
 		this.originX = this.cornealGraft.originX;
 		this.originY = this.cornealGraft.originY;
 	}
-	else {
-		this.radius = 374;
-		this.setRotationWithDisplacements(0, 30);
+	
+	// inherit derived parameters from previous doodle of same class
+	var previousDoodle = this.drawing.lastDoodleOfClass(this.className);
+	if (previousDoodle) {
+// 		this.suture = previousDoodle.suture;
+		this.setParameterWithAnimation("suture",previousDoodle.suture);
+		this.setParameterWithAnimation("sutureBites",previousDoodle.sutureBites);
+		this.setParameterWithAnimation("biteLength",previousDoodle.biteLength);
+		
+		// rotatation displacement amount appropriate for number of sutures
+		var theta = 120/previousDoodle.sutureBites;
+		this.setRotationWithDisplacements(0, -theta);
 	}
+
 }
 
 /**
@@ -20399,7 +20410,10 @@ ED.ContinuousCornealSuture.prototype.draw = function(_point) {
 
 		// Draw sutures
 		ctx.lineWidth = 4;
-		ctx.strokeStyle = (this.removed) ? "rgba(150,150,150,0.5)" : "gray";
+		ctx.strokeStyle = "rgba(0,0,0,0.8)";
+		if (this.removed) ctx.strokeStyle = "rgba(150,150,150,0.5)";
+		else if (this.suture == "Vicryl") ctx.strokeStyle = "rgba(55,0,123,1)";
+		else if (this.suture == "Prolene") ctx.strokeStyle = "rgba(0,15,90,1)";
 		ctx.stroke();
 	}
 
@@ -21706,6 +21720,7 @@ ED.CornealGraft.prototype.draw = function(_point) {
 
 	// Draw boundary path (also hit testing)
 	this.drawBoundary(_point);
+	ctx.closePath();
 
 	// Non boundary paths
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
