@@ -180,6 +180,9 @@
                             // Newly added doodle is passed in message object
                             var newDoodle = _messageArray['object'];
                             
+                            if (newDoodle.className == "CornealSuture") {
+	                            document.getElementById('interruptedSutureNumber').value = parseInt(document.getElementById('interruptedSutureNumber').value) + 1;
+                            }
                             // Get other drawing (New doodles are only added to first drawing)
                             var otherDrawing = drawingEdit2;
                         
@@ -258,6 +261,10 @@
                         
                             // Class of deleted doodle
                             var deletedDoodleClass = _messageArray['object'];
+                            
+                            if (deletedDoodleClass == "CornealSuture") {
+	                            document.getElementById('interruptedSutureNumber').value = parseInt(document.getElementById('interruptedSutureNumber').value) - 1;
+                            }
                             
                             // Get drawings (doodles can only deleted from first drawing)
                             var thisDrawing = drawingEdit1;
@@ -522,6 +529,8 @@
 	function interruptedSutureNumber(_number) {
 		// sutures always added to en face canvas
 		var currentN = drawingEdit1.numberOfDoodlesOfClass('CornealSuture');
+		document.getElementById('interruptedSutureNumber').value = currentN; // reset count because edited in eyedrawcontroller
+																				// needs to be edited in controller in case user adds / removes doodles manually
 		
 		var difference = _number - currentN;
 		

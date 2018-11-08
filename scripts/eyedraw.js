@@ -20233,7 +20233,7 @@ ED.ContinuousCornealSuture = function(_drawing, _parameterJSON) {
 
 
 	// Saved parameters
-	this.savedParameterArray = ['originX','originY','radius', 'rotation','numberOfStufures','removed','suture','sutureBites','biteLength','sutureLength'];
+	this.savedParameterArray = ['originX','originY','apexX','radius', 'rotation','numberOfStufures','removed','suture','sutureBites','biteLength','sutureLength'];
 
 	// Parameters in doodle control bar (parameter name: parameter label)
 	this.controlParameterArray = {'removed':'Removed','suture':'Suture','sutureBites':'Suture bites','biteLength':'Bite length'};
@@ -20250,12 +20250,22 @@ ED.ContinuousCornealSuture.prototype.constructor = ED.ContinuousCornealSuture;
 ED.ContinuousCornealSuture.superclass = ED.Doodle.prototype;
 
 /**
+ * Sets handle attributes
+ */
+ED.ContinuousCornealSuture.prototype.setHandles = function() {
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+}
+
+/**
  * Sets default dragging attributes
  */
 ED.ContinuousCornealSuture.prototype.setPropertyDefaults = function() {
 	this.isScaleable = false;
 	this.isMoveable = false;
 	this.isRotatable = false;
+
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-0, +0);
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(6.5 * this.pixelsPerMillimetre/2, 15 * this.pixelsPerMillimetre/2);
 	
 	// Add complete validation arrays for derived parameters
 	this.parameterValidationArray['suture'] = {
@@ -20292,6 +20302,7 @@ ED.ContinuousCornealSuture.prototype.setParameterDefaults = function() {
 	this.setParameterFromString('proudKnot', 'False');
 */
 	// defaults
+	this.apexX = 11.9 * this.pixelsPerMillimetre/2 - 50;
 	this.radius = 374;
 	this.setRotationWithDisplacements(0, 30); // rotation always dispalced for subsequent doodles
 
@@ -20304,16 +20315,22 @@ ED.ContinuousCornealSuture.prototype.setParameterDefaults = function() {
 	}
 	
 	// inherit derived parameters from previous doodle of same class
-	var previousDoodle = this.drawing.lastDoodleOfClass(this.className);
-	if (previousDoodle) {
-// 		this.suture = previousDoodle.suture;
-		this.setParameterWithAnimation("suture",previousDoodle.suture);
-		this.setParameterWithAnimation("sutureBites",previousDoodle.sutureBites);
-		this.setParameterWithAnimation("biteLength",previousDoodle.biteLength);
+	var previousDoodles = this.drawing.allDoodlesOfClass(this.className);
+	if (previousDoodles.length>0) {
+		var lastDoodle = previousDoodles[previousDoodles.length-1];
+		this.setParameterWithAnimation("suture",lastDoodle.suture);
+		this.setParameterWithAnimation("sutureBites",lastDoodle.sutureBites);
+		this.setParameterWithAnimation("biteLength",lastDoodle.biteLength);
+		this.setParameterWithAnimation("apexX",lastDoodle.apexX);
 		
-		// rotatation displacement amount appropriate for number of sutures
-		var theta = 120/previousDoodle.sutureBites;
-		this.setRotationWithDisplacements(0, -theta);
+		// rotatation displacement amount appropriate for number of doodles (equidistant)
+// 				var theta = 120/previousDoodle.sutureBites;
+
+ 		previousDoodles.push(this);
+		var theta = (2*Math.PI/previousDoodles.length)/lastDoodle.sutureBites;
+		for (var i=0; i<previousDoodles.length;i++) {
+			previousDoodles[i].setSimpleParameter('rotation', i*theta);
+		}
 	}
 
 }
@@ -20332,6 +20349,10 @@ ED.ContinuousCornealSuture.prototype.dependentParameterValues = function(_parame
 	switch (_parameter) {
 		case 'biteLength':
 			returnArray['sutureLength'] = _value * this.pixelsPerMillimetre;
+			break;
+			
+		case 'apexX':
+			returnArray['radius'] = 50+_value;
 			break;
 			
 	}
@@ -20412,10 +20433,15 @@ ED.ContinuousCornealSuture.prototype.draw = function(_point) {
 		ctx.lineWidth = 4;
 		ctx.strokeStyle = "rgba(0,0,0,0.8)";
 		if (this.removed) ctx.strokeStyle = "rgba(150,150,150,0.5)";
-		else if (this.suture == "Vicryl") ctx.strokeStyle = "rgba(100,0,150,0.7)";
-		else if (this.suture == "Prolene") ctx.strokeStyle = "rgba(0,0,120,0.7)";
+		else if (this.suture == "Vicryl") ctx.strokeStyle = "rgba(55,0,123,1)";
+		else if (this.suture == "Prolene") ctx.strokeStyle = "rgba(0,15,90,1)";
 		ctx.stroke();
 	}
+
+ 	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing && !this.cornealGraft) this.drawHandles(_point);
 
 	// Return value indicating successful hittest
 	return this.isClicked;
