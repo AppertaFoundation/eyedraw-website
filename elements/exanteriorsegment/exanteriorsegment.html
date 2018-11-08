@@ -495,7 +495,10 @@
 						<p id="report" style="color: #0000FF;"></p>
 						<p class="lable">Comments:</p>
 						<textarea rows = 5></textarea>
-						<!-- <input type="text" id="incisionMeridian" value='90'>; -->			
+						
+						<BR> <!-- demo for methods of adding multiple doodles -->
+						<p class="lable" style="width:200px;">Interrupted sutures:
+						<input type="text" id="interruptedSutureNumber" value='0' onchange="interruptedSutureNumber(this.value)"></p>	
 					</div>
 				</div>
 				
@@ -515,6 +518,37 @@
 	</div>
 </div>
 
+<script type="text/javascript">
+	function interruptedSutureNumber(_number) {
+		// sutures always added to en face canvas
+		var currentN = drawingEdit1.numberOfDoodlesOfClass('CornealSuture');
+		
+		var difference = _number - currentN;
+		
+		if (difference>0) {
+			for (var i=0; i<difference; i++) {
+				drawingEdit1.addDoodle('CornealSuture');
+			}
+		}
+		else if (difference<0) {
+			difference = Math.abs(difference);
+			for (var i=0; i<difference; i++) {
+				var suture = drawingEdit1.lastDoodleOfClass('CornealSuture');
+				drawingEdit1.deleteDoodle(suture);
+			
+			}
+		}
+		
+		// adjust angle between sutures so equidistant
+		var sutures = drawingEdit1.allDoodlesOfClass('CornealSuture');
+		var theta = (2*Math.PI)/_number;
+		for (var j=0; j<sutures.length;j++) {
+			sutures[j].setSimpleParameter('rotation',theta*j);
+		}
+		
+	}
+	
+</script>
 <!--
 <script type="text/javascript">
 
