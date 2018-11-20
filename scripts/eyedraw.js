@@ -259,2918 +259,5833 @@ ED.setTitles = function(titles) {
  */
 ED.randomArray = [0.6570, 0.2886, 0.7388, 0.1621, 0.9896, 0.0434, 0.1695, 0.9099, 0.1948, 0.4433, 0.1580, 0.7392, 0.8730, 0.2165, 0.7138, 0.6316, 0.3425, 0.2838, 0.4551, 0.4153, 0.7421, 0.3364, 0.6087, 0.1986, 0.5764, 0.1952, 0.6179, 0.6699, 0.0903, 0.2968, 0.2684, 0.9383, 0.2488, 0.4579, 0.2921, 0.9085, 0.7951, 0.4500, 0.2255, 0.3366, 0.6670, 0.7300, 0.5511, 0.5623, 0.1376, 0.5553, 0.9898, 0.4317, 0.5922, 0.6452, 0.5008, 0.7077, 0.0704, 0.2293, 0.5697, 0.7415, 0.1557, 0.2944, 0.4566, 0.4129, 0.2449, 0.5620, 0.4105, 0.5486, 0.8917, 0.9346, 0.0921, 0.7998, 0.7717, 0.0357, 0.1179, 0.0168, 0.1520, 0.5187, 0.3466, 0.1663, 0.5935, 0.7524, 0.8410, 0.1859, 0.6012, 0.8171, 0.9272, 0.3367, 0.8133, 0.4868, 0.3665, 0.9625, 0.7839, 0.3052, 0.1651, 0.6414, 0.7361, 0.0065, 0.3267, 0.0554, 0.3389, 0.8967, 0.8777, 0.0557, 0.9201, 0.6015, 0.2676, 0.3365, 0.2606, 0.0989, 0.2085, 0.3526, 0.8476, 0.0146, 0.0190, 0.6896, 0.5198, 0.9871, 0.0288, 0.8037, 0.6741, 0.2148, 0.2584, 0.8447, 0.8480, 0.5557, 0.2480, 0.4736, 0.8869, 0.1867, 0.3869, 0.6871, 0.1011, 0.7561, 0.7340, 0.1525, 0.9968, 0.8179, 0.7103, 0.5462, 0.4150, 0.4187, 0.0478, 0.6511, 0.0386, 0.5243, 0.7271, 0.9093, 0.4461, 0.1264, 0.0756, 0.9405, 0.7287, 0.0684, 0.2820, 0.4059, 0.3694, 0.7641, 0.4188, 0.0498, 0.7841, 0.9136, 0.6210, 0.2249, 0.9935, 0.9709, 0.0741, 0.6218, 0.3166, 0.2237, 0.7754, 0.4191, 0.2195, 0.2935, 0.4529, 0.9112, 0.9183, 0.3275, 0.1856, 0.8345, 0.0442, 0.6297, 0.9030, 0.4689, 0.9512, 0.2219, 0.9993, 0.8981, 0.1018, 0.9362, 0.6426, 0.4563, 0.1267, 0.7889, 0.5057, 0.8588, 0.4669, 0.0687, 0.6623, 0.3681, 0.8152, 0.9004, 0.0822, 0.3652];
 /**
+
  * @summary Contains the core classes for EyeDraw
+
  * @author <a href="mailto:bill.aylward@mac.com">Bill Aylward</a>
+
  * @version 1.2
+
  *
+
  * Modification date: 28th March 2012
+
  * Copyright 2011 OpenEyes
+
  *
+
  * This file is part of OpenEyes.
+
  *
+
  * OpenEyes is free software: you can redistribute it and/or modify
+
  * it under the terms of the GNU Affero General Public License as published by
+
  * the Free Software Foundation, either version 3 of the License, or
+
  * (at your option) any later version.
+
  *
+
  * OpenEyes is distributed in the hope that it will be useful,
+
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
  * GNU Affero General Public License for more details.
+
  *
+
  * You should have received a copy of the GNU Affero General Public License
+
  * along with OpenEyes.  If not, see <http://www.gnu.org/licenses/>.
+
  */
 
+
+
 /**
+
  * @namespace ED
+
  * @description Namespace for all EyeDraw classes
+
  */
+
 var ED = ED || {};
 
+
+
 /**
+
  * A Drawing consists of one canvas element displaying one or more doodles;
+
  * Doodles are drawn in the 'doodle plane' consisting of a (nominal) 1001 pixel square grid -500 to 500) with central origin, and negative Y upwards
+
  * Affine transforms are used to convert points in the doodle plane to the canvas plane, the plane of the canvas element;
+
  * Each doodle contains additional transforms to handle individual position, rotation, and scale.
+
  * @namespace ED.Drawing
+
  * @memberOf ED
+
  * @property {Canvas} canvas A canvas element used to edit and display the drawing
+
  * @property {Eye} eye Right or left eye (some doodles display differently according to side)
+
  * @property {Bool} isEditable Flag indicating whether canvas is editable or not
+
  * @property {Context} context The 2d context of the canvas element
+
  * @property {Array} doodleArray Array of doodles in the drawing
+
  * @property {AffineTransform} transform Transform converts doodle plane -> canvas plane
+
  * @property {AffineTransform} inverseTransform Inverse transform converts canvas plane -> doodle plane
+
  * @property {Doodle} selectedDoodle The currently selected doodle, null if no selection
+
  * @property {Bool} mouseIsDown Flag indicating whether mouse is down in canvas
+
  * @property {Mode} mode The current mouse dragging mode
+
  * @property {Point} lastMousePosition Last position of mouse in canvas coordinates
+
  * @property {Image} image Optional background image
+
  * @property {Int} doubleClickMilliSeconds Duration of double click
+
  * @property {Bool} newPointOnClick Flag indicating whether a mouse click will create a new PointInLine doodle
+
  * @property {Bool} completeLine Flag indicating whether to draw an additional line to the first PointInLine doodle
+
  * @property {Float} scale Scaling of transformation from canvas to doodle planes, preserving aspect ratio and maximising doodle plnae
+
  * @property {Float} globalScaleFactor Factor used to scale all added doodles to this drawing, defaults to 1
+
  * @property {Int} scrollValue Current value of scrollFactor
+
  * @property {Int} lastDoodleId id of last doodle to be added
+
  * @property {Bool} isActive Flag indicating that the mouse is interacting with the drawing
+
  * @property {Bool} isNew Flag indicating that the drawing is new (false after doodles loaded from an input string)
+
  * @property {Bool} isReady Flag indicating that the drawing has finished loading (set by widget controller)
+
  * @property {Bool} showDoodleControls Flag indicating whether doodles should display controls when selected
+
  * @property {Float} scaleOn Options for setting scale to either width or height
+
  * @param {Canvas} _canvas Canvas element
+
  * @param {Eye} _eye Right or left eye
+
  * @param {String} _idSuffix String suffix to identify HTML elements related to this drawing
+
  * @param {Bool} _isEditable Flag indicating whether canvas is editable or not
+
  * @param {Array} _options Associative array of optional parameters
+
  */
+
+
 
 ED.Drawing = function(_canvas, _eye, _idSuffix, _isEditable, _options) {
 
+
+
 	// Check we're working with an actual canvas HTML element.
+
 	if (!_canvas || !(_canvas instanceof HTMLCanvasElement)) {
+
 		ED.errorHandler('ED.Drawing', 'constructor', 'Invalid canvas element');
+
 		return;
+
 	}
+
+
 
 	// Defaults for optional parameters
+
 	var offsetX = 0;
+
 	var offsetY = 0;
+
 	var toImage = false;
+
 	var globalScaleFactor = 1;
+
 	var toggleScaleFactor = 0;
 
+
+
 	this.graphicsPath = 'assets/img';
+
 	this.scaleOn = 'height';
 
+
+
 	// If optional parameters exist, use them instead
+
 	if (typeof(_options) != 'undefined') {
+
 		if (_options['offsetX']) offsetX = _options['offsetX'];
+
 		if (_options['offsetY']) offsetY = _options['offsetY'];
+
 		if (_options['toImage']) toImage = _options['toImage'];
+
 		if (_options['graphicsPath']) this.graphicsPath = _options['graphicsPath'];
+
 		if (_options['scaleOn']) this.scaleOn = _options['scaleOn'];
+
 		if (_options['scale']) globalScaleFactor = _options['scale'];
+
 		if (_options['toggleScale']) toggleScaleFactor = _options['toggleScale'];
+
 	}
+
+
 
 	// Initialise properties
+
 	this.drawingName = _options.drawingName;
+
 	this.canvas = _canvas;
+
 	this.eye = _eye;
+
 	this.idSuffix = _idSuffix;
+
 	this.isEditable = _isEditable;
+
 	this.hoverTimer = null;
+
 	this.convertToImage = (toImage && !this.isEditable) ? true : false;
+
 	this.context = this.canvas.getContext('2d');
+
 	this.doodleArray = new Array();
+
 	this.bindingArray = new Array();
+
 	this.listenerArray = new Array();
+
 	this.transform = new ED.AffineTransform();
+
 	this.inverseTransform = new ED.AffineTransform();
+
 	this.selectedDoodle = null;
+
 	this.mouseIsDown = false;
+
 	this.doubleClick = false;
+
 	this.mode = ED.Mode.None;
+
 	this.lastMousePosition = new ED.Point(0, 0);
+
 	this.doubleClickMilliSeconds = 250;
+
 	this.readyNotificationSent = false;
+
 	this.newPointOnClick = false;
+
 	this.completeLine = false;
+
 	this.globalScaleFactor = globalScaleFactor;
+
 	this.toggleScaleFactor = toggleScaleFactor;
+
 	this.origScaleLevel = globalScaleFactor;
+
 	this.scrollValue = 0;
+
 	this.lastDoodleId = 0;
+
 	this.isActive = false;
+
 	this.isNew = true;
+
 	this.isReady = false;
+
 	this.showDoodleControls = false;
+
 	this.onReadyCommands = [];
+
 	this.resetDoodleSet = false;
+
 	this.lastTouchPoint = undefined;
 
+
+
 	// Freehand drawing properties NB from November 2013 moved to Freehand doodle
+
 //	this.squiggleColour = new ED.Colour(0, 255, 0, 1);
+
 //	this.squiggleWidth = ED.squiggleWidth.Medium;
+
 //	this.squiggleStyle = ED.squiggleStyle.Outline;
 
+
+
 	// Put settings into display canvas
+
 //	this.refreshSquiggleSettings();
 
+
+
 	// Associative array of bound element no doodle values (ie value associated with deleted doodle)
+
 	this.boundElementDeleteValueArray = new Array();
 
+
+
 	// Grab the canvas parent element
+
 	this.canvasParent = this.canvas.parentElement;
 
+
+
 	// Array of objects requesting notifications
+
 	this.notificationArray = new Array();
 
+
+
 	// Optional tooltip (this property will be null if a span element with this id not found
+
 	this.canvasTooltip = document.getElementById(this.canvas.id + 'Tooltip');
 
+
+
 	// Make sure doodle plane fits within canvas (Height priority)
+
 	if (this.scaleOn == 'height') {
+
 		this.scale = this.canvas.height / 1001;
+
 	} else {
+
 		this.scale = this.canvas.width / 1001;
+
 	}
 
+
+
 	// Calculate dimensions of doodle plane
+
 	this.doodlePlaneWidth = this.canvas.width / this.scale;
+
 	this.doodlePlaneHeight = this.canvas.height / this.scale;
 
+
+
 	// Array of images to be preloaded
+
 	this.imageArray = new Array();
+
 	this.imageArray['LatticePattern'] = new Image();
+
 	this.imageArray['CribriformPattern'] = new Image();
+
 	this.imageArray['CribriformPatternSmall'] = new Image();
+
 	this.imageArray['CryoPattern'] = new Image();
+
 	this.imageArray['AntPVRPattern'] = new Image();
+
 	this.imageArray['LaserPattern'] = new Image();
+
 	this.imageArray['FuchsPattern'] = new Image();
+
 	this.imageArray['PSCPattern'] = new Image();
+
 	this.imageArray['MeshworkPatternLight'] = new Image();
+
 	this.imageArray['MeshworkPatternMedium'] = new Image();
+
 	this.imageArray['MeshworkPatternHeavy'] = new Image();
+
 	this.imageArray['NewVesselPattern'] = new Image();
+
 	this.imageArray['OedemaPattern'] = new Image();
+
 	this.imageArray['OedemaPatternBullous'] = new Image();
+
 	this.imageArray['BrownSpotPattern'] = new Image();
+
 	this.imageArray['TranslucentPattern'] = new Image();
 
+
+
 	// Set transform to map from doodle to canvas plane
+
 	this.transform.translate(this.canvas.width / 2, this.canvas.height / 2);
+
 	this.transform.scale(this.scale, this.scale);
 
+
+
 	// Set inverse transform to map the other way
+
 	this.inverseTransform = this.transform.createInverse();
 
+
+
 	// Initialise canvas context transform by calling clear() method
+
 	this.clear();
 
+
+
 	// Selection rectangle
+
 	this.selectionRectangleIsBeingDragged = false;
+
 	this.selectionRectangleStart = new ED.Point(0, 0);
+
 	this.selectionRectangleEnd = new ED.Point(0, 0);
 
+
+
 	// Add event listeners (NB within the event listener 'this' refers to the canvas, NOT the drawing instance)
+
 	if (this.isEditable) {
+
 		var drawing = this;
 
+
+
 		// Mouse listeners
+
 		this.canvas.addEventListener('mousedown', function(e) {
+
 			var position = ED.findPosition(this, e);
+
 			var point = new ED.Point(position.x, position.y);
+
 			drawing.mousedown(point);
+
 		}, false);
+
+
 
 		this.canvas.addEventListener('mouseup', function(e) {
+
 			var position = ED.findPosition(this, e);
+
 			var point = new ED.Point(position.x, position.y);
+
 			drawing.mouseup(point);
+
 		}, false);
+
+
 
 		this.canvas.addEventListener('mousemove', function(e) {
+
 			var position = ED.findPosition(this, e);
+
 			var point = new ED.Point(position.x, position.y);
+
 			drawing.mousemove(point);
+
 		}, false);
+
+
 
 		this.canvas.addEventListener('mouseover', function(e) {
+
 			var position = ED.findPosition(this, e);
+
 			var point = new ED.Point(position.x, position.y);
+
 			drawing.mouseover(point);
+
 		}, false);
 
+
+
 		this.canvas.addEventListener('mouseout', function(e) {
+
 			var position = ED.findPosition(this, e);
+
 			var point = new ED.Point(position.x, position.y);
+
 			drawing.mouseout(point);
+
 		}, false);
+
+
 
 		document.body.addEventListener('mousedown', function onBodyMouseDown(e) {
 
+
+
 			// Deselect all doodles if the user clicks anywhere on the page that is
+
 			// not the canvas itself, nor the doodle popup, nor any toolbar buttons.
 
+
+
 			var elem = e.target;
+
 			var isEyeDrawElement = false;
 
+
+
 			var ignore = '(' + [
+
 				'ed-doodle-popup',
+
 				'ed-button',
+
 				'ed-canvas',
+
 				'ed_canvas',
+
 				'ed-selected-doodle-select',
+
 			].join(')|(') + ')';
 
+
+
 			do {
+
 				isEyeDrawElement = new RegExp(ignore).test(elem.className);
+
 			} while (
+
 				(elem = elem.parentNode) && (elem !== document.body) && (!isEyeDrawElement)
+
 			);
 
+
+
 			if (!isEyeDrawElement) {
+
 				drawing.deselectDoodles();
+
 			}
+
 		}, false);
+
+
 
 		//				this.canvas.addEventListener('mousewheel', function(e) {
+
 		//																		 e.preventDefault();
+
 		//																		 drawing.selectNextDoodle(e.wheelDelta);
+
 		//																		 }, false);
 
+
+
 		// iOS listeners
+
 		this.canvas.addEventListener('touchstart', function(e) {
+
 			if (e.targetTouches[0] !== undefined) {
+
 				var canvas_pos = drawing.getPositionOfElement(drawing.canvas);
+
 				var point = new ED.Point(e.targetTouches[0].pageX - canvas_pos[0] - this.offsetLeft, e.targetTouches[0].pageY - canvas_pos[1]);
+
 				e.preventDefault();
+
 			} else {
+
 				ED.errorHandler('ED.Drawing', 'Class', 'Touches undefined: ');
+
 			}
+
 			this.lastTouchPoint = point;
+
 			drawing.mousedown(point);
+
 		}, false);
+
+
 
 		this.canvas.addEventListener('touchend', function(e) {
+
             if (this.lastTouchPoint !== undefined) {
+
 				drawing.mouseup(this.lastTouchPoint);
+
 				this.lastTouchPoint = undefined;
+
 			}
+
 		}, false);
+
+
 
 		this.canvas.addEventListener('touchmove', function(e) {
+
 			if (e.targetTouches[0] !== undefined) {
+
 				var canvas_pos = drawing.getPositionOfElement(drawing.canvas);
+
 				var point = new ED.Point(e.targetTouches[0].pageX - canvas_pos[0] - this.offsetLeft, e.targetTouches[0].pageY - canvas_pos[1]);
+
                 this.lastTouchPoint = point;
+
 				drawing.mousemove(point);
+
 			}
+
 		}, false);
 
+
+
 		// Keyboard listener
+
 		window.addEventListener('keydown', function(e) {
+
 			if (document.activeElement === _canvas) drawing.keydown(e);
+
 		}, true);
 
+
+
 		// Stop browser stealing double click to select text
+
 		this.canvas.onselectstart = function() {
+
 			return false;
+
 		}
+
 	}
+
 };
+
+
 
 ED.Drawing.prototype.getPositionOfElement = function(element) {
+
 		var x=0;
+
 		var y=0;
+
 		while(true){
+
 				x += element.offsetLeft;
+
 				y += element.offsetTop;
+
 				if(element.offsetParent === null){
+
 						break;
+
 				}
+
 				element = element.offsetParent;
+
 		}
+
 		return [x, y];
+
 };
 
+
+
 /**
+
  * Carries out initialisation of drawing (called after a controller has been instantiated to ensure notification)
+
  */
+
 ED.Drawing.prototype.init = function() {
+
 	// Start loading of texture images (will send ready notification when ready)
+
 	/* FIXME */
+
 	this.preLoadImagesFrom(this.graphicsPath + '/' + 'patterns/');
+
 };
 
+
+
 /**
+
  * Replaces the canvas element inline with a PNG image, useful for printing
+
  */
+
 ED.Drawing.prototype.replaceWithImage = function() {
+
 	// Create a new image element
+
 	var img = document.createElement("img");
 
+
+
 	// Base64 encoded PNG version of the canvas element
+
 	img.setAttribute('src', this.canvas.toDataURL('image/png'));
 
+
+
 	// Removes canvas and hidden input element (+ any other children) as they will be replaced with an image
+
 	if (this.canvasParent.hasChildNodes()) {
+
 		while (this.canvasParent.childNodes.length >= 1) {
+
 			this.canvasParent.removeChild(this.canvasParent.firstChild);
+
 		}
+
 	}
+
+
 
 	this.canvasParent.appendChild(img);
+
 };
 
+
+
 /**
+
  * Preloads image files
+
  *
+
  * @param {String} Relative path to directory where images are stored
+
  */
+
 ED.Drawing.prototype.preLoadImagesFrom = function(_path) {
+
 	var drawing = this;
+
 	var ready = false;
 
+
+
 	// Iterate through array loading each image, calling checking function from onload event
+
 	for (var key in this.imageArray) {
+
 		// This line picked up by javadoc toolkit - @ignore does not work
+
 		this.imageArray[key].onload = function() {
+
 			drawing.checkAllLoaded();
+
 		};
 
+
+
 		// Error handling
+
 		this.imageArray[key].onerror = (function(key){
+
 			return function() {
+
 				ED.errorHandler('ED.Drawing', 'preLoadImagesFrom', 'Error loading image file "' + key + '.gif" from directory: "' + _path + '"');
+
 			}
+
 		}(key));
 
+
+
 		// Attempt to load image file
+
 		this.imageArray[key].src = _path + key + '.gif';
+
 	}
+
 };
 
+
+
 /**
+
  * Checks all images are loaded then sends a notification
+
  */
+
 ED.Drawing.prototype.checkAllLoaded = function() {
+
 	// Set flag to check loading
+
 	var allLoaded = true;
 
+
+
 	// Iterate through array loading each image, checking all are loaded
+
 	for (var key in this.imageArray) {
+
 		var imageLoaded = false;
+
 		if (this.imageArray[key].width > 0) imageLoaded = true;
 
+
+
 		// Check all are loaded
+
 		allLoaded = allLoaded && imageLoaded;
+
 	}
+
+
 
 	// If all are loaded, send notification
+
 	if (allLoaded) {
+
 		if (!this.readyNotificationSent) {
+
 			//this.onready();
+
 			this.readyNotificationSent = true;
 
+
+
 			// Notify
+
 			this.notify("ready");
+
 		}
+
 	}
+
 };
 
+
+
 /**
+
  * Registers an object to receive notifications
+
  *
+
  * @param {Object} _object The object requesting notification
+
  * @param {String} _methodName The method in the receiving object which is called for a notification. Defaults to 'notificationHandler'
+
  * @param {Array} _notificationList Array of strings listing the notifications the object is interested in. If empty, receives all.
+
  */
+
 ED.Drawing.prototype.registerForNotifications = function(_object, _methodName, _notificationList) {
 
+
+
 	// Put in default values for optional parameters
+
 	if (typeof(_methodName) == 'undefined') {
+
 		_methodName = 'notificationHandler';
+
 	}
+
 	if (typeof(_notificationList) == 'undefined') {
+
 		_notificationList = new Array();
+
 	}
+
+
 
 	// Add object and details to notification array
+
 	this.notificationArray.push({
+
 		object: _object,
+
 		methodName: _methodName,
+
 		notificationList: _notificationList
+
 	});
+
 };
 
+
+
 /**
+
  * Unregisters an object for notifications	***TODO*** Need method of identifying objects for this to work
+
  *
+
  * @param {object} _object The object requesting notification
+
  */
+
 ED.Drawing.prototype.unRegisterForNotifications = function(_object) {
+
 	// Get index of object in array
+
 	var index = this.notificationArray.indexOf(_object);
 
+
+
 	// If its there, remove it
+
 	if (index >= 0) {
+
 		this.notificationArray.splice(index, 1);
+
 	}
+
 };
 
+
+
 /**
+
  * Send notifications to all registered objects
+
  *
+
  * @param {String} _eventName Name of event
+
  * @param {Object} _object An optional object which may accompany an event containing additional information
+
  */
+
 ED.Drawing.prototype.notify = function(_eventName, _object) {
+
 	// Create array containing useful information
+
 	var messageArray = {
+
 		eventName: _eventName,
+
 		selectedDoodle: this.selectedDoodle,
+
 		object: _object
+
 	};
 
+
+
 	// Call method on each registered object
+
 	for (var i = 0; i < this.notificationArray.length; i++) {
 
+
+
 		// Assign to variables to make code easier to read
+
 		var list = this.notificationArray[i]['notificationList'];
+
 		var object = this.notificationArray[i]['object'];
+
 		var methodName = this.notificationArray[i]['methodName'];
 
+
+
 		// Check that event is in notification list for this object, or array is empty implying all notifications
+
 		if (list.length == 0 || list.indexOf(_eventName) >= 0) {
+
 			// Check method exists
+
 			if (typeof(object[methodName]) != 'undefined') {
+
 				// Call registered object using specified method, and passing message array
+
 				object[methodName].apply(object, [messageArray]);
+
 			} else {
+
 				ED.errorHandler('ED.Drawing', 'notify', 'Attempt to call undefined notification handler method');
+
 			}
+
 		}
+
 	}
+
 };
 
+
+
 /**
+
  * Loads doodles from an HTML element
+
  *
+
  * @param {string} _id Id of HTML input element containing JSON data
+
  */
+
 ED.Drawing.prototype.loadDoodles = function(_id) {
+
 	// Get element containing JSON string
+
 	var sourceElement = document.getElementById(_id);
 
+
+
 	// If it exists and contains something, load it
+
 	if (sourceElement && sourceElement.value.length > 0) {
+
 		var doodleSet = window.JSON.parse(sourceElement.value);
+
 		this.resetDoodleSet = doodleSet;
+
 		this.load(doodleSet);
 
+
+
 		// Set isNew flag
+
 		this.isNew = false;
 
+
+
 		// Notify
+
 		this.notify("doodlesLoaded");
+
 	}
+
 };
 
+
+
 /**
+
  * Loads doodles from passed set in JSON format into doodleArray
+
  *
+
  * @param {Set} _doodleSet Set of doodles from server
+
  */
+
 ED.Drawing.prototype.load = function(_doodleSet) {
+
 	// Iterate through set of doodles and load into doodle array
+
 	for (var i = 0; i < _doodleSet.length; i++) {
+
 		// Check that class definition exists, otherwise skip it
+
 		if (ED[_doodleSet[i].subclass] === undefined) {
+
 			ED.errorHandler('ED.Drawing', 'load', 'Unrecognised doodle: ' + _doodleSet[i].subclass);
+
 			break;
+
 		}
+
+
 
 		// Instantiate a new doodle object with parameters from doodle set
+
 		this.doodleArray[i] = new ED[_doodleSet[i].subclass](this, _doodleSet[i]);
+
 		this.doodleArray[i].id = i;
+
 	}
+
+
 
 	// Sort array by order (puts back doodle first)
+
 	this.doodleArray.sort(function(a, b) {
+
 		return a.order - b.order
+
 	});
+
 };
 
+
+
 /**
+
  * Creates string containing drawing data in JSON format with surrounding square brackets
+
  *
+
  * @returns {String} Serialized data in JSON format with surrounding square brackets
+
  */
+
 ED.Drawing.prototype.save = function() {
+
 	// Store current data in textArea
+
 	return '[' + this.json() + ']';
+
 };
 
+
+
 /**
+
  * Creates string containing drawing data in JSON format
+
  *
+
  * @returns {String} Serialized data in JSON format
+
  */
+
 ED.Drawing.prototype.json = function() {
+
 	var s = "";
 
+
+
 	// Go through each member of doodle array, encoding it
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		var doodle = this.doodleArray[i];
+
 		if (doodle.isSaveable) {
+
 			s = s + doodle.json() + ",";
+
 		}
+
 	}
+
+
 
 	// Remove last comma
+
 	s = s.substring(0, s.length - 1);
 
+
+
 	return s;
+
 };
 
+
+
 /**
+
  * Draws all doodles for this drawing
+
  */
+
 ED.Drawing.prototype.drawAllDoodles = function() {
+
 	// Draw any connecting lines
+
 	var ctx = this.context;
+
 	ctx.beginPath();
+
 	var started = false;
+
 	var startPoint;
 
+
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		if (this.doodleArray[i].isPointInLine) {
+
 			// Start or draw line
+
 			if (!started) {
+
 				ctx.moveTo(this.doodleArray[i].originX, this.doodleArray[i].originY);
+
 				started = true;
+
 				startPoint = new ED.Point(this.doodleArray[i].originX, this.doodleArray[i].originY);
+
 			} else {
+
 				ctx.lineTo(this.doodleArray[i].originX, this.doodleArray[i].originY);
+
 			}
+
 		}
+
 	}
+
+
 
 	// Optionally add line to start
+
 	if (this.completeLine && typeof(startPoint) != 'undefined') {
+
 		ctx.lineTo(startPoint.x, startPoint.y);
+
 	}
+
+
 
 	// Draw lines
+
 	if (started) {
+
 		ctx.lineWidth = 4;
+
 		ctx.strokeStyle = "rgba(20,20,20,1)";
+
 		ctx.stroke();
+
 	}
+
+
 
 	// Draw doodles
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		// Save context (draw method of each doodle may alter it)
+
 		this.context.save();
 
+
+
 		// Draw doodle
+
 		this.doodleArray[i].draw();
 
+
+
 		// Restore context
+
 		this.context.restore();
+
 	}
+
 };
 
+
+
 /**
+
  * Responds to mouse down event in canvas, cycles through doodles from front to back.
+
  * Selected doodle is first selectable doodle to have click within boundary path.
+
  * Double clicking on a selected doodle promotes it to drawing mode (if is drawable)
+
  *
+
  * @event Drawing#mousedown
+
  * @param {Point} _point Coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.mousedown = function(_point) {
+
 	// Set flag to indicate dragging can now take place
+
 	this.mouseIsDown = true;
+
 	
+
 	var doodle = this.selectedDoodle;
 
+
+
 	// Detect double click
+
 	if (ED.recentClick) {
+
 		this.doubleClick = true;
+
 	}
+
 	ED.recentClick = true;
+
 	var t = setTimeout("ED.recentClick = false;", this.doubleClickMilliSeconds);
 
+
+
 	// Set flags
+
 	var found = false;
+
 	this.lastSelectedDoodle = this.selectedDoodle;
+
 	this.selectedDoodle = null;
+
 	// Cycle through doodles from front to back doing hit test
+
 	for (var i = this.doodleArray.length - 1; i > -1; i--) {
+
 		if (!found) {
+
 			// Save context (draw method of each doodle may alter it)
+
 			this.context.save();
 
+
+
 			// Successful hit test?
+
 			if (this.doodleArray[i].draw(_point)) {
+
 				if (this.doodleArray[i].isSelectable) {
+
 					// If double clicked, go into drawing mode
+
 					if (this.doubleClick && this.doodleArray[i].isSelected && this.doodleArray[i].isDrawable) {
+
 						this.doodleArray[i].isForDrawing = true;
+
 					}
+
+
 
 					found = true;
+
 					this.selectDoodle(this.doodleArray[i]);
 
+
+
 					// If for drawing, mouse down starts a new squiggle
+
 					if (!this.doubleClick && this.doodleArray[i].isForDrawing) {
+
 						// Add new squiggle
+
 						this.doodleArray[i].addSquiggle();
+
 					}
+
 					
+
 				}
+
 			}
+
 			// Ensure that unselected doodles are marked as such
+
 			else {
+
 				this.doodleArray[i].isSelected = false;
+
 				this.doodleArray[i].isForDrawing = false;
+
 			}
+
+
 
 			// Restore context
+
 			this.context.restore();
+
 		} else {
+
 			this.doodleArray[i].isSelected = false;
+
 			this.doodleArray[i].isForDrawing = false;
+
 		}
+
+
 
 		// Ensure drag flagged is off for each doodle
+
 		this.doodleArray[i].isBeingDragged = false;
+
 	}
+
+
 
 	// If no doodles selected, run onDeselection code for last doodle
+
 	if (!this.selectedDoodle) {
+
 		if (this.lastSelectedDoodle) this.lastSelectedDoodle.onDeselection();
+
 	}
+
+
 
 	// Notify if doodle is deselected ***TODO*** move to onDeselection code for doodle to make this trigger for all deselections
+
 	if (this.lastSelectedDoodle) {
+
 		if (this.lastSelectedDoodle != this.selectedDoodle) {
+
 			// Notify
+
 			this.notify("doodleDeselected");
+
 		}
+
 	}
+
+
 
 	// Drawing
+
 	if (this.newPointOnClick && !found) {
+
 		var mousePosDoodlePlane = this.inverseTransform.transformPoint(_point);
 
+
+
 		var newPointInLine = this.addDoodle('PointInLine');
+
 		newPointInLine.originX = mousePosDoodlePlane.x;
+
 		newPointInLine.originY = mousePosDoodlePlane.y;
+
 	}
 
+
+
 	// Multiple Selecting
+
 	/*
+
 		if (!found)
+
 		{
+
 				this.mode = ED.Mode.Select;
+
 				this.selectionRectangleStart = this.inverseTransform.transformPoint(_point);
+
 		}
+
 		 */
 
+
+
 	// Repaint
+
 	this.repaint();
 
+
+
 	// Notify
+
 	this.notify("mousedown", {
+
 		drawing: this,
+
 		point: _point
+
 	});
+
 };
 
 
+
+
+
 /**
+
  * Responds to mouse down event in canvas, cycles through doodles from front to back.
+
  * Selected doodle is first selectable doodle to have click within boundary path.
+
  * Double clicking on a selected doodle promotes it to drawing mode (if is drawable)
+
  *
+
  * @event
+
  * @param {Point} _point Coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.click = function(_point) {
+
 	// Notify
+
 	this.notify("click", {
+
 		drawing: this,
+
 		point: _point
+
 	});
+
 }
 
 
+
+
+
 /**
+
  * Responds to mouse move event in canvas according to the drawing mode
+
  *
+
  * @event Drawing#mousemove
+
  * @param {Point} _point coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.mousemove = function(_point) {
+
 	// Notify
+
 	this.notify("mousemove", {
+
 		drawing: this,
+
 		point: _point
+
 	});
 
+
+
 	// Get selected doodle
+
 	var doodle = this.selectedDoodle;
 
+
+
 	if (doodle && this.selectedDoodle.isLocked) {
+
 		return;
+
 	}
 
+
+
 	// Draw selection rectangle
+
 	/*
+
 		if (this.mode == ED.Mode.Select)
+
 		{
+
 				if (!this.selectionRectangleIsBeingDragged)
+
 				{
+
 						this.selectionRectangleIsBeingDragged = true;
+
 				}
 
+
+
 				this.selectionRectangleEnd = this.inverseTransform.transformPoint(_point);
+
 				this.repaint();
+
 		}
+
 		*/
 
+
+
 	// Store action for notification
+
 	var action = "";
 
+
+
 	// Start the hover timer (also resets it)
+
 	this.startHoverTimer(_point);
+
 	// Only drag if mouse already down and a doodle selected
+
 	if (this.mouseIsDown && doodle != null) {
 
+
+
 		// Dragging not started
+
 		if (!doodle.isBeingDragged) {
+
 			// Flag start of dragging manoeuvre
+
 			doodle.isBeingDragged = true;
+
 		}
+
 		// Dragging in progress
+
 		else {
+
 			// Get mouse position in doodle plane
+
 			var mousePosDoodlePlane = this.inverseTransform.transformPoint(_point);
+
 			var lastMousePosDoodlePlane = this.inverseTransform.transformPoint(this.lastMousePosition);
 
+
+
 			// Get mouse positions in selected doodle's plane
+
 			var mousePosSelectedDoodlePlane = doodle.inverseTransform.transformPoint(_point);
+
 			var lastMousePosSelectedDoodlePlane = doodle.inverseTransform.transformPoint(this.lastMousePosition);
 
+
+
 			// Get mouse positions in canvas plane relative to centre
+
 			var mousePosRelCanvasCentre = new ED.Point(_point.x - this.canvas.width / 2, _point.y - this.canvas.height / 2);
+
 			var lastMousePosRelCanvasCentre = new ED.Point(this.lastMousePosition.x - this.canvas.width / 2, this.lastMousePosition.y - this.canvas.height / 2);
 
+
+
 			// Get position of centre of display (canvas plane relative to centre) and of an arbitrary point vertically above
+
 			var canvasCentre = new ED.Point(0, 0);
+
 			var canvasTop = new ED.Point(0, -100);
 
+
+
 			// Get coordinates of origin of doodle in doodle plane
+
 			var doodleOrigin = new ED.Point(doodle.originX, doodle.originY);
 
+
+
 			// Get position of point vertically above doodle origin in doodle plane
+
 			var doodleTop = new ED.Point(doodle.originX, doodle.originY - 100);
 
+
+
 			// Effect of dragging depends on mode
+
 			switch (this.mode) {
+
 				case ED.Mode.None:
+
 					break;
+
+
 
 				case ED.Mode.Move:
+
 					// If isMoveable is true, move doodle
+
 					if (doodle.isMoveable) {
+
 						// Initialise new values to stop doodle getting 'trapped' at origin due to failure of non-zero test in snapToQuadrant
+
 						var newOriginX = doodle.originX;
+
 						var newOriginY = doodle.originY;
 
+
+
 						// Enforce snap to grid
+
 						if (doodle.snapToGrid) {
+
 							// Calculate mouse position and work out nearest position of a grid line
+
 							var testX = mousePosDoodlePlane.x - doodle.gridDisplacementX;
+
 							var gridSquaresX = Math.floor(testX / doodle.gridSpacing);
+
 							var gridRemainderX = ED.Mod(testX, doodle.gridSpacing);
+
 							newOriginX = doodle.gridDisplacementX + doodle.gridSpacing * (gridSquaresX + Math.round(gridRemainderX / doodle.gridSpacing));
 
+
+
 							// Repeat for Y axis
+
 							var testY = mousePosDoodlePlane.y - doodle.gridDisplacementY;
+
 							var gridSquaresY = Math.floor(testY / doodle.gridSpacing);
+
 							var gridRemainderY = ED.Mod(testY, doodle.gridSpacing);
+
 							newOriginY = doodle.gridDisplacementY + doodle.gridSpacing * (gridSquaresY + Math.round(gridRemainderY / doodle.gridSpacing));
 
-							// Doodle's move method notifies and also sets orientation
-							doodle.move(newOriginX - doodle.originX, newOriginY - doodle.originY);
-						}
-						// Enforce snap to quadrant
-						else if (doodle.snapToQuadrant) {
-							if (mousePosDoodlePlane.x != 0) {
-								newOriginX = doodle.quadrantPoint.x * mousePosDoodlePlane.x / Math.abs(mousePosDoodlePlane.x);
-							}
-							if (mousePosDoodlePlane.y != 0) {
-								newOriginY = doodle.quadrantPoint.y * mousePosDoodlePlane.y / Math.abs(mousePosDoodlePlane.y);
-							}
+
 
 							// Doodle's move method notifies and also sets orientation
+
 							doodle.move(newOriginX - doodle.originX, newOriginY - doodle.originY);
+
 						}
+
+						// Enforce snap to quadrant
+
+						else if (doodle.snapToQuadrant) {
+
+							if (mousePosDoodlePlane.x != 0) {
+
+								newOriginX = doodle.quadrantPoint.x * mousePosDoodlePlane.x / Math.abs(mousePosDoodlePlane.x);
+
+							}
+
+							if (mousePosDoodlePlane.y != 0) {
+
+								newOriginY = doodle.quadrantPoint.y * mousePosDoodlePlane.y / Math.abs(mousePosDoodlePlane.y);
+
+							}
+
+
+
+							// Doodle's move method notifies and also sets orientation
+
+							doodle.move(newOriginX - doodle.originX, newOriginY - doodle.originY);
+
+						}
+
 						// Enforce snap to points
+
 						else if (doodle.snapToPoints) {
+
 							newOriginX = doodle.nearestPointTo(mousePosDoodlePlane).x;
+
 							newOriginY = doodle.nearestPointTo(mousePosDoodlePlane).y;
 
+
+
 							// Doodle's move method notifies and also sets orientation
+
 							doodle.move(newOriginX - doodle.originX, newOriginY - doodle.originY);
+
 						}
+
 						// Normal move
+
 						else {
+
 							doodle.move(mousePosDoodlePlane.x - lastMousePosDoodlePlane.x, mousePosDoodlePlane.y - lastMousePosDoodlePlane.y);
+
 						}
+
+
 
 						action = 'move';
+
 					}
+
 					// Otherwise rotate it (if isRotatable)
+
 					else {
+
 						if (doodle.isRotatable) {
+
 							// Calculate angles from centre to mouse positions relative to north
+
 							var oldAngle = this.innerAngle(canvasTop, canvasCentre, lastMousePosRelCanvasCentre);
+
 							var newAngle = this.innerAngle(canvasTop, canvasCentre, mousePosRelCanvasCentre);
 
+
+
 							// Work out difference, and change doodle's angle of rotation by this amount
+
 							var angleDelta = newAngle - oldAngle;
 
+
+
 							// Calculate new value of rotation
+
 							if (doodle.snapToAngles) {
+
 								var newRotation = doodle.nearestAngleTo(newAngle);
+
 							} else {
+
 								var newRotation = ED.Mod(doodle.rotation + angleDelta, 2 * Math.PI);
+
 							}
 
+
+
 							// Restrict to allowable range
+
 							doodle.setSimpleParameter('rotation', doodle.parameterValidationArray['rotation']['range'].constrainToAngularRange(newRotation, false));
 
+
+
 							// Update dependencies
+
 							doodle.updateDependentParameters('rotation');
 
+
+
 							// Adjust radius property
+
 							var oldRadius = Math.sqrt(lastMousePosDoodlePlane.x * lastMousePosDoodlePlane.x + lastMousePosDoodlePlane.y * lastMousePosDoodlePlane.y);
+
 							var newRadius = Math.sqrt(mousePosDoodlePlane.x * mousePosDoodlePlane.x + mousePosDoodlePlane.y * mousePosDoodlePlane.y);
+
 							var radiusDelta = doodle.radius + (newRadius - oldRadius);
 
+
+
 							// Keep within bounds
+
 							doodle.setSimpleParameter('radius', doodle.parameterValidationArray['radius']['range'].constrain(radiusDelta));
 
+
+
 							// Update dependencies
+
 							doodle.updateDependentParameters('radius');
+
 						}
+
 					}
+
 					break;
+
 				case ED.Mode.Scale:
+
 					if (doodle.isScaleable) {
+
 						// Get sign of scale (negative scales create horizontal and vertical flips)
+
 						var signX = doodle.scaleX / Math.abs(doodle.scaleX);
+
 						var signY = doodle.scaleY / Math.abs(doodle.scaleY);
 
+
+
 						// Calculate change in scale (sign change indicates mouse has moved across central axis)
+
 						var changeX = mousePosSelectedDoodlePlane.x / lastMousePosSelectedDoodlePlane.x;
+
 						var changeY = mousePosSelectedDoodlePlane.y / lastMousePosSelectedDoodlePlane.y;
 
+
+
 						// Ensure scale change is same if not squeezable
+
 						if (!doodle.isSqueezable) {
+
 							if (changeX > changeY) changeY = changeX;
+
 							else changeY = changeX;
+
 						}
+
+
 
 						// Check that mouse has not moved from one quadrant to another
+
 						if (changeX > 0 && changeY > 0) {
+
 							// Now do scaling
+
 							newScaleX = doodle.scaleX * changeX;
+
 							newScaleY = doodle.scaleY * changeY;
 
+
+
 							// Constrain scale
+
 							newScaleX = doodle.parameterValidationArray['scaleX']['range'].constrain(Math.abs(newScaleX), this.globalScaleFactor);
+
 							newScaleY = doodle.parameterValidationArray['scaleY']['range'].constrain(Math.abs(newScaleY), this.globalScaleFactor);
 
+
+
 							doodle.setSimpleParameter('scaleX', newScaleX * signX);
+
 							doodle.setSimpleParameter('scaleY', newScaleY * signY);
 
+
+
 							// Update dependencies
+
 							doodle.updateDependentParameters('scaleX');
+
 							doodle.updateDependentParameters('scaleY');
+
 						} else {
+
 							this.mode = ED.Mode.None;
+
 						}
+
 					}
+
 					break;
+
+
 
 				case ED.Mode.Arc:
 
+
+
 					// Calculate angles from centre to mouse positions relative to north
+
 					var newAngle = this.innerAngle(doodleTop, doodleOrigin, mousePosSelectedDoodlePlane);
+
 					var oldAngle = this.innerAngle(doodleTop, doodleOrigin, lastMousePosSelectedDoodlePlane);
 
+
+
 					// Work out difference, and sign of rotation correction
+
 					var deltaAngle = newAngle - oldAngle;
+
 					if (doodle.isArcSymmetrical) deltaAngle = 2 * deltaAngle;
+
 					rotationCorrection = 1;
 
+
+
 					// Arc left or right depending on which handle is dragging
+
 					if (doodle.draggingHandleIndex < 2) {
+
 						deltaAngle = -deltaAngle;
+
 						rotationCorrection = -1;
+
 					}
+
+
 
 					// Handle snapping
+
 					if (doodle.snapToArc) {
+
 						// Correct for negative handle
+
 						if (rotationCorrection < 0) {
+
 							newAngle = 2 * Math.PI - ED.positiveAngle(newAngle);
+
 						}
+
 						doodle.setSimpleParameter('arc', doodle.nearestArcTo(doodle.arc / 2 + newAngle));
+
 					} else {
+
 						// Check for permitted range and stop dragging if exceeded
+
 						if (doodle.parameterValidationArray['arc']['range'].isBelow(doodle.arc + deltaAngle)) {
+
 							deltaAngle = doodle.parameterValidationArray['arc']['range'].min - doodle.arc;
+
 							doodle.setSimpleParameter('arc', doodle.parameterValidationArray['arc']['range'].min);
+
 							this.mode = ED.Mode.None;
+
 						} else if (doodle.parameterValidationArray['arc']['range'].isAbove(doodle.arc + deltaAngle)) {
 
+
+
 							deltaAngle = doodle.parameterValidationArray['arc']['range'].max - doodle.arc;
+
 							//doodle.arc = doodle.parameterValidationArray['arc']['range'].max;
+
 							doodle.setSimpleParameter('arc', doodle.parameterValidationArray['arc']['range'].max);
+
 							this.mode = ED.Mode.None;
+
 						} else {
+
 							doodle.setSimpleParameter('arc', doodle.arc + deltaAngle);
+
 						}
+
 					}
+
+
 
 					// Update dependencies
+
 					doodle.updateDependentParameters('arc');
 
+
+
 					// Correct rotation with counter-rotation
+
 					if (!doodle.isArcSymmetrical) {
+
 						rotationCorrection = rotationCorrection * deltaAngle / 2;
+
 						doodle.setSimpleParameter('rotation', doodle.rotation + rotationCorrection);
 
+
+
 						// Update dependencies
+
 						doodle.updateDependentParameters('rotation');
+
 					}
+
 					break;
+
+
 
 				case ED.Mode.Rotate:
 
+
+
 					if (doodle.isRotatable) {
+
 						// Calculate angles from centre to mouse positions relative to north
+
 						var oldAngle = this.innerAngle(doodleTop, doodleOrigin, lastMousePosDoodlePlane);
+
 						var newAngle = this.innerAngle(doodleTop, doodleOrigin, mousePosDoodlePlane);
 
+
+
 						// Work out difference, and change doodle's angle of rotation by this amount
+
 						var deltaAngle = newAngle - oldAngle;
+
 						//deltaAngle = ED.positiveAngle(deltaAngle);
+
 						var newRotation = doodle.rotation + deltaAngle;
+
 						newRotation = ED.positiveAngle(newRotation);
 
+
+
 						// Restrict to allowable range
+
 						doodle.setSimpleParameter('rotation', doodle.parameterValidationArray['rotation']['range'].constrainToAngularRange(newRotation, false));
 
+
+
 						// Update dependencies
+
 						doodle.updateDependentParameters('rotation');
+
 					}
+
 					break;
+
+
 
 				case ED.Mode.Apex:
+
 					// Move apex to new position
+
 					var newApexX = doodle.apexX + (mousePosSelectedDoodlePlane.x - lastMousePosSelectedDoodlePlane.x);
+
 					var newApexY = doodle.apexY + (mousePosSelectedDoodlePlane.y - lastMousePosSelectedDoodlePlane.y);
 
+
+
 					// Enforce bounds
+
 					doodle.setSimpleParameter('apexX', doodle.parameterValidationArray['apexX']['range'].constrain(newApexX));
+
 					doodle.setSimpleParameter('apexY', doodle.parameterValidationArray['apexY']['range'].constrain(newApexY));
 
+
+
 					// Update dependencies
+
 					doodle.updateDependentParameters('apexX');
+
 					doodle.updateDependentParameters('apexY');
+
 					break;
+
+
 
 				case ED.Mode.Size:
+
 					// Alter width and height accordingly
+
 					var newWidth = doodle.width + 2 * (mousePosSelectedDoodlePlane.x - lastMousePosSelectedDoodlePlane.x);
+
 					var newHeight = doodle.height - 2 * (mousePosSelectedDoodlePlane.y - lastMousePosSelectedDoodlePlane.y);
 
+
+
 					// Enforce bounds
+
 					doodle.setSimpleParameter('width', doodle.parameterValidationArray['width']['range'].constrain(newWidth));
+
 					doodle.setSimpleParameter('height', doodle.parameterValidationArray['height']['range'].constrain(newHeight));
 
+
+
 					// Update dependencies
+
 					doodle.updateDependentParameters('width');
+
 					doodle.updateDependentParameters('height');
+
 					break;
+
+
 
 				case ED.Mode.Handles:
 
+
+
 					// Move handles to new position (Stored in a squiggle)
+
 					var index = doodle.draggingHandleIndex;
 
+
+
 					// Get new position into a point object
+
 					var newPosition = new ED.Point(0, 0);
+
 					newPosition.x = doodle.squiggleArray[0].pointsArray[index].x + (mousePosSelectedDoodlePlane.x - lastMousePosSelectedDoodlePlane.x);
+
 					newPosition.y = doodle.squiggleArray[0].pointsArray[index].y + (mousePosSelectedDoodlePlane.y - lastMousePosSelectedDoodlePlane.y);
 
+
+
 					// Constraining coordinates handle with optional range array (set in a subclass)
+
 					if (typeof(doodle.handleCoordinateRangeArray) != 'undefined') {
+
 						newPosition.x = doodle.handleCoordinateRangeArray[index]['x'].constrain(newPosition.x);
+
 						newPosition.y = doodle.handleCoordinateRangeArray[index]['y'].constrain(newPosition.y);
+
 					}
+
+
 
 					// Constraining radius and angle of handle with optional range array (set in a subclass)
+
 					if (typeof(doodle.handleVectorRangeArray) != 'undefined') {
+
 						var length = doodle.handleVectorRangeArray[index]['length'].constrain(newPosition.length());
+
 						var angle = doodle.handleVectorRangeArray[index]['angle'].constrainToAngularRange(newPosition.direction(), false);
+
 						newPosition.setWithPolars(length, angle);
+
 					}
 
+
+
 					// Set new position for handle
+
 					doodle.squiggleArray[0].pointsArray[index].x = newPosition.x;
+
 					doodle.squiggleArray[0].pointsArray[index].y = newPosition.y;
 
+
+
 					// Update dependencies (NB handles is not stricly a parameter, but this will call the appropriate doodle methods)
+
 					doodle.updateDependentParameters('handles');
+
 					break;
+
+
 
 				case ED.Mode.Draw:
+
 					var p = new ED.Point(mousePosSelectedDoodlePlane.x, mousePosSelectedDoodlePlane.y);
+
 					doodle.addPointToSquiggle(p);
+
 					break;
+
+
 
 				case ED.Mode.Select:
+
 					var p = new ED.Point(mousePosSelectedDoodlePlane.x, mousePosSelectedDoodlePlane.y);
+
 					// console.log('Selecting ', p.x, p.y);
+
 					break;
+
+
 
 				default:
+
 					break;
+
 			}
 
+
+
 			// Update any bindings NB temporarilly moved to updateDependentParameters method which SHOULD be called for all relevant changes in this method
+
 			//this.updateBindings();
+
 		}
 
+
+
 		// Store mouse position
+
 		this.lastMousePosition = _point;
 
+
+
 		// Notify
+
 		this.notify("mousedragged", {
+
 			point: _point,
+
 			action: action
+
 		});
 
+
+
 		// Refresh
+
 		this.repaint();
+
 	}
+
 };
 
+
+
 /**
+
  * Responds to mouse up event in canvas
+
  *
+
  * @event Drawing#mouseup
+
  * @param {Point} _point coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.mouseup = function(_point) {
+
 	// Multiselect - Go through doodles seeing which are within dragging rectangle
+
 	/*
+
 		for (var i = 0; i < this.doodleArray.length; i++)
+
 	{
+
 				var doodle = this.doodleArray[i];
+
 				var origin = new ED.Point(doodle.originX, doodle.originY);
+
+
 
 				var p = this.transform.transformPoint(origin);
 
+
+
 				// If doodle origin is in selection rectangle, select it
+
 				if(this.selectionRectangleIsBeingDragged && this.context.isPointInPath(p.x, p.y))
+
 				{
+
 						doodle.isSelected = true;
+
 				}
+
 	}
+
+
 
 		// TEMP - this is needed to ensure delete button is activated
+
 		if (doodle) this.selectedDoodle = doodle;
+
 		 */
 
+
+
 	// Reset flags and mode
+
 	this.mouseIsDown = false;
+
 	this.doubleClick = false;
+
 	this.mode = ED.Mode.None;
+
 	this.selectionRectangleIsBeingDragged = false;
 
+
+
 	// Reset selected doodle's dragging flag
+
 	if (this.selectedDoodle != null) {
+
 		this.selectedDoodle.isBeingDragged = false;
 
+
+
 		// Optionally complete squiggle
+
 		if (this.selectedDoodle.isDrawable) {
+
 			this.selectedDoodle.completeSquiggle();
+
 			this.drawAllDoodles();
+
 		}
+
+
 
 		// Remove selection from some doodles
+
 		if (!this.selectedDoodle.willStaySelected) {
+
 			this.selectedDoodle.isSelected = false;
+
 			this.selectedDoodle = null;
+
 		}
+
 	}
+
+
 
 	
+
 	// Redraw to get rid of select rectangle
+
 	this.repaint();
 
+
+
 	// Notify
+
 	this.notify("mouseup", _point);
+
 };
 
+
+
 /**
+
  * Responds to mouse out event in canvas, stopping dragging operation
+
  *
+
  * @param {Point} _point coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.mouseover = function(_point) {
+
 	// Make drawing active
+
 	this.isActive = true;
 
+
+
 	// Notify
+
 	this.notify("mouseover", _point);
+
 };
 
+
+
 /**
+
  * Responds to mouse out event in canvas, stopping dragging operation
+
  *
+
  * @event Drawing#mouseout
+
  * @param {Point} _point coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.mouseout = function(_point) {
+
 	// Make drawing inactive
+
 	this.isActive = false;
 
+
+
 	// Stop the hover timer
+
 	this.stopHoverTimer();
 
+
+
 	// Reset flag and mode
+
 	this.mouseIsDown = false;
+
 	this.mode = ED.Mode.None;
 
+
+
 	// Reset selected doodle's dragging flag
+
 	if (this.selectedDoodle != null) {
+
 		this.selectedDoodle.isBeingDragged = false;
 
+
+
 		// Optionally complete squiggle
+
 		if (this.selectedDoodle.isDrawable) {
+
 			this.selectedDoodle.completeSquiggle();
+
 			this.drawAllDoodles();
+
 		}
+
 	}
 
+
+
 	// Notify
+
 	this.notify("mouseout", _point);
+
 };
 
+
+
 /**
+
  * Responds to key down event in canvas
+
  *
+
  * @event Drawing#keydown
+
  * @param {event} e Keyboard event
+
  */
+
 ED.Drawing.prototype.keydown = function(e) {
+
 	// Keyboard action works on selected doodle
+
 	if (this.selectedDoodle != null) {
+
 		// Delete or move doodle
+
 		switch (e.keyCode) {
+
 			case 8: // Backspace
+
 				if (this.selectedDoodle.className != "Label") this.deleteSelectedDoodle();
+
 				break;
+
 			case 37: // Left arrow
+
 				this.selectedDoodle.move(-ED.arrowDelta, 0);
+
 				break;
+
 			case 38: // Up arrow
+
 				this.selectedDoodle.move(0, -ED.arrowDelta);
+
 				break;
+
 			case 39: // Right arrow
+
 				this.selectedDoodle.move(ED.arrowDelta, 0);
+
 				break;
+
 			case 40: // Down arrow
+
 				this.selectedDoodle.move(0, ED.arrowDelta);
+
 				break;
+
 			default:
+
 				break;
+
 		}
+
+
 
 		this.repaint();
 
+
+
 		// Prevent key stroke bubbling up (***TODO*** may need cross browser handling)
+
 		e.stopPropagation();
+
 		e.preventDefault();
 
+
+
 		this.notify("keydown", e.keyCode);
+
 	}
+
 };
 
+
+
 /**
+
  * Starts a timer to display a tooltip simulating hover. Called from the mousemove event
+
  *
+
  * @event Drawing#startHoverTimer
+
  * @param {Point} _point coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.startHoverTimer = function(_point) {
+
 	// Only show tooltips for editable drawings with a span element of id 'canvasTooltip'
+
 	if (this.isEditable && this.canvasTooltip != null) {
+
 		// Stop any existing timer
+
 		this.stopHoverTimer();
 
+
+
 		// Restart it
+
 		var drawing = this;
+
 		this.hoverTimer = setTimeout(function() {
+
 			drawing.hover(_point);
+
 		}, 1000);
+
 	}
+
 };
 
+
+
 /**
+
  * Stops the timer. Called by the mouseout event, and from the start of the startHoverTimer method
+
  *
+
  * @event Drawing#stopHoverTimer
+
  */
+
 ED.Drawing.prototype.stopHoverTimer = function() {
+
 	if (this.canvasTooltip != null) {
+
 		// Reset any existing timer
+
 		clearTimeout(this.hoverTimer);
 
+
+
 		// Clear text
+
 		this.canvasTooltip.innerHTML = "";
 
+
+
 		// Hide hover
+
 		this.hideTooltip();
+
 	}
+
 };
 
+
+
 /**
+
  * Triggered by the hover timer
+
  *
+
  * @event Drawing#hover
+
  * @param {Point} _point coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.hover = function(_point) {
+
 	this.showTooltip(_point);
 
+
+
 	// Notify
+
 	this.notify("hover", _point);
+
 };
 
+
+
 /**
+
  * Shows a tooltip if present
+
  *
+
  * @event Drawing#showTooltip
+
  * @param {Point} _point coordinates of mouse in canvas plane
+
  */
+
 ED.Drawing.prototype.showTooltip = function(_point) {
 
 
+
+
+
 	// DISABLED TOOLTIPS AS PART OF #OED-4
+
 	return;
 
+
+
 	// Get coordinates of mouse
+
 	var xAbs = _point.x;
+
 	var yAbs = _point.y;
+
 	if (this.canvas.offsetParent) {
+
 		var obj = this.canvas;
+
 		var keepGoing;
 
+
+
 		// The tooltip <span> has an absolute position (relative to the 1st parent element that has a position other than static)
+
 		do {
+
 			// ***TODO*** is this a reliable way of getting the position attribute?
+
 			var position = document.defaultView.getComputedStyle(obj, null).getPropertyValue('position');
 
+
+
 			// Flag to continue going up the tree
+
 			keepGoing = false;
 
+
+
 			// Assign x and y values
+
 			if (position != null) {
+
 				if (position == 'static') {
+
 					keepGoing = true;
+
 					xAbs += obj.offsetLeft;
+
 					yAbs += obj.offsetTop;
+
 				}
+
 			}
+
+
 
 			// Does parent exist, or is origin for absolute positioning
+
 			var keepGoing = keepGoing && (obj = obj.offsetParent);
 
+
+
 		}
+
 		while (keepGoing);
+
 	}
+
+
 
 	// Adjust coodinates of tooltip
+
 	this.canvasTooltip.style.left = xAbs + "px";
+
 	this.canvasTooltip.style.top = (yAbs + 18) + "px";
 
+
+
 	// Set flag to indicate success
+
 	var found = false;
 
+
+
 	// Cycle through doodles from front to back doing hit test
+
 	for (var i = this.doodleArray.length - 1; i > -1; i--) {
+
 		if (!found) {
+
 			// Save context (draw method of each doodle may alter it)
+
 			this.context.save();
 
+
+
 			// Successful hit test?
+
 			if (this.doodleArray[i].draw(_point) && this.doodleArray[i].showsToolTip) {
+
 				this.canvasTooltip.innerHTML = this.doodleArray[i].tooltip();
+
 				found = true;
+
 			}
+
+
 
 			// Restore context
+
 			this.context.restore();
+
 		}
+
 	}
+
+
 
 	// Display tooltip
+
 	if (this.canvasTooltip.innerHTML.length > 0) {
+
 		this.canvasTooltip.style.display = 'block';
+
 	}
+
 };
 
+
+
 /**
+
  * Hides a tooltip
+
  *
+
  * @event Drawing#hideTooltip
+
  */
+
 ED.Drawing.prototype.hideTooltip = function() {
+
 	this.canvasTooltip.style.display = 'none';
+
 };
 
+
+
 /**
+
  * Moves selected doodle to front
+
  */
+
 ED.Drawing.prototype.moveToFront = function() {
 
+
+
 	// Should only be called if a doodle is selected, but check anyway
+
 	if (this.selectedDoodle != null) {
 
+
+
 		if (this.selectedDoodle.isLocked) {
+
 			return;
+
 		}
+
+
 
 		// Assign large number to selected doodle
+
 		this.selectedDoodle.order = 1000;
 
+
+
 		// Sort array by order (puts back doodle first)
+
 		this.doodleArray.sort(function(a, b) {
+
 			return a.order - b.order
+
 		});
 
+
+
 		// Re-assign ordinal numbers to array
+
 		for (var i = 0; i < this.doodleArray.length; i++) {
+
 			this.doodleArray[i].order = i;
+
 		}
 
+
+
 		// Refresh canvas
+
 		this.repaint();
+
 	}
 
+
+
 	// Notify
+
 	this.notify("moveToFront");
+
 };
 
+
+
 /**
+
  * Moves selected doodle to back
+
  */
+
 ED.Drawing.prototype.moveToBack = function() {
 
+
+
 	// Should only be called if a doodle is selected, but check anyway
+
 	if (this.selectedDoodle !== null) {
 
+
+
 		if (this.selectedDoodle.isLocked) {
+
 			return;
+
 		}
+
+
 
 		// Assign negative order to selected doodle
+
 		this.selectedDoodle.order = -1;
 
+
+
 		// Sort array by order (puts back doodle first)
+
 		this.doodleArray.sort(function(a, b) {
+
 			return a.order - b.order
+
 		});
+
+
 
 		// Re-assign ordinal numbers to array
+
 		for (var i = 0; i < this.doodleArray.length; i++) {
+
 			this.doodleArray[i].order = i;
+
 		}
+
+
 
 		// Refresh canvas
+
 		this.repaint();
+
 	}
 
+
+
 	// Notify
+
 	this.notify("moveToBack");
+
 };
 
+
+
 /**
+
  * Moves a doodle next to the first doodle of the passed class name
+
  *
+
  * @param {Doodle} _doodle The doodle to move
+
  * @param {String} _className Classname of doodle to move next to
+
  * @param {Bool} _inFront True if doodle placed in front, otherwise behind
+
  */
+
 ED.Drawing.prototype.moveNextTo = function(_doodle, _className, _inFront) {
+
 	// Check that _className has an instance
+
 	if (this.hasDoodleOfClass(_className)) {
+
 		// Don't assume that _doodle is in front, so start by putting it there, and reorder
+
 		_doodle.order = 1000;
+
 		this.doodleArray.sort(function(a, b) {
+
 			return a.order - b.order
+
 		});
+
 		for (var i = 0; i < this.doodleArray.length; i++) {
+
 			this.doodleArray[i].order = i;
+
 		}
+
+
 
 		// Interate through doodle array altering order
+
 		var offset = 0;
+
 		for (var i = 0; i < this.doodleArray.length - 1; i++) {
+
 			this.doodleArray[i].order = i + offset;
 
+
+
 			// Look for doodle of passed classname (will definitely be found first)
+
 			if (this.doodleArray[i].className == _className) {
+
 				offset = 1;
+
 				if (_inFront) {
+
 					_doodle.order = i + 1;
+
 				} else {
+
 					_doodle.order = i;
+
 					this.doodleArray[i].order = i + 1;
+
 				}
+
 			}
+
 		}
+
+
 
 		// Sort array by order (puts back doodle first)
+
 		this.doodleArray.sort(function(a, b) {
+
 			return a.order - b.order
+
 		});
+
 	}
+
 };
 
+
+
 /**
+
  * Flips the doodle around a vertical axis
+
  */
+
 ED.Drawing.prototype.flipVer = function() {
+
 	// Should only be called if a doodle is selected, but check anyway
+
 	if (this.selectedDoodle != null) {
+
 		// Vertical axis involved altering sign of scale y
+
 		this.selectedDoodle.scaleY = this.selectedDoodle.scaleY * -1;
 
+
+
 		// Refresh canvas
+
 		this.repaint();
+
 	}
 
+
+
 	// Notify
+
 	this.notify("flipVer");
+
 };
 
+
+
 /**
+
  * Flips the doodle around a horizontal axis
+
  */
+
 ED.Drawing.prototype.flipHor = function() {
+
 	// Should only be called if a doodle is selected, but check anyway
+
 	if (this.selectedDoodle != null) {
+
 		// Horizontal axis involved altering sign of scale x
+
 		this.selectedDoodle.scaleX = this.selectedDoodle.scaleX * -1;
 
+
+
 		// Refresh canvas
+
 		this.repaint();
+
 	}
+
+
 
 	// Notify
+
 	this.notify("flipHor");
+
 };
 
+
+
 /**
+
  * Deletes a doodle
+
  *
+
  * @param {Doodle} The doodle to be deleted
+
  */
+
 ED.Drawing.prototype.deleteDoodle = function(_doodle, really) {
+
 	// Class name and flag for successful deletion
+
 	var deletedClassName = false;
 
+
+
 	var errorMessage = 'Attempt to delete a doodle that does not exist';
+
 	// Check that doodle will delete
+
 	if (really || _doodle.willDelete()) {
+
 		// Iterate through doodle array looking for doodle
+
 		for (var i = 0; i < this.doodleArray.length; i++) {
+
 			if (this.doodleArray[i].id == _doodle.id) {
+
 				if (really || this.doodleArray[i].isDeletable) {
+
 					deletedClassName = _doodle.className;
 
+
+
 					// If its selected, deselect it
+
 					if (this.selectedDoodle != null && this.selectedDoodle.id == _doodle.id) {
+
 						this.selectedDoodle.onDeselection();
+
 						this.selectedDoodle = null;
+
 					}
+
+
 
 					// Remove bindings and reset values of bound elements
+
 					for (var parameter in _doodle.bindingArray) {
+
 						var elementId = _doodle.bindingArray[parameter]['id'];
+
 						var attribute = _doodle.bindingArray[parameter]['attribute'];
 
+
+
 						var element = document.getElementById(elementId);
+
 						var value = this.boundElementDeleteValueArray[elementId];
 
+
+
 						// If available, set the value of the bound element to the appropriate value
+
 						if (element != null && typeof(value) != 'undefined') {
+
 							// Set the element according to the value
+
 							switch (element.type) {
+
 								case 'checkbox':
+
 									if (attribute) {
+
 										ED.errorHandler('ED.Drawing', 'deleteDoodle', 'Binding to a checkbox with a non-standard attribute not yet supported');
+
 									} else {
+
 										if (value == "true") {
+
 											element.setAttribute('checked', 'checked');
+
 										} else {
+
 											element.removeAttribute('checked');
+
 										}
+
 									}
+
 									break;
+
+
 
 								case 'select-one':
+
 									if (attribute) {
+
 										for (var j = 0; j < element.length; j++) {
+
 											if (element.options[j].getAttribute(attribute) == value) {
+
 												element.value = element.options[j].value;
+
 												break;
+
 											}
+
 										}
+
 									} else {
+
 										element.value = value;
+
 									}
+
 									break;
+
+
 
 								default:
+
 									if (attribute) {
+
 										element.setAttribute(attribute, value);
+
 									} else {
+
 										element.value = value;
+
 									}
+
 									break;
+
 							}
+
 						}
 
+
+
 						// Remove binding from doodle (also removes event listener from element)
+
 						_doodle.removeBinding(parameter);
+
 					}
 
+
+
 					// Remove it from array
+
 					this.doodleArray.splice(i, 1);
+
 				} else {
+
 					errorMessage = 'Attempt to delete a doodle that is not deletable, className: ' + _doodle.className;
+
 				}
+
 			}
+
 		}
+
 	} else {
+
 		errorMessage = 'Doodle refused permission to be deleted, className: ' + _doodle.className;
+
 	}
+
+
 
 	// If successfully deleted, tidy up
+
 	if (deletedClassName) {
+
 		// Re-assign ordinal numbers within array
+
 		for (var i = 0; i < this.doodleArray.length; i++) {
+
 			this.doodleArray[i].order = i;
+
 		}
+
+
 
 		// Refresh canvas
+
 		this.repaint();
 
+
+
 		// Notify
+
 		this.notify("doodleDeleted", deletedClassName);
+
 	} else {
+
 		ED.errorHandler('ED.Drawing', 'deleteDoodle', errorMessage);
+
 	}
+
 };
 
 
+
+
+
 /**
+
  * Deletes currently selected doodle
+
  */
+
 ED.Drawing.prototype.deleteSelectedDoodle = function() {
+
 	// Should only be called if a doodle is selected, but check anyway
+
 	if (this.selectedDoodle != null) {
+
 		this.deleteDoodle(this.selectedDoodle,false);
+
 	} else {
+
 		ED.errorHandler('ED.Drawing', 'deleteSelectedDoodle', 'Attempt to delete selected doodle, when none selected');
+
 	}
+
+
 
 	// Multiple select
+
 	/*
+
 		for (var i = 0; i < this.doodleArray.length; i++)
+
 		{
+
 				if (this.doodleArray[i].isSelected)
+
 				{
+
 						this.deleteDoodle(this.doodleArray[i]);
+
 				}
+
 		}
+
 		 */
+
 };
 
 
+
+
+
 /**
+
  * Resets the eyedraw canvas completely including any related form inputs
+
  */
 
+
+
 ED.Drawing.prototype.resetEyedraw = function() {
+
 	this.notify("beforeReset");
+
+
 
 	this.deleteAllDoodles(true);
 
-	if (this.resetDoodleSet !== false) {
-		this.notify("resetEdit");
-	} else {
-		this.notify("reset");
-	}
+
 
 	if (this.resetDoodleSet !== false) {
+
+		this.notify("resetEdit");
+
+	} else {
+
+		this.notify("reset");
+
+	}
+
+
+
+	if (this.resetDoodleSet !== false) {
+
 		this.load(this.resetDoodleSet);
 
+
+
 		// Set isNew flag
+
 		this.isNew = false;
 
+
+
 		// Notify
+
 		this.notify("doodlesLoaded");
+
 	} else {
+
 		for (var i = 0; i < this.onReadyCommands.length; i++) {
+
 			for (var j = 0; j < this.onReadyCommands[i].length; j++) {
+
 				var method = this.onReadyCommands[i][j][0];
+
 				var argumentArray = this.onReadyCommands[i][j][1];
 
+
+
 				this[method].apply(this, argumentArray);
+
 			}
+
 		}
+
 	}
 
+
+
 	this.drawAllDoodles();
+
 	this.deselectDoodles();
 
+
+
 	this.addBindings(this.bindingArray);
+
 };
 
+
+
 /**
+
  * Set the scale level for drawing and all doodles
+
  * @param  {Number} level			Scale level.
+
  * @param  {String} eventName Event name to notify.
+
  */
+
 ED.Drawing.prototype.setScaleForDrawingAndDoodles = function(level) {
+
+
 
 	this.globalScaleFactor = level;
 
+
+
 	this.doodleArray.forEach(function(doodle) {
+
 		doodle.setScaleLevel(level);
+
 	});
 
+
+
 	this.repaint();
+
 };
 
+
+
 /**
+
  * This should be called only once the drawing is ready.
+
  * @param {Number} level [description]
+
  */
+
 ED.Drawing.prototype.setScaleLevel = function(level) {
+
 	this.setScaleForDrawingAndDoodles(level);
+
 	this.notifyZoomLevel();
+
 };
 
+
+
 /**
+
  * Toggles the scale level of the drawing.
+
  * We're only supporting two zoom levels: "in" and "out".
+
  */
+
 ED.Drawing.prototype.toggleZoom = function() {
+
 	if (!this.toggleScaleFactor) return;
+
 	var scale = this.globalScaleFactor === this.toggleScaleFactor ? this.origScaleLevel : this.toggleScaleFactor;
+
 	this.setScaleLevel(scale);
+
 };
+
+
 
 ED.Drawing.prototype.notifyZoomLevel = function() {
 
+
+
 	var zoomIn = 'drawingZoomIn';
+
 	var zoomOut = 'drawingZoomOut';
+
 	var evt;
 
+
+
 	if (this.origScaleLevel < this.toggleScaleFactor) {
+
 		evt = (this.globalScaleFactor < this.toggleScaleFactor) ? zoomOut : zoomIn;
+
 	} else {
+
 		evt = (this.globalScaleFactor <= this.toggleScaleFactor) ? zoomOut : zoomIn;
+
 	}
+
+
 
 	this.notify('drawingZoom');
+
 	this.notify(evt);
+
 };
 
+
+
 /**
+
  * Sets a property on currently selected doodle NB currently only supports boolean properties
+
  *
+
  * @param {Object} _element An HTML element which called this function
+
  * @param {String} _property The name of the property to switch
+
  */
+
 ED.Drawing.prototype.setSelectedDoodle = function(_element, _property) {
+
 	// Get value of check box
+
 	var value = _element.checked ? "true" : "false";
 
+
+
 	// Should only be called if a doodle is selected, but check anyway
+
 	if (this.selectedDoodle != null) {
+
 		this.selectedDoodle.setParameterFromString(_property, value);
+
 	} else {
+
 		ED.errorHandler('ED.Drawing', 'setSelectedDoodle', 'Attempt to set a property on the selected doodle, when none selected');
+
 	}
+
 };
 
+
+
 /**
+
  * Deletes doodle with selected id
+
  */
+
 ED.Drawing.prototype.deleteDoodleOfId = function(_id) {
+
 	var doodle = this.doodleOfId(_id);
 
+
+
 	if (doodle) {
+
 		this.deleteDoodle(doodle,false);
+
 	} else {
+
 		ED.errorHandler('ED.Drawing', 'deleteDoodleOfId', 'Attempt to delete doodle with invalid id');
+
 	}
+
 };
 
+
+
 /**
+
  * Locks selected doodle
+
  */
+
 ED.Drawing.prototype.lock = function() {
+
 	// Should only be called if a doodle is selected, but check anyway
+
 	if (this.selectedDoodle !== null) {
+
 		this.selectedDoodle.isLocked = true;
+
 		this.notify("doodleLocked");
+
 		this.repaint();
+
 	}
+
 };
 
+
+
 /**
+
  * Unlocks all doodles
+
  */
+
 ED.Drawing.prototype.unlock = function() {
+
 	// Go through doodles unlocking all
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		this.doodleArray[i].isLocked = false;
+
 	}
+
 	this.notify("doodleUnlocked");
+
 	// Refresh canvas
+
 	this.repaint();
+
 };
 
+
+
 /**
+
  * Toggle doodle help text
+
  */
+
 ED.Drawing.prototype.toggleHelp = function() {
+
 	this.notify('toggleDoodleHelp');
+
 };
 
+
+
 /**
+
  * Deselect any selected doodles
+
  */
+
 ED.Drawing.prototype.deselectDoodles = function() {
 
+
+
 	// Deselect all doodles
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		this.doodleArray[i].isSelected = false;
+
 	}
 
+
+
 	if (this.selectedDoodle) {
+
 		this.selectedDoodle.onDeselection();
+
 		this.selectedDoodle = null;
+
 	}
+
+
 
 	this.notify("doodleDeselected");
 
+
+
 	// Refresh drawing
+
 	this.repaint();
+
 };
 
+
+
 /**
+
  * Use scroll to select next doodle in array (From an idea of Adrian Duke)
+
  *
+
  * @param {Int} _value Value of scroll wheel
+
  */
+
 ED.Drawing.prototype.selectNextDoodle = function(_value) {
+
 	// Increment current scrollValue
+
 	this.scrollValue += _value;
 
+
+
 	// Scroll direction
+
 	var up = _value > 0 ? true : false;
 
+
+
 	// 'Damp' scroll speed by waiting for larger increments
+
 	var dampValue = 96;
 
+
+
 	if (this.scrollValue > dampValue || this.scrollValue < -dampValue) {
+
 		// Reset scrollValue
+
 		this.scrollValue = 0;
 
+
+
 		// Index of selected doodle
+
 		var selectedIndex = -1;
 
+
+
 		// Iterate through doodles
+
 		for (var i = 0; i < this.doodleArray.length; i++) {
+
 			if (this.doodleArray[i].isSelected) {
+
 				selectedIndex = i;
 
+
+
 				// Deselected currently selected doodle
+
 				this.doodleArray[i].isSelected = false;
+
 			}
+
 		}
+
+
 
 		// If there is a selection, change it
+
 		if (selectedIndex >= 0) {
+
 			// Change index
+
 			if (up) {
+
 				selectedIndex++;
+
 				if (selectedIndex == this.doodleArray.length) selectedIndex = 0;
+
 			} else {
+
 				selectedIndex--;
+
 				if (selectedIndex < 0) selectedIndex = this.doodleArray.length - 1;
+
 			}
+
+
 
 			// Wrap
+
 			if (selectedIndex == this.doodleArray.length) {
+
+
 
 			}
 
+
+
 			this.doodleArray[selectedIndex].isSelected = true;
+
 			this.selectedDoodle = this.doodleArray[selectedIndex];
+
 		}
+
+
 
 		// Refresh drawing
+
 		this.repaint();
+
 	}
+
 };
 
+
+
 /**
+
  * Sets a doodle as selected
+
  *
+
  * @param {Int} _doodleId Value of scroll wheel
+
  */
+
 ED.Drawing.prototype.setDoodleAsSelected = function(_doodleId) {
+
 	var selectedIndex = -1;
 
+
+
 	// Iterate through doodles
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		if (this.doodleArray[i].id == _doodleId) {
+
 			selectedIndex = i;
+
 		}
+
 	}
+
+
 
 	if (selectedIndex >= 0) {
+
 		var doodle = this.doodleArray[selectedIndex];
+
 		this.selectDoodle(doodle);
+
 	}
+
 };
 
+
+
 /**
+
  * Mark a doodle as selected
+
  * @param  {ED.Doodle} doodle
+
  */
+
 ED.Drawing.prototype.selectDoodle = function(doodle) {
+
+
 
 	this.deselectDoodles();
 
+
+
 	doodle.isSelected = true;
+
 	this.selectedDoodle = doodle;
+
 	
+
 	// Run onDeselection code for last doodle
+
 	if (this.lastSelectedDoodle) this.lastSelectedDoodle.onDeselection();
 
+
+
 	// Notify
+
 	this.notify("doodleSelected");
 
+
+
 	// Run onSelection code
+
 	this.selectedDoodle.onSelection();
 
+
+
 	this.repaint();
+
 };
 
+
+
 /**
+
  * Marks the doodle as 'unmodified' so we can catch an event when it gets modified by the user
+
  */
+
 ED.Drawing.prototype.isReady = function() {
+
 	this.modified = false;
+
 	if (this.convertToImage) {
+
 		this.replaceWithImage();
+
 	}
+
 };
 
+
+
 /**
+
  * Adds a doodle to the array
+
  *
+
  * @param {String} _className Class name of doodle
+
  * @param {Array} _parameterDefaults Array of key value pairs containing default values or parameters
+
  * @param {Array} _parameterBindings Array of key value pairs. Key is element id, value is parameter to bind to
+
  * @returns {Doodle} The newly added doodle
+
  */
+
 ED.Drawing.prototype.addDoodle = function(_className, _parameterDefaults, _parameterBindings) {
+
 		
+
 	// Set flag to indicate whether a doodle of this className already exists
+
 	var doodleExists = this.hasDoodleOfClass(_className);
 
+
+
 	// Check that class exists, and create a new doodle
+
 	if (ED.hasOwnProperty(_className)) {
+
 		// Create new doodle of class
+
 		var newDoodle = new ED[_className](this);
 
+
+
 		// Create an instance of the parent if it does not already exist
+
 		/*
+
 				if (newDoodle.parentClass.length > 0)
+
 				{
+
 						if (!this.hasDoodleOfClass(newDoodle.parentClass))
+
 						{
+
 								this.addDoodle(newDoodle.parentClass);
+
 						}
+
 				}
+
 				*/
+
 	} else {
+
 		ED.errorHandler('ED.Drawing', 'addDoodle', 'Unable to find definition for subclass ' + _className);
+
 		return null;
+
 	}
+
+
 
 	// Check if one is already there if unique)
+
 	if (!(newDoodle.isUnique && this.hasDoodleOfClass(_className))) {
+
 		// Ensure no other doodles are selected, and run onDeselection code if appropriate
+
 		for (var i = 0; i < this.doodleArray.length; i++) {
+
 			if (this.doodleArray[i].isSelected) this.doodleArray[i].onDeselection();
+
 			this.doodleArray[i].isSelected = false;
+
 		}
+
+
 
 		// Set parameters for this doodle
+
 		if (typeof(_parameterDefaults) != 'undefined') {
+
 			for (var key in _parameterDefaults) {
+
 				var res = newDoodle.validateParameter(key, _parameterDefaults[key]);
+
 				if (res.valid) {
+
 					newDoodle.setParameterFromString(key, res.value);
+
 				} else {
+
 					ED.errorHandler('ED.Drawing', 'addDoodle', 'ParameterDefaults array contains an invalid value for parameter ' + key);
+
 				}
+
 			}
+
 		}
+
+
 
 		// New doodles are selected by default
+
 		this.selectedDoodle = newDoodle;
 
+
+
 		// If drawable, also go into drawing mode
+
 		if (newDoodle.isDrawable) {
+
 			newDoodle.isForDrawing = true;
+
 		}
+
+
 
 		// Add to array
+
 		this.doodleArray[this.doodleArray.length] = newDoodle;
 
+
+
 		// Pre-existing binding
+
 		if (!doodleExists) {
+
 			for (var parameter in this.bindingArray[_className]) {
+
 				var elementId = this.bindingArray[_className][parameter]['id'];
+
 				var attribute = this.bindingArray[_className][parameter]['attribute'];
+
 				var element = document.getElementById(elementId);
 
+
+
 				// Get the value of the element
+
 				var value;
 
+
+
 				// Set the value to the value of the element
+
 				switch (element.type) {
+
 					case 'checkbox':
+
 						if (attribute) {
+
 							ED.errorHandler('ED.Drawing', 'addDoodle', 'Binding to a checkbox with a non-standard attribute not yet supported');
+
 						} else {
+
 							value = element.checked.toString();
+
 						}
+
 						break;
+
+
 
 					case 'select-one':
+
 						if (attribute) {
+
 							if (element.selectedIndex > -1) {
+
 								value = element.options[element.selectedIndex].getAttribute(attribute);
+
 							}
+
 						} else {
+
 							value = element.value;
+
 						}
+
 						break;
+
+
 
 					default:
+
 						if (attribute) {
+
 							value = element.getAttribute(attribute);
+
 						} else {
+
 							value = element.value;
+
 						}
+
 						break;
+
 				}
+
+
 
 				// If the element value is equal to the delete value, use the default value of the doodle instead
+
 				if (value == this.boundElementDeleteValueArray[elementId]) {
+
 					value = newDoodle[parameter];
+
 				}
+
+
 
 				// Check validity of new value
+
 				var validityArray = newDoodle.validateParameter(parameter, value);
 
+
+
 				// If new value is valid, set it, otherwise use default value of doodle
+
 				if (validityArray.valid) {
+
 					newDoodle.setParameterFromString(parameter, validityArray.value);
+
 					//newDoodle.setSimpleParameter(parameter, validityArray.value);
+
 					newDoodle.updateDependentParameters(parameter);
+
 					//newDoodle.setParameterWithAnimation(parameter, validityArray.value);
+
 				} else {
+
 					value = newDoodle[parameter];
+
 					ED.errorHandler('ED.Drawing', 'addDoodle', 'Invalid value for parameter: ' + parameter);
+
 				}
+
+
 
 				// Add binding to the doodle (NB this will set value of new doodle to the value of the element)
+
 				newDoodle.addBinding(parameter, this.bindingArray[_className][parameter]);
 
+
+
 				// Trigger binding by setting parameter
+
 				//newDoodle.setSimpleParameter(parameter, value);
+
 				newDoodle.setParameterFromString(parameter, validityArray.value);
+
 				newDoodle.updateDependentParameters(parameter);
+
 				this.updateBindings(newDoodle);
+
 			}
+
 		}
+
+
 
 		// Binding passed as an argument to this method
+
 		if (typeof(_parameterBindings) != 'undefined') {
+
 			for (var key in _parameterBindings) {
+
 				// Add binding to the doodle
+
 				newDoodle.addBinding(key, _parameterBindings[key]);
+
 			}
+
 		}
+
+
 
 		if (newDoodle.addAtBack) {
+
 			// This method also calls the repaint method
+
 			this.moveToBack();
+
 		} else {
+
 			// Refresh drawing
+
 			this.repaint();
+
 		}
+
+
 
 		// Notify
+
 		this.notify("doodleAdded", newDoodle);
 
+
+
 		// Run onSelection code
+
 		if (this.selectedDoodle) {
+
 			// might already have been deselected depending on syncing rules
+
 			this.selectedDoodle.onSelection();
+
 		}
+
+
 
 		// Return doodle
+
 		return newDoodle;
+
 	} else {
+
 		ED.errorHandler('ED.Drawing', 'addDoodle', 'Attempt to add a second unique doodle of class ' + _className);
+
 		return null;
+
 	}
+
 };
 
+
+
 /**
+
  * Takes array of bindings, and adds them to the corresponding doodles. Adds an event listener to create a doodle if it does not exist
+
  *
+
  * @param {Array} _bindingArray Associative array. Key is className, and each value is an array with key: parameter name, value: elementId
+
  */
+
 ED.Drawing.prototype.addBindings = function(_bindingArray) {
+
 	// Store binding array as part of drawing object in order to restore bindings to doodles that are deleted and added again
+
 	this.bindingArray = _bindingArray;
 
+
+
 	// Get reference to this drawing object (for inner function)
+
 	var drawing = this;
 
+
+
 	// Iterate through classNames
+
 	for (var className in _bindingArray) {
+
 		// Look for the first doodle of this class to bind to
+
 		var doodle = this.firstDoodleOfClass(className);
 
+
+
 		// Iterate through bindings for this className
+
 		for (var parameter in _bindingArray[className]) {
+
 			// Get reference to element
+
 			var elementId = _bindingArray[className][parameter]['id'];
+
 			var element = document.getElementById(elementId);
 
+
+
 			if (element) {
+
 				// Add an event listener to the element to create a bound doodle on change, if it does not exist
+
 				element.addEventListener('change', (function(className) {
+
 					return function(event) {
+
 						if (!drawing.hasDoodleOfClass(className)) {
+
 							drawing.addDoodle(className);
+
 							drawing.deselectDoodles();
+
 						}
+
 					};
+
 				}(className)), false);
 
+
+
 				// Add binding to doodle if it exists
+
 				if (doodle) {
+
 					doodle.addBinding(parameter, _bindingArray[className][parameter]);
+
 				}
+
 			} else {
+
 				ED.errorHandler('ED.Drawing', 'addBindings', 'Attempt to add binding for an element that does not exist for parameter: ' + parameter + ' with id ' + elementId);
+
 			}
+
 		}
+
 	}
+
 };
 
+
+
 /**
+
  * Takes an array of key value pairs and adds them to the boundElementDeleteValueArray
+
  *
+
  * @param {Array} _deleteValuesArray Associative array. Key is elementId, and value the value corresponding to an absent doodle
+
  */
+
 ED.Drawing.prototype.addDeleteValues = function(_deleteValuesArray) {
+
 	for (elementId in _deleteValuesArray) {
+
 		this.boundElementDeleteValueArray[elementId] = _deleteValuesArray[elementId];
+
 	}
+
 };
 
+
+
 /**
+
  * Called by events attached to HTML elements such as <input>
+
  *
+
  * @param {String} _type Type of event, only onchange is currently implemented
+
  * @param {Int} _doodleId The id of the doodle containing the binding
+
  * @param {String} _className The class name of the doodle containing the binding (for recreation if deleted)
+
  * @param {String} _elementId The id attribute of the element
+
  * @returns {Value} The current value of the element
+
  */
+
 ED.Drawing.prototype.eventHandler = function(_type, _doodleId, _className, _elementId, _value) {
+
 	//console.log("Event: " + _type + " doodleId: " + _doodleId + " doodleClass: " + _className + " elementId: " + _elementId + " value: " + _value);
 
 
+
+
+
 	switch (_type) {
+
 		case 'oninput':
+
 		case 'onchange':
+
 			// Get reference to associated doodle
+
 			var doodle = this.doodleOfId(_doodleId);
 
+
+
 			// Process event
+
 			if (doodle) {
+
 				// Look for value in boundElementDeleteValueArray
+
 				if (this.boundElementDeleteValueArray[_elementId] == _value) {
+
 					this.deleteDoodleOfId(_doodleId);
+
 				} else {
+
 					// Set state of drawing to be active to allow synchronisation to work when changed by bound element
+
 					doodle.drawing.isActive = true;
 
+
+
 					// Find key associated with the element id
+
 					var parameter;
+
 					for (var key in doodle.bindingArray) {
+
 						if (doodle.bindingArray[key]['id'] == _elementId) {
+
 							parameter = key;
+
 						}
+
 					}
+
+
 
 					// Check validity of new value, only trim the value if change event
+
 					var validityArray = doodle.validateParameter(parameter, _value, (_type === 'onchange'));
 
+
+
 					// If new value is valid, set it
+
 					if (validityArray.valid) {
 
+
+
 						// [OE-4028] We do not want the doodle animation to update the bindings for the
+
 						// following reasons:
+
 						// 1) The form control is already set with the correct value.
+
 						// 2) We do not want the value to update incrementally with the animation.
+
 						var updateBindings = false;
 
+
+
 						// Animate the doodle with the value of the form control.
+
 						doodle.setParameterWithAnimation(parameter, validityArray.value, updateBindings);
+
 					} else {
+
 						ED.errorHandler('ED.Drawing', 'eventHandler', 'Attempt to change HTML element value to an invalid value for parameter ' + parameter);
+
 					}
+
+
 
 					// Apply new value to element if necessary
+
 					if (_value != validityArray.value) {
+
 						var element = document.getElementById(_elementId);
+
 						var attribute = doodle.bindingArray[parameter]['attribute'];
 
+
+
 						// Set the element according to the value
+
 						switch (element.type) {
+
 							case 'checkbox':
+
 								if (attribute) {
+
 									ED.errorHandler('ED.Drawing', 'eventHandler', 'Binding to a checkbox with a non-standard attribute not yet supported');
+
 								} else {
+
 									console.log('setting checkbox - needs testing with a suitable doodle');
+
 									if (value == "true") {
+
 										element.setAttribute('checked', 'checked');
+
 									} else {
+
 										element.removeAttribute('checked');
+
 									}
+
 								}
+
 								break;
+
+
 
 							case 'select-one':
+
 								if (attribute) {
+
 									for (var i = 0; i < element.length; i++) {
+
 										if (element.options[i].getAttribute(attribute) == validityArray.value) {
+
 											element.value = element.options[i].value;
+
 											break;
+
 										}
+
 									}
+
 								} else {
+
 									element.value = validityArray.value;
+
 								}
+
 								break;
+
+
 
 							case 'text':
+
 								if (attribute) {
+
 									ED.errorHandler('ED.Drawing', 'eventHandler', 'Binding to a textfield with a non-standard attribute not yet supported');
+
 								} else {
+
 									element.value = validityArray.value;
+
 								}
+
 								break;
 
+
+
 							default:
+
 								if (attribute) {
+
 									element.setAttribute(attribute, validityArray.value);
+
 								} else {
+
 									element.value = validityArray.value;
+
 								}
+
 								break;
+
 						}
+
 					}
+
+
+
 
 
 					// ***TODO*** Need to reset state of drawing elsewhere, since this gets called before animation finished.
+
 					//doodle.drawing.isActive = false;
+
 				}
+
 			} else {
+
 				ED.errorHandler('ED.Drawing', 'eventHandler', 'Doodle of id: ' + _doodleId + ' no longer exists');
+
 			}
+
 			break;
+
 		default:
+
 			break;
+
 	}
+
 };
 
+
+
 /**
+
  * Updates value of bound elements to the selected doodle. Called by methods which change parameter values
+
  *
+
  * @param {ED.Doodle} _doodle Optional doodle object to update drawings without a selected doodle
+
  */
+
 ED.Drawing.prototype.updateBindings = function(_doodle) {
+
 	var doodle = _doodle;
 
 	// Check for an argument, otherwise take selected doodle for this drawing
+
 	if (typeof(doodle) == 'undefined') {
+
 		doodle = this.selectedDoodle;
+
 	}
+
+
 
 	// Update bindings for this doodle
+
 	if (doodle != null) {
+
 		// Iterate through this doodle's bindings array and alter value of HTML element
+
 		for (var parameter in doodle.bindingArray) {
+
 			var element = document.getElementById(doodle.bindingArray[parameter]['id']);
+
 			if (!element)
+
 				continue;
+
 			var attribute = doodle.bindingArray[parameter]['attribute'];
+
 			var value = doodle.getParameter(parameter);
+
 			// Modify value of element according to type
+
 			switch (element.type) {
+
 				case 'checkbox':
+
+
+
 					if (attribute) {
+
 						ED.errorHandler('ED.Drawing', 'updateBindings', 'Binding to a checkbox with a non-standard attribute not yet supported');
+
 					} else {
+
+
 
 						if (value == "true") {
-							element.setAttribute('checked', 'checked');
+
+							element.checked = true;
+
 						} else {
-							element.removeAttribute('checked');
+
+							element.checked = false;
+
 						}
+
 					}
+
+
+
 					break;
+
+
 
 				case 'select-one':
+
 					var originalValue = element.value;
+
 					if (attribute) {
+
 						for (var i = 0; i < element.length; i++) {
+
 							if (element.options[i].getAttribute(attribute) == value) {
+
 								element.value = element.options[i].value;
+
 								break;
+
 							}
+
 						}
+
 					} else {
+
 						element.value = value;
+
 					}
+
 					if (originalValue !== element.value) {
+
                         // trigger a change event for anything listen to the bound html elements
+
                         // instead of the eyedraw doodles.
+
                         window.setTimeout(function(el) { el.dispatchEvent(new Event('change', {bubbles: true, cancelable: true})); }.bind(null, element), 100)
+
 					}
+
 					break;
+
+
 
 				case 'text':
+
 					if (attribute) {
+
 						ED.errorHandler('ED.Drawing', 'updateBindings', 'Binding to a textfield with a non-standard attribute not yet supported');
+
 					} else {
+
 						element.value = value;
+
 					}
+
 					break;
+
+
 
 				default:
+
 					if (attribute) {
+
 						element.setAttribute(attribute, value);
+
 					} else {
+
 						element.value = value;
+
 					}
+
 					break;
+
 			}
+
 		}
+
 	} else {
+
 		// Since moving updateBindings method, this is no longer an error
+
 		//ED.errorHandler('ED.Drawing', 'updateBindings', 'Attempt to update bindings on null doodle');
+
 	}
+
 };
+
+
 
 /**
+
  * Test if doodle of a class exists in drawing
+
  *
+
  * @param {String} _className Classname of doodle
+
  * @returns {Bool} True is a doodle of the class exists, otherwise false
+
  */
+
 ED.Drawing.prototype.hasDoodleOfClass = function(_className) {
+
 	var returnValue = false;
 
+
+
 	// Go through doodle array looking for doodles of passed className
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		if (this.doodleArray[i].className == _className) {
+
 			returnValue = true;
+
 		}
+
 	}
 
+
+
 	return returnValue;
+
 };
+
+
 
 /** Counts number of doodles of passed class
+
  *
+
  * @param {String} _className Classname of doodle
+
  * @returns {Int} Number of doodles of the class
+
  */
+
 ED.Drawing.prototype.numberOfDoodlesOfClass = function(_className) {
+
 	var returnValue = 0;
 
+
+
 	// Go through doodle array looking for doodles of passed className
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		if (this.doodleArray[i].className == _className) {
+
 			returnValue++;
+
 		}
+
 	}
 
+
+
 	return returnValue;
+
 };
 
+
+
 /**
+
  * Returns first doodle of the passed className, or false if does not exist
+
  *
+
  * @param {String} _className Classname of doodle
+
  * @returns {Doodle} The first doodle of the passed className
+
  */
+
 ED.Drawing.prototype.firstDoodleOfClass = function(_className) {
+
 	var returnValue = false;
+
+
 
 	// Go through doodle array looking for doodles of passed className
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		if (this.doodleArray[i].className == _className) {
+
 			returnValue = this.doodleArray[i];
+
 			break;
+
 		}
+
 	}
 
+
+
 	return returnValue;
+
 };
 
 
+
+
+
 /**
+
  * Returns last doodle of the passed className, or false if does not exist
+
  *
+
  * @param {String} _className Classname of doodle
+
  * @returns {Doodle} The last doodle of the passed className
+
  */
+
 ED.Drawing.prototype.lastDoodleOfClass = function(_className) {
+
 	var returnValue = false;
+
+
 
 	// Go through doodle array backwards looking for doodles of passed className
+
 	for (var i = this.doodleArray.length - 1; i >= 0; i--) {
+
 		if (this.doodleArray[i].className == _className) {
+
 			returnValue = this.doodleArray[i];
+
 			break;
+
 		}
+
 	}
 
+
+
 	return returnValue;
+
 };
 
+
+
 /**
+
  * Returns all doodles of the passed className
+
  *
+
  * @param {String} _className Classname of doodle
+
  * @returns {Array} Array of doodles of the passed className
+
  */
+
 ED.Drawing.prototype.allDoodlesOfClass = function(_className) {
+
 	var returnValue = [];
 
+
+
 	// Go through doodle array backwards looking for doodles of passed className
+
 	for (var i = this.doodleArray.length - 1; i >= 0; i--) {
+
 		if (this.doodleArray[i].className == _className) {
+
 			returnValue.push(this.doodleArray[i]);
+
 		}
+
 	}
+
+
 
 	return returnValue;
+
 };
 
+
+
 /**
+
  * Sets a parameter value for all doodles of this class
+
  *
+
  * @param {String} _parameter Name of parameter
+
  * @param {String} _className Classname of doodle
+
  * @param {String} _value New value of parameter
+
  */
+
 ED.Drawing.prototype.setParameterValueForClass = function(_parameter, _value, _className) {
+
 	// Go through doodle array (backwards because of splice function) looking for doodles of passed className
+
 	for (var i = this.doodleArray.length - 1; i >= 0; i--) {
+
 		// Find doodles of given class name
+
 		if (this.doodleArray[i].className == _className) {
+
 			var doodle = this.doodleArray[i];
 
+
+
 			// Set parameter
+
 			doodle.setParameterWithAnimation(_parameter, _value);
+
 		}
+
 	}
 
+
+
 	// Refresh drawing
+
 	this.repaint();
+
 };
 
+
+
 /**
+
  * Returns the doodle with the corresponding id
+
  *
+
  * @param {Int} Id Id of doodle
+
  * @returns {Doodle} The doodle with the passed id
+
  */
+
 ED.Drawing.prototype.doodleOfId = function(_id) {
+
 	var doodle = false;
 
+
+
 	// Go through doodle array looking for the corresponding doodle
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		if (this.doodleArray[i].id == _id) {
+
 			doodle = this.doodleArray[i];
+
 			break;
+
 		}
+
 	}
+
+
 
 	return doodle;
+
 };
 
+
+
 /**
+
  * Deletes all doodles that are deletable
+
  */
+
 ED.Drawing.prototype.deleteAllDoodles = function(really_all) {
+
 	// Go through doodle array (backwards because of splice function)
+
 	for (var i = this.doodleArray.length - 1; i >= 0; i--) {
+
 		// Only delete deletable ones
+
 		if (really_all || this.doodleArray[i].isDeletable) {
+
 			this.deleteDoodle(this.doodleArray[i],really_all);
+
 		}
+
 	}
+
 };
 
+
+
 /**
+
  * Deletes doodles of one class from the drawing
+
  *
+
  * @param {String} _className Classname of doodle
+
  */
+
 ED.Drawing.prototype.deleteDoodlesOfClass = function(_className) {
+
 	// Go through doodle array (backwards because of splice function) looking for doodles of passed className
+
 	for (var i = this.doodleArray.length - 1; i >= 0; i--) {
+
 		// Find doodles of given class name
+
 		if (this.doodleArray[i].className == _className) {
+
 			this.deleteDoodle(this.doodleArray[i],false);
+
 		}
+
 	}
+
 };
 
+
+
 /**
+
  * Updates a doodle with a new value of a parameter ***TODO** These two methods need updating with new notification system
+
  *
+
  * @param {Doodle} _doodle The doodle to be updated
+
  * @param {String} _parameter Name of the parameter
+
  * @param {Any} _value New value of the parameter
+
  */
+
 ED.Drawing.prototype.setParameterForDoodle = function(_doodle, _parameter, _value) {
+
 	// Determine whether doodle exists
+
 	if (typeof(_doodle[_parameter]) != 'undefined') {
+
 		_doodle[_parameter] = +_value;
+
 	} else {
+
 		_doodle.setParameterFromString(_parameter, _value);
+
 	}
+
+
 
 	// Save to hidden input, if exists, and refresh drawing
+
 	if (typeof(this.saveToInputElement) != 'undefined') this.saveToInputElement();
+
 	this.repaint();
+
 };
 
+
+
 /**
+
  * Updates a doodle of class with a vew value of a parameter. Use if only one member of a class exists
+
  *
+
  * @param {String} _className The name of the doodle class to be updated
+
  * @param {String} _parameter Name of the parameter
+
  * @param {Any} _value New value of the parameter
+
  */
+
 ED.Drawing.prototype.setParameterForDoodleOfClass = function(_className, _parameter, _value) {
+
 	// Get pointer to doodle
+
 	var doodle = this.firstDoodleOfClass(_className);
 
+
+
 	// Set parameter for the doodle
+
 	doodle.setParameterWithAnimation(_parameter, _value);
 
+
+
 	// Save to hidden input, if exists, and refresh drawing
+
 	if (typeof(this.saveToInputElement) != 'undefined') this.saveToInputElement();
+
 	this.repaint();
+
 };
 
+
+
 /**
+
  * Returns the total extent in degrees covered by doodles of the passed class
+
  *
+
  * @param {String} _class Class of the doodle to be updated
+
  * @returns {Int} Total extent in degrees, with maximum of 360
+
  */
+
 ED.Drawing.prototype.totalDegreesExtent = function(_class) {
+
 	var degrees = 0;
 
+
+
 	// Calculate total for all doodles of this class
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		// Find doodles of given class name
+
 		if (this.doodleArray[i].className == _class) {
+
 			degrees += this.doodleArray[i].degreesExtent();
+
 		}
+
 	}
+
+
 
 	// Overlapping doodles do not increase total beyond 360 degrees
+
 	if (degrees > 360) degrees = 360;
 
+
+
 	return degrees;
+
 };
 
+
+
 /**
+
  * Suppresses reporting for all doodles currently in drawing.
+
  */
+
 ED.Drawing.prototype.suppressReports = function() {
+
 	// Iterate through all doodles
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		this.doodleArray[i].willReport = false;
+
 	}
+
 };
 
+
+
 /**
+
  * Returns a list of report strings to allow more fine grained manipulation of results.
+
  *
+
  * @returns {Array} list of report strings from doodle(s) on drawing
+
  */
+
 ED.Drawing.prototype.reportData = function() {
+
 	var reports = [];
+
 	var grouped = {};
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		var doodle = this.doodleArray[i];
+
 		var description = doodle.description();
 
+
+
 		if (doodle.willReport) {
+
 			var groupDescription = doodle.groupDescription();
+
 			if (groupDescription.length > 0) {
+
 				if (typeof(grouped[doodle.className]) === 'undefined') {
+
 					grouped[doodle.className] = {
+
 						'start': groupDescription,
+
 						'descriptions': [],
+
 						'end': doodle.groupDescriptionEnd()
+
 					}
+
 				}
+
 				grouped[doodle.className]['descriptions'].push(description)
+
 			} else {
+
 				if (description.length) {
+
 					reports.push(description);
+
 				}
+
 			}
+
 		}
+
 	}
+
+
 
 	// consolidate group reports
+
   for (var cls in grouped) {
+
 		var groupStr = '';
+
     if (grouped.hasOwnProperty(cls)) {
+
       groupStr = grouped[cls]['start'];
+
       groupStr += ED.addAndAfterLastComma(grouped[cls]['descriptions'].join(", "));
+
       groupStr += grouped[cls]['end'];
+
       reports.push(groupStr);
+
     }
+
   }
 
+
+
 	return reports;
+
 }
 
+
+
 /**
+
  * Returns a string containing a description of the drawing
+
  *
+
  * @returns {String} Description of the drawing
+
  */
+
 ED.Drawing.prototype.report = function() {
+
 	var returnString = "";
 
+
+
 	var data = this.reportData();
+
 	for (var i = 0; i < data.length; i++) {
+
 		returnString += (i === 0) ? data[i] : ", " + ED.firstLetterToLowerCase(data[i]);
+
 	}
+
+
 
 	return (returnString.length > 0) ? returnString : "No abnormality";
+
 };
 
 
+
+
+
 /**
+
  * Returns a SNOMED diagnostic code derived from the drawing, returns empty array if no code
+
  *
+
  * @returns {Int} SnoMed code of doodle with highest position in hierarchy
+
  */
+
 ED.Drawing.prototype.diagnosis = function() {
+
 	var topOfHierarchy = 0;
+
 	var returnCodes = new Array();
 
+
+
 	// Loop through doodles with diagnoses, taking one highest in hierarchy, or those that are equal
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		var doodle = this.doodleArray[i];
+
 		var codeArray = doodle.snomedCodes();
+
 		for (var j = 0; j < codeArray.length; j++) {
+
 			var code = codeArray[j][0];
+
             if (code > 0) {
+
                 var codePosition = codeArray[j][1];
+
                 if (codePosition > topOfHierarchy) {
+
                     topOfHierarchy = codePosition;
+
                     returnCodes.push(code);
+
                 } else if (codePosition == topOfHierarchy) {
+
                     if (returnCodes.indexOf(code) < 0) {
+
                         returnCodes.push(code);
+
                     }
+
                 }
+
             }
 
+
+
 		}
+
 	}
+
+
 
 	return returnCodes;
+
 };
 
+
+
 /**
+
  * Changes value of eye
+
  *
+
  * @param {String} _eye Eye to change to
+
  */
+
 ED.Drawing.prototype.setEye = function(_eye) {
+
 	// Change eye
+
 	if (_eye == "Right") this.eye = ED.eye.Right;
+
 	if (_eye == "Left") this.eye = ED.eye.Left;
 
+
+
 	// Refresh drawing
+
 	this.repaint();
+
 };
 
+
+
 /**
+
  * Clears canvas and sets context
+
  */
+
 ED.Drawing.prototype.clear = function() {
+
 	// Resetting a dimension attribute clears the canvas and resets the context
+
 	this.canvas.width = this.canvas.width;
 
+
+
 	// But, might not clear canvas, so do it explicitly
+
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+
+
 	// Set context transform to map from doodle plane to canvas plane
+
 	this.context.translate(this.canvas.width / 2, this.canvas.height / 2);
 
+
+
 	this.context.scale(this.scale, this.scale);
+
 };
 
+
+
 /**
+
  * Clears canvas and draws all doodles
+
  */
+
 ED.Drawing.prototype.repaint = function() {
+
 	// Clear canvas
+
 	this.clear();
 
+
+
 	// Draw background image (In doodle space because of transform)
+
 	if (typeof(this.image) != 'undefined') {
+
 		if (this.image.width >= this.image.height) {
+
 			var height = 1000 * this.image.height / this.image.width;
+
 			this.context.drawImage(this.image, -500, -height / 2, 1000, height);
+
 		} else {
+
 			var width = 1000 * this.image.width / this.image.height;
+
 			this.context.drawImage(this.image, -width / 2, -500, width, 1000);
+
 		}
+
 	}
+
+
 
 	// Redraw all doodles
+
 	this.drawAllDoodles();
 
+
+
 	// Go through doodles unsetting and then setting property display
+
 	for (var i = 0; i < this.doodleArray.length; i++) {
+
 		this.doodleArray[i].setDisplayOfParameterControls(false);
+
 	}
+
 	if (this.selectedDoodle != null) {
+
 		this.selectedDoodle.setDisplayOfParameterControls(true);
+
 	}
+
+
 
 	// ***TODO*** ask Mark what this code is for
+
 	if (!this.modified) {
+
 		this.modified = true;
+
 	}
+
+
 
 	// Draw selection frame
+
 	if (this.selectionRectangleIsBeingDragged) {
+
 		// Get context
+
 		var ctx = this.context;
 
+
+
 		// Boundary path
+
 		ctx.beginPath();
 
+
+
 		// Square
+
 		ctx.moveTo(this.selectionRectangleStart.x, this.selectionRectangleStart.y);
+
 		ctx.lineTo(this.selectionRectangleEnd.x, this.selectionRectangleStart.y);
+
 		ctx.lineTo(this.selectionRectangleEnd.x, this.selectionRectangleEnd.y);
+
 		ctx.lineTo(this.selectionRectangleStart.x, this.selectionRectangleEnd.y);
 
+
+
 		// Close path
+
 		ctx.closePath();
 
+
+
 		// Set line attributes
+
 		ctx.lineWidth = 1;
+
 		ctx.strokeStyle = "gray";
 
+
+
 		ctx.stroke();
+
 	}
+
+
 
 	// Notify
+
 	this.notify("drawingRepainted");
+
 };
 
+
+
 /**
+
  * Calculates angle between three points (clockwise from _pointA to _pointB in radians)
+
  *
+
  * @param {Point} _pointA First point
+
  * @param {Point} _pointM Mid point
+
  * @param {Point} _pointB Last point
+
  * @returns {Float} Angle between three points in radians (clockwise)
+
  */
+
 ED.Drawing.prototype.innerAngle = function(_pointA, _pointM, _pointB) {
+
 	// Get vectors from midpoint to A and B
+
 	var a = new ED.Point(_pointA.x - _pointM.x, _pointA.y - _pointM.y);
+
 	var b = new ED.Point(_pointB.x - _pointM.x, _pointB.y - _pointM.y);
 
+
+
 	return a.clockwiseAngleTo(b);
+
 };
 
+
+
 /**
+
  * Toggles drawing state for drawing points in line
+
  */
+
 ED.Drawing.prototype.togglePointInLine = function() {
+
 	if (this.newPointOnClick) {
+
 		this.newPointOnClick = false;
+
 		this.completeLine = true;
+
 		this.deselectDoodles();
+
 		this.repaint();
+
 	} else {
+
 		this.newPointOnClick = true;
+
 		this.completeLine = false;
+
 	}
+
 };
 
+
+
 /**
+
  * Generates a numeric id guaranteed to be unique for the lifetime of the drawing object
+
  * (Index of doodleArray could be repeated if a doodle is deleted before adding another)
+
  *
+
  * @returns {Int} Id of next doodle
+
  */
+
 ED.Drawing.prototype.nextDoodleId = function() {
+
 	return this.lastDoodleId++;
+
 };
+
+
 
 ED.Drawing.prototype.getScaleLevel = function() {
+
 	return this.globalScaleFactor;
+
 };
 
+
+
 /**
+
  * Changes the drawing colour of freehand drawing
+
  *
+
  * @param {Object} _colour Colour object
+
  * @returns {String} _hexColour A string describing the colour to use for freehand drawing
+
  */
+
 // ED.Drawing.prototype.setSquiggleColour = function(_colour) {
+
 //	this.squiggleColour = _colour;
+
 //
+
 //	this.refreshSquiggleSettings()
+
 // }
 
+
+
 /**
+
  * Changes the line width for freehand drawing
+
  *
+
  * @returns {Int} _hexColour A number describing the width
+
  */
+
 // ED.Drawing.prototype.setSquiggleWidth = function(_width) {
+
 //	this.squiggleWidth = _width;
+
 //
+
 //	this.refreshSquiggleSettings()
+
 // }
 
+
+
 /**
+
  * Changes the line width for freehand drawing
+
  *
+
  * @returns {int} _style A string describing the style to use for freehand drawing
+
  */
+
 // ED.Drawing.prototype.setSquiggleStyle = function(_style) {
+
 //	this.squiggleStyle = _style;
+
 //
+
 //	this.refreshSquiggleSettings()
+
 // }
 
+
+
 /**
+
  * Refreshes the display of settings for freehand drawing
+
  *
+
  * @returns {String} _hexColour A string describing the colour to use for freehand drawing
+
  */
+
 // ED.Drawing.prototype.refreshSquiggleSettings = function() {
+
 //	// Get reference to canvas
+
 //	var displayCanvas = document.getElementById("squiggleSettings" + this.idSuffix);
+
 //
+
 //	if (displayCanvas) {
+
 //		// Get context
+
 //		var ctx = displayCanvas.getContext('2d');
+
 //
+
 //		// Reset canvas
+
 //		displayCanvas.width = displayCanvas.width;
+
 //		ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
 //
+
 //		// Set colours
+
 //		ctx.strokeStyle = this.squiggleColour.rgba();
+
 //		ctx.fillStyle = this.squiggleColour.rgba();;
+
 //
+
 //		// Line width
+
 //		ctx.beginPath();
+
 //		ctx.moveTo(3, 8);
+
 //		ctx.lineTo(20, 8);
+
 //		ctx.lineWidth = this.squiggleWidth / 2;
+
 //		ctx.stroke();
+
 //
+
 //		// Outline or solid
+
 //		ctx.beginPath();
+
 //		ctx.rect(5, 19, 13, 8);
+
 //		ctx.lineWidth = 3;
+
 //		ctx.stroke();
+
 //		if (this.squiggleStyle == ED.squiggleStyle.Solid) {
+
 //			ctx.fill();
+
 //		}
+
 //	}
+
 // }
+
+
 
 ///**
+
 // * Static class to implement groups of doodles
+
 // *
+
 // * @returns {String}
+
 // */
+
 //ED.DoodleGroups =
+
 //{
+
 //		bar: function (val)
+
 //		{
+
 //				console.log(val);
+
 //		},
+
 //		foo: 2
+
 //}
+
 //
+
 //ED.DoodleGroups.foo = 4;
+
 
 /**
  * Doodles are components of drawings which have built in knowledge of what they represent, and how to behave when manipulated;
@@ -8684,215 +11599,423 @@ ED.Surgeon.prototype.draw = function(_point) {
 	return this.isClicked;
 };
 /**
+
  * 
+
  * @author <a href="mailto:bill.aylward@mac.com">Bill Aylward</a>
+
  * @version 0.9
+
  *
+
  * Modification date: 15th June 2012
+
  * Copyright 2012 OpenEyes
+
  *
+
  * This file is part of OpenEyes.
+
  *
+
  * OpenEyes is free software: you can redistribute it and/or modify
+
  * it under the terms of the GNU Affero General Public License as published by
+
  * the Free Software Foundation, either version 3 of the License, or
+
  * (at your option) any later version.
+
  *
+
  * OpenEyes is distributed in the hope that it will be useful,
+
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
  * GNU Affero General Public License for more details.
+
  *
+
  * You should have received a copy of the GNU Affero General Public License
+
  * along with OpenEyes.  If not, see <http://www.gnu.org/licenses/>.
+
  */
 
+
+
 /**
+
  * @namespace ED
+
  * @description Namespace for all EyeDraw classes
+
  */
+
 if (ED == null || typeof(ED) != "object") {
+
 	var ED = new Object();
+
 }
 
+
+
 /**
+
  * Language specific translations. Mostly used for doodle descriptions.
+
  *
+
  * In order to display UTF.8 characters, this file should be loaded with the 'charset="utf-8"' attribute.
+
  * This currently cannot be done with the Yii registerScriptFile method, so should be loaded using a tag in the view file;
+
  * <script src="js/Misc/Translations.js" type="text/javascript" charset="utf-8"></script>
+
  */
+
 ED.trans = new Object();
 
+
+
 // For UTF.8, this file should be loaded with the 'charset="utf-8"' attribute. This currently cannot be done with the Yii registerScriptFile method
+
 ED.trans['ACIOL'] = 'Drag to move<br/>Drag the handle to rotate';
+
 ED.trans['ACMaintainer'] = 'Drag to move';
+
 ED.trans['AngleGradeEast'] = 'Drag handle to adjust amount of angle obscure by iris';
+
 ED.trans['AngleGradeNorth'] = 'Drag handle to adjust amount of angle obscure by iris';
+
 ED.trans['AngleGradeSouth'] = 'Drag handle to adjust amount of angle obscure by iris';
+
 ED.trans['AngleGradeWest'] = 'Drag handle to adjust amount of angle obscure by iris';
+
 ED.trans['AngleNV'] = 'Drag to move around angle<br/>Drag handles to change extent';
+
 ED.trans['AngleRecession'] = 'Drag to move around angle<br/>Drag handles to change extent';
+
 ED.trans['AntSeg'] = 'Drag the handle to resize the pupil<br/><br/>The iris is semi-transparent so that IOLs, and<br/>other structures can be seen behind it';
+
 ED.trans['AntSegCrossSection'] = '';
+
 ED.trans['AntSynech'] = 'Drag to move around angle<br/>Drag handles to change extent';
+
 ED.trans['ArcuateKeratotomy'] = 'Drag to rotate<br/>Drag end handle to increase extent<br/>Drag middle handle to change radius';
+
 ED.trans['ArcuateScotoma'] = 'Drag handle to change size';
+
 ED.trans['BiopsySite'] = 'Drag to position';
+
 ED.trans['Bleb'] = 'Drag to move around the limbus<br/>Drag handle to change size';
+
 ED.trans['BlotHaemorrhage'] = 'Drag to position<br/>Drag the handle to change size';
+
 ED.trans['BuckleSuture'] = 'Drag to position';
+
 ED.trans['BusaccaNodule'] = 'Drag to move around the iris';
+
 ED.trans['CapsularTensionRing'] = 'This cannot be selected directly since it is behind the iris<br/>Select the iris first<br/>Then move the scroll wheel until the ring is selected<br/>Click the \'Move to front\' button<br/>Err.. of course if you are seeing this tooltip you have already done it';
+
 ED.trans['ChandelierSingle'] = 'Drag to rotate around centre<br/>';
+
 ED.trans['ChandelierDouble'] = 'Drag to rotate around centre<br/>';
+
 ED.trans['ChoroidalHaemorrhage'] = 'Drag to move around eye<br/>Drag outer handles to change size</br>Drag middle handle to change posterior extent';
+
 ED.trans['ChoroidalNaevus'] = 'Drag to position<br/>Drag outer handles to change shape<br/>Drag outer ring of top handles to rotate<br/>Drag middle handle to add drusen';
+
 ED.trans['CiliaryInjection'] = 'Drag to rotate around centre<br/>Drag handles to change extent';
+
 ED.trans['Circinate'] = 'Drag to position<br/>Drag handle to change size';
+
 ED.trans['CircumferentialBuckle'] = 'Drag to position<br/>Drag outer handles to change extent<br/>Drag middle handle to change width';
+
 ED.trans['ConjunctivalFlap'] = 'Drag to move around the limbus<br/>Drag handles to change size and depth';
-ED.trans['ContinuousCornealSuture'] = '';
+
 ED.trans['CornealAbrasion'] = 'Drag to position<br/>Drag handle to change size';
+
 ED.trans['CorneaCrossSection'] = '';
+
 ED.trans['CornealErosion'] = 'Drag to position<br/>Drag handle to change size';
-ED.trans['CornealGraft'] = 'Drag to position<br/>Drag handle to change size';
-ED.trans['CornealGraftSuture'] = '';
+
+ED.trans['CornealGraft'] = 'Drag handle to change size';
+
 ED.trans['CornealInlay'] = '';
+
 ED.trans['CornealOedema'] = 'Drag to position<br/>Drag handle to change size';
+
 ED.trans['CornealStriae'] = '';
+
 ED.trans['CornealScar'] = 'Drag outer handle to change shape<br/>Drag inner handle to change density';
+
 ED.trans['CornealSuture'] = 'Drag to move';
+
 ED.trans['CornealLaceration'] = 'Please click to draw each point of the laceration.<br />Double click to complete.';
+
 ED.trans['CorticalCataract'] = 'Drag to move<br/>Drag handle to change density';
+
 ED.trans['CottonWoolSpot'] = 'Drag to position<br/>Drag handle to change shape and size';
+
 ED.trans['CNV'] = 'Drag to move<br/>Drag handle to scale';
+
 ED.trans['CutterPI'] = 'Drag to move around the iris';
+
 ED.trans['CystoidMacularOedema'] = 'Drag handle to change size';
+
 ED.trans['DiabeticNV'] = 'Drag to position<br/>Drag handle to change size';
+
 ED.trans['DiscHaemorrhage'] = 'Drag to position';
+
 ED.trans['DiscPallor'] = 'Drag to position<br/>Drag handles to adjust extent';
+
 ED.trans['DrainageRetinotomy'] = 'Drag to position';
+
 ED.trans['DrainageSite'] = 'Drag to change position';
+
 ED.trans['EncirclingBand'] = 'Drag to change orientation of Watzke sleeve';
+
 ED.trans['EntrySiteBreak'] = 'Drag to position<br/>Drag either end handle to increase extent';
+
 ED.trans['EpiretinalMembrane'] = 'Drag inner handle to change shape and size<br/>Drag outer handle to rotate';
+
 ED.trans['FibrousProliferation'] = 'Drag to position<br/>Drag inner handle to change shape and size<br/>Drag outer handle to rotate';
+
 ED.trans['FibrovascularScar'] = 'Drag to move<br/>Drag handle to scale';
+
 ED.trans['FocalLaser'] = 'Drag the handle for a bigger area with more burns';
+
 ED.trans['Freehand'] = 'Double-click to start drawing<br/>Drag inner handle to change size<br/>Drag outer handle to rotate<br/><br/>Adjust colours and settings in tool bar';
+
 ED.trans['Fundus'] = '';
+
 ED.trans['Fuchs'] = 'Drag handle to change shape';
+
 ED.trans['Geographic'] = 'Drag middle handle to alter size of remaining central island of RPE<br/>Drag outside handle to scale';
+
 ED.trans['Gonioscopy'] = 'Drag top left handle up and down to alter pigment density<br/>Drag top left handle left and right to alter pigment homogeneity';
+
 ED.trans['HardDrusen'] = 'Drag middle handle up and down to alter density of drusen<br/>Drag outside handle to scale';
+
+ED.trans['Drusen'] = 'Drag middle handle up and down to alter density of drusen<br/>Drag outside handle to scale';
+
 ED.trans['HardExudate'] = 'Drag to position';
+
 ED.trans['Hyphaema'] = 'Drag handle vertically to change size<br/>Drag handle horizontally to change density';
+
 ED.trans['Hypopyon'] = 'Drag handle vertically to change size';
+
 ED.trans['IatrogenicBreak'] = 'Drag to position<br/>Drag inner handle to change size<br/>Drag outer handle to rotate';
+
 ED.trans['ILMPeel'] = 'Drag to position<br/>Drag handle to change size';
+
 ED.trans['InjectionSite'] = 'Drag to position<br/>Drag handle to adjust distance from limbus';
+
 ED.trans['ICL'] = 'Drag to move<br/>Drag handle to scale and rotate';
+
 ED.trans['IOL'] = 'Drag to move<br/>Drag handle to scale and rotate';
+
 ED.trans['IrisHook'] = 'Drag to move around the clock<br/><br/>The hook will match the size of the pupil as it changes<br/>Subsequent hooks are added to the next quadrant';
+
 ED.trans['IrisNaevus'] = 'Drag to move<br/>Drag handle to change size';
+
 ED.trans['IRMA'] = 'Drag to move<br/>Drag inner handle to change size<br/>Drag outer handle to rotate';
+
 ED.trans['KeraticPrecipitates'] = 'Drag middle handle up and down to alter density<br/>Drag middle handle left and right to alter size<br/>Drag outside handle to scale';
+
 ED.trans['KoeppeNodule'] = 'Drag to move around the iris';
+
 ED.trans['KrukenbergSpindle'] = 'Drag to move</br>Drag outer handle to change shape';
+
 ED.trans['Label'] = 'Drag to move label, type text to edit<br/>Drag handle to move pointer';
+
 ED.trans['LaserCircle'] = 'Drag handle to change shape';
+
 ED.trans['LaserDemarcation'] = 'Drag to rotate<br/>Drag each end handle to increase extent<br/>Drag the middle handle to move line more posteriorly';
+
 ED.trans['LaserSpot'] = 'Drag to position<br/>Drag the handle to change size';
+
 ED.trans['LasikFlap'] = 'Drag to rotate<br/>Drag the handle to scale';
+
 ED.trans['Lens'] = 'Drag to move<br/>Edit properties when selected<br/>Delete to remove';
+
 ED.trans['LensCrossSection'] = '';
+
 ED.trans['LimbalRelaxingIncision'] = 'Drag to move';
+
 ED.trans['Macroaneurysm'] = 'Drag to move';
+
 ED.trans['MacularDystrophy'] = 'Drag outer handle to change size<br/>Drag middle handle to change type';
+
 ED.trans['MacularGrid'] = 'Drag the handle to scale';
+
 ED.trans['MacularHole'] = 'Drag the handle to scale';
+
 ED.trans['MacularThickening'] = 'Drag to position<br/>Drag handle to change size';
+
 ED.trans['MattressSuture'] = 'Drag to move';
+
 ED.trans['Microaneurysm'] = 'Drag to position';
+
 ED.trans['NerveFibreDefect'] = 'Drag to position<br/>Drag handles to change size';
+
 ED.trans['NuclearCataract'] = 'Drag to move<br/>Drag handle to change density';
+
 ED.trans['OperatingTable'] = '';
+
 ED.trans['OpticDisc'] = 'Basic mode: Drag handle to adjust cup/disc ratio<br/>Expert mode: Drag handles to re-shape disc';
+
 ED.trans['OpticDiscPit'] = 'Drag to position<br/>Drag handle to change shape';
+
 ED.trans['Patch'] = 'Drag to position<br/>Drag handle to change size';
+
 ED.trans['Papilloedema'] = '';
+
 ED.trans['PCIOL'] = 'Drag to move<br/>Drag the handle to rotate';
+
 ED.trans['PeripapillaryAtrophy'] = 'Drag to rotate<br/>Drag handles to change extent';
+
 ED.trans['PeripheralRetinectomy'] = 'Drag to rotate<br/>Drag each end handle to increase extent<br/>Drag the middle handle to move posterior limit';
+
 ED.trans['PeripheralRRD'] = 'Drag to rotate<br/>Drag each end handle to increase extent<br/>Drag the middle handle to move posterior limit';
+
 ED.trans['PhakoIncision'] = 'Drag end handle to change length<br/>Drag the middle handle to change section type<br/>Drag the incision itself to move';
+
 ED.trans['PI'] = 'Drag to move around the iris';
+
 ED.trans['PosteriorCapsule'] = '';
+
 ED.trans['PosteriorEmbryotoxon'] = '';
+
 ED.trans['PosteriorRetinectomy'] = 'Drag to position<br/>Drag the handle to change size';
+
 ED.trans['PosteriorSynechia'] = 'Drag to rotate around centre<br/>Drag handles to increase extent';
+
 ED.trans['PostPole'] = 'The disc cup can be edited by clicking on the disc, and dragging the yellow handle<br/>The gray circle marks one disc diameter from the fovea';
+
 ED.trans['PostSubcapCataract'] = 'Drag handle to change size';
+
 ED.trans['PreRetinalHaemorrhage'] = 'Drag to position<br/>Drag handles to change shape and size';
+
 ED.trans['PRPPostPole'] = '';
+
 ED.trans['PTK'] = 'Drag handle to change size';
+
 ED.trans['RadialSponge'] = 'Drag to change position';
+
 ED.trans['RetinalArteryOcclusionPostPole'] = 'Drag to position<br/>Drag handles to change extent<br/>Drag central handle to alter macular involvement';
+
 ED.trans['RetinalTouch'] = 'Drag to change position';
+
 ED.trans['RetinalVeinOcclusionPostPole'] = 'Drag to position<br/>Drag handles to change extent<br/>Drag central handle to alter macular involvement';
+
 ED.trans['RK'] = 'Drag to rotate<br/>Drag outer handle to resize<br/>Drag inner handle to adjust central extent';
+
 ED.trans['RoundHole'] = '';
+
 ED.trans['RPEAtrophy'] = 'Drag to position<br/>Drag the handle to change size';
+
 ED.trans['RPEDetachment'] = 'Drag to position<br/>Drag handles to change shape<br/>Drag to position<br/>Drag outer ring of top handles to rotate';
+
 ED.trans['RetinalHaemorrhage'] = 'Drag to position<br/>Drag the handle to change size';
+
 ED.trans['RPEHypertrophy'] = 'Drag to position<br/>Drag the handle to change size';
+
 ED.trans['RPERip'] = 'Drag to move<br/>Drag large handle to resize and rotate<br/>Drag other handles to adjust shape';
+
 ED.trans['RRD'] = 'Drag to move around eye<br/>Drag outer handles to change size</br>Drag middle handle to change posterior extent';
+
 ED.trans['Rubeosis'] = 'Drag to rotate around centre<br/>Drag handles to increase extent';
+
 ED.trans['SectorPRP'] = 'Drag to rotate around centre<br/>Drag each end handle to increase extent';
+
 ED.trans['SectorPRPPostPole'] = 'Drag to rotate around centre<br/>Drag each end handle to increase extent';
+
 ED.trans['ScleralIncision'] = 'Drag to move around the sclera';
+
 ED.trans['SectorIridectomy'] = 'Drag to position<br/>Drag handles to adjust extent';
+
 ED.trans['Sclerostomy'] = 'Drag to rotate around centre<br/>Drag each handle to alter gauge<br/>Click suture button to toggle suture';
+
 ED.trans['SidePort'] = 'Drag to move';
+
 ED.trans['SMILE'] = 'Drag to handle to change size';
+
 ED.trans['SubretinalFluid'] = 'Drag to position<br/>Drag handles to change shape<br/>Drag to position<br/>Drag outer ring of top handles to rotate';
+
 ED.trans['SubretinalPFCL'] = 'Drag to position<br/>Drag handle to change size';
+
 ED.trans['Supramid'] = 'Drag handle to move conjunctival end of suture';
+
 ED.trans['Surgeon'] = '';
+
 ED.trans['SwollenDisc'] = '';
+
 ED.trans['Telangiectasis'] = 'Drag middle handle to add pigment and exudate';
+
 ED.trans['ToricPCIOL'] = 'Drag to move<br/>Drag the handle to rotate';
+
 ED.trans['Trabectome'] = 'Drag to position<br/>Drag either end handle to adjust extent';
+
 ED.trans['TrabyConjIncision'] = 'Drag to position<br/>Drag end handle to adjust extent';
+
 ED.trans['TrabyFlap'] = 'Drag to position<br/>Drag either end handle to adjust size</br>Drag middle handle to change sclerostomy';
+
 ED.trans['TrabySuture'] = 'Drag to position<br/>Drag corner handle to adjust orientation</br>Drag lower handle to change suture type';
+
 ED.trans['TractionRetinalDetachment'] = 'Drag to position<br/>Drag inner handle to change shape and size<br/>Drag outer handle to rotate';
+
 ED.trans['TransilluminationDefect'] = 'Drag to rotate around centre<br/>Drag each end handle to alter extent';
+
 ED.trans['Tube'] = 'Drag to change quadrant<br/>Drag handle to move end of tube';
+
 ED.trans['TubeExtender'] = 'Drag to change quadrant<br/>Drag handle to move end of tube';
+
 ED.trans['TubeLigation'] = 'Drag to change position';
+
 ED.trans['UTear'] = '';
+
 ED.trans['ViewObscured'] = 'Drag handle to change opacity';
+
 ED.trans['VitreousOpacity'] = 'Drag to move<br/>Drag the inner handle up and down to alter opacity<br/>Drag the outer handle to scale';
 
+
+
 // ENT
+
 ED.trans['Grommet'] = 'Drag to position';
+
 ED.trans['Perforation'] = 'Drag to move<br/>Drag handle to change size';
 
+
+
 // Cardiology
+
 ED.trans['Crepitations'] = 'Drag to move<br/>Drag handle to resize';
+
 ED.trans['Stenosis'] = 'Drag to move<br/>Drag handle up and down to change degree<br/>Drag handle to left and right to change type';
+
 ED.trans['Wheeze'] = 'Drag to move';
+
 ED.trans['Effusion'] = 'Drag handle to move up';
+
 ED.trans['LeftCoronaryArtery'] = 'Drag handle to move origin and make anomolous';
+
 ED.trans['DrugStent'] = 'Drag to move';
+
 ED.trans['MetalStent'] = 'Drag to move';
+
 ED.trans['Bypass'] = 'Drag handle to alter destination';
+
 ED.trans['Bruit'] = 'Drag to move';
+
 ED.trans['Bruising'] = 'Drag to move<br/>Drag handle to resize';
+
 ED.trans['Haematoma'] = 'Drag to move<br/>Drag handle to resize';
+
 
 /**
  * OpenEyes
@@ -13577,7 +16700,18 @@ ED.AdenoviralKeratitis.prototype.draw = function(_point) {
  */
 ED.AdenoviralKeratitis.prototype.description = function() {
 	return "Adenoviral keratitis";
-}
+};
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {number} SnoMed code of entity represented by doodle
+ */
+ED.AdenoviralKeratitis.prototype.snomedCode = function() {
+    'use strict';
+
+    return 314559002;
+};
 
 /**
  * OpenEyes
@@ -13966,15 +17100,14 @@ ED.AngleGradeEast = function(_drawing, _parameterJSON) {
 	this.className = "AngleGradeEast";
 
 	// Private parameters
-	this.rsl = 480;
-	this.rsli = 470;
-	this.rtmo = 404;
-	this.rtmi = 304;
-	this.rcbo = 270;
-	this.rcbi = 190;
-	this.riro = 190;
-	this.riri = 176;
-	this.rpu = 100;
+    this.rsl = 480;
+    this.rsli = 470;
+    this.rtmo = 404;
+    this.rtmi = 304;
+    this.rcbo = 306;
+    this.riro = 270;
+    this.riri = 230;
+    this.rpu = 100;
 
 	// Derived parameters
 	this.grade = "4";
@@ -14071,24 +17204,39 @@ ED.AngleGradeEast.prototype.dependentParameterValues = function(_parameter, _val
 			var returnValue = "";
 			switch (_value) {
 				case '0':
-					if (-this.apexY >= this.rsli) returnValue = this.apexY;
-					else returnValue = -this.rsli;
+					if (-this.apexY >= this.rsli) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.rsli;
+					}
 					break;
 				case '1':
-					if (-this.apexY >= this.rtmo && -this.apexY < this.rsli) returnValue = this.apexY;
-					else returnValue = -this.rtmo;
+					if (-this.apexY >= this.rtmo && -this.apexY < this.rsli) {
+                        returnValue = this.apexY;
+					} else {
+                    	returnValue = -this.rtmo;
+					}
 					break;
 				case '2':
-					if (-this.apexY >= this.rcbo && -this.apexY < this.rtmo) returnValue = this.apexY;
-					else returnValue = -360; //-this.rcbo;
+					if (-this.apexY >= this.rcbo && -this.apexY < this.rtmo) {
+						returnValue = this.apexY;
+					} else {
+                        returnValue = -306; //-this.rcbo;
+					}
 					break;
 				case '3':
-					if (-this.apexY >= this.riro && -this.apexY < this.rcbo) returnValue = this.apexY;
-					else returnValue = -230; //-this.riro;
+					if (-this.apexY >= this.riro && -this.apexY < this.rcbo) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -270; //-this.riro;
+					}
 					break;
 				case '4':
-					if (-this.apexY >= this.riri && -this.apexY < this.riro) returnValue = this.apexY;
-					else returnValue = -this.riri;
+					if (-this.apexY >= this.riri && -this.apexY < this.riro){
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.riri;
+					}
 					break;
 			}
 			returnArray['apexY'] = returnValue;
@@ -14103,7 +17251,7 @@ ED.AngleGradeEast.prototype.dependentParameterValues = function(_parameter, _val
 					break;
 				case 'Yes':
 					if (-this.apexY < this.rtmo) returnValue = this.apexY;
-					else returnValue = -this.riri;
+					else returnValue = -this.riro;
 					break;
 			}
 			returnArray['apexY'] = returnValue;
@@ -14185,15 +17333,14 @@ ED.AngleGradeNorth = function(_drawing, _parameterJSON) {
 	this.className = "AngleGradeNorth";
 
 	// Private parameters
-	this.rsl = 480;
-	this.rsli = 470;
-	this.rtmo = 404;
-	this.rtmi = 304;
-	this.rcbo = 270;
-	this.rcbi = 190;
-	this.riro = 190;
-	this.riri = 176;
-	this.rpu = 100;
+    this.rsl = 480;
+    this.rsli = 470;
+    this.rtmo = 404;
+    this.rtmi = 304;
+    this.rcbo = 306;
+    this.riro = 270;
+    this.riri = 230;
+    this.rpu = 100;
 
 	// Derived parameters
 	this.grade = "4";
@@ -14290,24 +17437,40 @@ ED.AngleGradeNorth.prototype.dependentParameterValues = function(_parameter, _va
 			var returnValue = "";
 			switch (_value) {
 				case '0':
-					if (-this.apexY >= this.rsli) returnValue = this.apexY;
-					else returnValue = -this.rsli;
+					if (-this.apexY >= this.rsli){
+                        returnValue = this.apexY;
+					}
+					else {
+                        returnValue = -this.rsli;
+					}
 					break;
 				case '1':
-					if (-this.apexY >= this.rtmo && -this.apexY < this.rsli) returnValue = this.apexY;
-					else returnValue = -this.rtmo;
+					if (-this.apexY >= this.rtmo && -this.apexY < this.rsli){
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.rtmo;
+					}
 					break;
 				case '2':
-					if (-this.apexY >= this.rcbo && -this.apexY < this.rtmo) returnValue = this.apexY;
-					else returnValue = -360; //-this.rcbo;
+					if (-this.apexY >= this.rcbo && -this.apexY < this.rtmo){
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -306; //-this.rcbo;
+					}
 					break;
 				case '3':
-					if (-this.apexY >= this.riro && -this.apexY < this.rcbo) returnValue = this.apexY;
-					else returnValue = -230; //-this.riro;
+					if (-this.apexY >= this.riro && -this.apexY < this.rcbo) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -270; //-this.riro;
+					}
 					break;
 				case '4':
-					if (-this.apexY >= this.riri && -this.apexY < this.riro) returnValue = this.apexY;
-					else returnValue = -this.riri;
+					if (-this.apexY >= this.riri && -this.apexY < this.riro) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.riri;
+					}
 					break;
 			}
 			returnArray['apexY'] = returnValue;
@@ -14322,7 +17485,7 @@ ED.AngleGradeNorth.prototype.dependentParameterValues = function(_parameter, _va
 					break;
 				case 'Yes':
 					if (-this.apexY < this.rtmo) returnValue = this.apexY;
-					else returnValue = -this.riri;
+					else returnValue = -this.riro;
 					break;
 			}
 			returnArray['apexY'] = returnValue;
@@ -14404,15 +17567,14 @@ ED.AngleGradeSouth = function(_drawing, _parameterJSON) {
 	this.className = "AngleGradeSouth";
 
 	// Private parameters
-	this.rsl = 480;
-	this.rsli = 470;
-	this.rtmo = 404;
-	this.rtmi = 304;
-	this.rcbo = 270;
-	this.rcbi = 190;
-	this.riro = 190;
-	this.riri = 176;
-	this.rpu = 100;
+    this.rsl = 480;
+    this.rsli = 470;
+    this.rtmo = 404;
+    this.rtmi = 304;
+    this.rcbo = 306;
+    this.riro = 270;
+    this.riri = 230;
+    this.rpu = 100;
 
 	// Derived parameters
 	this.grade = "4";
@@ -14509,24 +17671,40 @@ ED.AngleGradeSouth.prototype.dependentParameterValues = function(_parameter, _va
 			var returnValue = "";
 			switch (_value) {
 				case '0':
-					if (-this.apexY >= this.rsli) returnValue = this.apexY;
-					else returnValue = -this.rsli;
+					if (-this.apexY >= this.rsli) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.rsli;
+					}
 					break;
 				case '1':
-					if (-this.apexY >= this.rtmo && -this.apexY < this.rsli) returnValue = this.apexY;
-					else returnValue = -this.rtmo;
+					if (-this.apexY >= this.rtmo && -this.apexY < this.rsli) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.rtmo;
+					}
 					break;
 				case '2':
-					if (-this.apexY >= this.rcbo && -this.apexY < this.rtmo) returnValue = this.apexY;
-					else returnValue = -360; //-this.rcbo;
+					if (-this.apexY >= this.rcbo && -this.apexY < this.rtmo) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -306; //-this.rcbo;
+					}
 					break;
 				case '3':
-					if (-this.apexY >= this.riro && -this.apexY < this.rcbo) returnValue = this.apexY;
-					else returnValue = -230; //-this.riro;
+					if (-this.apexY >= this.riro && -this.apexY < this.rcbo){
+                        returnValue = this.apexY;
+					}
+					else {
+                        returnValue = -270; //-this.riro;
+					}
 					break;
 				case '4':
-					if (-this.apexY >= this.riri && -this.apexY < this.riro) returnValue = this.apexY;
-					else returnValue = -this.riri;
+					if (-this.apexY >= this.riri && -this.apexY < this.riro) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.riri;
+					}
 					break;
 			}
 			returnArray['apexY'] = returnValue;
@@ -14541,7 +17719,7 @@ ED.AngleGradeSouth.prototype.dependentParameterValues = function(_parameter, _va
 					break;
 				case 'Yes':
 					if (-this.apexY < this.rtmo) returnValue = this.apexY;
-					else returnValue = -this.riri;
+					else returnValue = -this.riro;
 					break;
 			}
 			returnArray['apexY'] = returnValue;
@@ -14627,10 +17805,9 @@ ED.AngleGradeWest = function(_drawing, _parameterJSON) {
 	this.rsli = 470;
 	this.rtmo = 404;
 	this.rtmi = 304;
-	this.rcbo = 270;
-	this.rcbi = 190;
-	this.riro = 190;
-	this.riri = 176;
+	this.rcbo = 306;
+	this.riro = 270;
+	this.riri = 230;
 	this.rpu = 100;
 
 	// Derived parameters
@@ -14646,7 +17823,7 @@ ED.AngleGradeWest = function(_drawing, _parameterJSON) {
 	// Invariant simple parameters
 	this.arc = 90 * Math.PI / 180;
 	this.rotation = 3 * Math.PI / 2;
-}
+};
 
 /**
  * Sets superclass and constructor
@@ -14660,7 +17837,7 @@ ED.AngleGradeWest.superclass = ED.Doodle.prototype;
  */
 ED.AngleGradeWest.prototype.setHandles = function() {
 	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
-}
+};
 
 /**
  * Sets default dragging attributes
@@ -14711,11 +17888,11 @@ ED.AngleGradeWest.prototype.setParameterDefaults = function() {
  */
 ED.AngleGradeWest.prototype.dependentParameterValues = function(_parameter, _value) {
 	var returnArray = new Array();
+    var returnValue = "4";
 
 	switch (_parameter) {
 		case 'apexY':
 			// Return value uses Schaffer classificaton (although visibility is based on Scheie)
-			var returnValue = "4";
 			if (-_value >= this.riro) returnValue = "3";
 			if (-_value >= this.rcbo) returnValue = "2";
 			if (-_value >= this.rtmo) returnValue = "1";
@@ -14725,34 +17902,49 @@ ED.AngleGradeWest.prototype.dependentParameterValues = function(_parameter, _val
 			break;
 
 		case 'grade':
-			var returnValue = "";
+			returnValue = "";
 			switch (_value) {
 				case '0':
-					if (-this.apexY >= this.rsli) returnValue = this.apexY;
-					else returnValue = -this.rsli;
+					if (-this.apexY >= this.rsli) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.rsli;
+					}
 					break;
 				case '1':
-					if (-this.apexY >= this.rtmo && -this.apexY < this.rsli) returnValue = this.apexY;
-					else returnValue = -this.rtmo;
+					if (-this.apexY >= this.rtmo && -this.apexY < this.rsli) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.rtmo;
+					}
 					break;
 				case '2':
-					if (-this.apexY >= this.rcbo && -this.apexY < this.rtmo) returnValue = this.apexY;
-					else returnValue = -360; //-this.rcbo;
+					if (-this.apexY >= this.rcbo && -this.apexY < this.rtmo) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -306; //-this.rcbo;
+					}
 					break;
 				case '3':
-					if (-this.apexY >= this.riro && -this.apexY < this.rcbo) returnValue = this.apexY;
-					else returnValue = -230; //-this.riro;
+					if (-this.apexY >= this.riro && -this.apexY < this.rcbo) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -270; //-this.riro;
+					}
 					break;
 				case '4':
-					if (-this.apexY >= this.riri && -this.apexY < this.riro) returnValue = this.apexY;
-					else returnValue = -this.riri;
+					if (-this.apexY >= this.riri && -this.apexY < this.riro) {
+                        returnValue = this.apexY;
+					} else {
+                        returnValue = -this.riri;
+					}
 					break;
 			}
 			returnArray['apexY'] = returnValue;
 			break;
 
 		case 'seen':
-			var returnValue = "";
+			returnValue = "";
 			switch (_value) {
 				case 'No':
 					if (-this.apexY >= this.rtmo) returnValue = this.apexY;
@@ -14760,7 +17952,7 @@ ED.AngleGradeWest.prototype.dependentParameterValues = function(_parameter, _val
 					break;
 				case 'Yes':
 					if (-this.apexY < this.rtmo) returnValue = this.apexY;
-					else returnValue = -this.riri;
+					else returnValue = -this.riro;
 					break;
 			}
 			returnArray['apexY'] = returnValue;
@@ -14768,7 +17960,7 @@ ED.AngleGradeWest.prototype.dependentParameterValues = function(_parameter, _val
 	}
 
 	return returnArray;
-}
+};
 
 /**
  * Draws doodle or performs a hit test if a Point parameter is passed
@@ -14811,7 +18003,7 @@ ED.AngleGradeWest.prototype.draw = function(_point) {
 
 	// Return value indicating successful hittest
 	return this.isClicked;
-}
+};
 
 /**
  * OpenEyes
@@ -15357,1084 +18549,2380 @@ ED.AntPVR.prototype.diagnosticHierarchy = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * Anterior segment with adjustable sized pupil
+
  *
+
  * @class AntSeg
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.AntSeg = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "AntSeg";
 
+
+
 	// Derived parameters
+
 	this.pupilSize = 'Large';
+
+
 
 	// Other parameters
+
 	this.pxe = false;
+
 	this.coloboma = false;
+
 	this.colour = 'Blue';
+
 	this.ectropion = false;
-	this.cornealSize = 'Normal';
+
+	this.cornealSize = 'Not Checked';
+
 	this.cells = 'Not Checked';
+
 	this.flare = 'Not Checked';
+
 	this.csApexX = 0;
 
+
+
 	// Saved parameters
+
 	this.savedParameterArray = [
+
 		'pupilSize',
+
 		'apexY',
+
 		'rotation',
+
 		'pxe',
+
 		'coloboma',
+
 		'colour',
+
 		'ectropion',
+
 		'cornealSize',
+
 		'cells',
+
 		'flare',
+
 		'csApexX' // store of cross section apex x value
+
 	];
 
+
+
 	// Parameters in doodle control bar (parameter name: parameter label)
+
 	this.controlParameterArray = {
+
 		'pupilSize':'Pupil size',
+
 		'pxe':'Pseudoexfoliation',
+
 		'coloboma':'Coloboma',
+
 		'colour':'Colour',
+
 		'ectropion':'Ectropion uveae',
+
 		'cornealSize':'Corneal size',
+
 		'cells': 'Cells',
+
 		'flare': 'Flare'
+
 	};
 
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
 };
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.AntSeg.prototype = new ED.Doodle();
+
 ED.AntSeg.prototype.constructor = ED.AntSeg;
+
 ED.AntSeg.superclass = ED.Doodle.prototype;
 
-/**
- * Sets handle attributes
- */
-ED.AntSeg.prototype.setHandles = function() {
-	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
-};
+
 
 /**
- * Set default properties
+
+ * Sets handle attributes
+
  */
+
+ED.AntSeg.prototype.setHandles = function() {
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+};
+
+
+
+/**
+
+ * Set default properties
+
+ */
+
 ED.AntSeg.prototype.setPropertyDefaults = function() {
+
 	this.version = 1.1;
+
 	this.isDeletable = false;
+
 	this.isMoveable = false;
+
 	this.isRotatable = true;
+
 	this.isUnique = true;
+
+
 
 	// Update component of validation array for simple parameters (enable 2D control by adding -50,+50 apexX range
+
 	this.parameterValidationArray.apexX.range.setMinAndMax(0, 0);
+
 	this.parameterValidationArray.apexY.range.setMinAndMax(-300, -60);
 
+
+
 	// Add complete validation arrays for derived parameters
+
 	this.parameterValidationArray.pupilSize = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['Large', 'Medium', 'Small'],
+
 		animate: true
+
 	};
+
+
 
 	this.parameterValidationArray.pxe = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: true
+
 	};
+
+
 
 	this.parameterValidationArray.coloboma = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: true
+
 	};
 
+
+
 	this.parameterValidationArray.colour = {
+
 		kind: 'other',
+
 		type: 'string',
+
 		list: ['Blue', 'Brown', 'Gray', 'Green'],
+
 		animate: false
+
 	};
+
+
 
 	this.parameterValidationArray.ectropion = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: true
+
 	};
+
+
 
 	this.parameterValidationArray.cornealSize = {
+
 		kind: 'other',
+
 		type: 'string',
-		list: ['Micro', 'Normal', 'Macro'],
+
+		list: ['Not Checked' , 'Micro', 'Normal', 'Macro'],
+
 		animate: false
+
 	};
+
+
 
 	this.parameterValidationArray.cells = {
+
 		kind: 'other',
+
 		type: 'string',
+
 		list: ['Not Checked', '0 (<1)', '0.5+ (1-5)', '1+ (6-15)', '2+ (16-25)', '3+ (26-50)', '4+ (>50)'],
+
 		animate: false
+
 	};
+
+
 
 	this.parameterValidationArray.flare = {
+
 		kind: 'other',
+
 		type: 'string',
+
 		list: ['Not Checked', '0 (None)', '1+ (Faint)', '2+ (Moderate)', '3+ (Marked)', '4+ (Intense)'],
+
 		animate: false
+
 	};
+
 };
 
+
+
 /**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.AntSeg.prototype.setParameterDefaults = function() {
+
 	this.setParameterFromString('pupilSize', 'Large');
+
 	this.setParameterFromString('pxe', 'false');
-	this.setParameterFromString('cornealSize', 'Normal');
+
+	this.setParameterFromString('cornealSize', 'Not Checked');
+
 };
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @param {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.AntSeg.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = {},
+
 		returnValue;
 
+
+
 	switch (_parameter) {
+
 		case 'apexY':
+
 			if (_value < -200) {
+
 			  returnArray.pupilSize = 'Large';
+
       } else if (_value < -100) {
+
 			  returnArray.pupilSize = 'Medium';
+
       } else {
+
 			  returnArray.pupilSize = 'Small';
+
       }
+
 			break;
+
+
 
 		case 'pupilSize':
+
 			switch (_value) {
+
 				case 'Large':
+
 					if (this.apexY < -200) {
+
 					  returnValue = this.apexY;
+
           } else {
+
 					  returnArray.apexY = -260;
+
           }
+
 					break;
+
 				case 'Medium':
+
 					if (this.apexY >= -200 && this.apexY < -100) {
+
 						returnValue = this.apexY;
+
 					} else {
+
 						returnArray.apexY = -200;
+
 					}
+
 					break;
+
 				case 'Small':
+
 					if (this.apexY >= -100) {
+
 						returnValue = this.apexY;
+
 					} else {
+
 						returnArray.apexY = -100;
+
 					}
+
 					break;
+
 			}
+
 			break;
+
 		case 'coloboma':
+
 			this.isRotatable = (_value === "true");
+
 			this.rotation = _value === "true" ? this.rotation : 0;
+
 			break;
+
 	}
 
+
+
 	return returnArray;
+
 };
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.AntSeg.prototype.draw = function(_point) {
 
+
+
 	// Get context
+
 	var ctx = this.drawing.context;
+
 	var colAngle;
+
 	var colAngleOuter;
+
 	var rimSize;
+
 	var p1;
+
 	var p2;
 
+
+
 	// Call draw method in superclass
+
 	ED.AntSeg.superclass.draw.call(this, _point);
 
+
+
 	// Radius of limbus
+
 	var ro = 380;
+
 	var ri = -this.apexY;
 
+
+
 	// Calculate parameters for arcs
+
 	var arcStart = 0;
+
 	var arcEnd = 2 * Math.PI;
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
+
+
 
 	// Do a 360 arc
+
 	ctx.arc(0, 0, ro, arcStart, arcEnd, true);
 
+
+
 	if (!this.coloboma) {
+
 		// Move to inner circle
+
 		ctx.moveTo(ri, 0);
 
+
+
 		// Arc round edge of pupil
+
 		ctx.arc(0, 0, ri, arcEnd, arcStart, false);
+
 	}
+
 	else {
+
 		// Angular size of coloboma
+
 		colAngle = (Math.PI/3) * 280/ri;
+
 		colAngleOuter = Math.PI/6;
+
 		rimSize = 20;
 
+
+
 		p1 = new ED.Point(0,0);
+
 		p1.setWithPolars(ri, Math.PI + colAngle/2);
+
 		p2 = new ED.Point(0,0);
+
 		p2.setWithPolars(ro - rimSize, Math.PI + colAngleOuter/2);
 
+
+
 		// Coloboma
+
 		ctx.moveTo(-p2.x, p2.y);
+
 		ctx.arc(0, 0, ro - rimSize, Math.PI/2 - colAngleOuter/2, Math.PI/2 + colAngleOuter/2, false);
 
+
+
 		// Arc round edge of pupil
+
 		ctx.arc(0, 0, ri, Math.PI/2 + colAngle/2, Math.PI/2 - colAngle/2, false);
 
+
+
 		// Back to start
+
 		ctx.lineTo(-p2.x, p2.y);
+
 	}
+
+
 
 	// Edge attributes
+
 	ctx.lineWidth = 4;
+
 	ctx.strokeStyle = "gray";
 
+
+
 	// Iris colour
+
 	switch (this.colour) {
+
 		case 'Blue':
+
 			ctx.fillStyle = "rgba(100, 200, 250, 0.5)";
+
 			break;
+
 		case 'Brown':
+
 			ctx.fillStyle = "rgba(172, 100, 55, 0.5)";
+
 			break;
+
 		case 'Gray':
+
 			ctx.fillStyle = "rgba(125, 132, 116, 0.5)";
+
 			break;
+
 		case 'Green':
+
 			ctx.fillStyle = "rgba(114, 172, 62, 0.5)";
+
 			break;
+
 	}
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
+
+
 
 	// Other paths and drawing here
+
 	if (this.drawFunctionMode === ED.drawFunctionMode.Draw) {
+
 		// Pseudo exfoliation
+
 		if (this.pxe) {
+
 			ctx.lineWidth = 8;
+
 			ctx.strokeStyle = "darkgray";
 
+
+
 			var rl = ri * 0.8;
+
 			var rp = ri * 1.05;
+
 			var segments = 36;
+
 			var i;
+
 			var phi = Math.PI * 2 / segments;
 
+
+
 			// Loop around alternating segments
+
 			for (i = 0; i < segments; i++) {
+
 				// PXE on lens
+
 				ctx.beginPath();
+
 				ctx.arc(0, 0, rl, i * phi, i * phi + phi / 2, false);
+
 				ctx.stroke();
+
+
 
 				// PXE on pupil
+
 				ctx.beginPath();
+
 				ctx.arc(0, 0, rp, i * phi, i * phi + phi / 2, false);
+
 				ctx.stroke();
+
 			}
+
 		}
+
+
 
 		// Ectropion uveae
+
 		if (this.ectropion) {
+
 			ctx.beginPath();
+
 			if (this.coloboma) {
+
 				ctx.arc(0, 0, ri, Math.PI/2 - colAngle/2, Math.PI/2 + colAngle/2, true);
+
 			}
+
 			else {
+
 				ctx.arc(0, 0, ri + 16, arcStart, arcEnd, true);
+
 			}
+
 			ctx.lineWidth = 32;
+
 			ctx.lineCap = "round";
+
 			ctx.strokeStyle = "brown";
+
 			ctx.stroke();
+
 		}
+
 	}
+
+
 
 	// Coordinates of handles (in canvas plane)
+
 	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) {
+
 		this.drawHandles(_point);
+
 	}
+
+
 
 	// Return value indicating successful hit test
+
 	return this.isClicked;
+
 };
 
+
+
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.AntSeg.prototype.description = function() {
+
 	var returnValue = "";
+
 	var pupilSize = Math.round(-this.apexY * 0.03);
 
-	// Pupil size and coloboma
-	returnValue += this.pupilSize.toLowerCase() + " pupil (diameter: " + pupilSize + "mm), ";
+
+
+	// Pupil size and coloboma and corneal size
+
+	returnValue += this.pupilSize.toLowerCase() + " pupil (diameter: " + pupilSize + "mm)";
+
+		if(this.cornealSize.toLowerCase() !== 'not checked'){
+
+			returnValue += ', corneal size : ' +  this.cornealSize.toLowerCase();
+
+        }
+
+
 
 	// Coloboma
+
 	if (this.coloboma) {
+
 		returnValue += "coloboma at " + this.clockHour(6) + " o'clock, ";
+
 	}
+
+
 
 	// Ectopion
+
 	if (this.ectropion) {
+
 		returnValue += "ectropion uveae, ";
+
 	}
+
+
 
 	// PXE
+
 	if (this.pxe) {
+
 		returnValue += "pseudoexfoliation, ";
+
 	}
+
+
 
 	if (this.cells && this.cells !== 'Not Checked') {
+
 		returnValue += "cells: " + this.cells + ", ";
+
 	}
+
+
 
 	if (this.flare && this.flare !== 'Not Checked') {
+
 		returnValue += "flare: " + this.flare + ", ";
+
 	}
+
+
 
 	// Empty report so far
+
 	if (returnValue.length === 0 && this.drawing.doodleArray.length === 1) {
+
 		// Is lens present and normal?
+
 		/*
+
 		var doodle = this.drawing.lastDoodleOfClass('Lens');
+
 		if (doodle) {
+
 			var lensDescription = doodle.description();
+
 			if (lensDescription.length == 0) {
+
 				returnValue = "Anterior segment normal, ";
+
 			}
+
 		}
+
 		else {
+
 			returnValue = "Aphakic, ";
+
 		}
+
 		*/
+
 		returnValue = "No abnormality";
+
 	}
 
+
+
 /*
+
 	if (this.pupilSize == 'Large') {
+
 		returnValue += "pupil diameter: " + pupilSize + "mm, ";
+
 	}
+
 */
+
+
 
 	// Remove final comma and space and capitalise first letter
+
 	returnValue = returnValue.replace(/, +$/, '');
+
 	returnValue = returnValue.charAt(0).toUpperCase() + returnValue.slice(1);
 
+
+
 	return returnValue;
+
 };
+
+
 
 ED.AntSeg.prototype.snomedCodes = function()
+
 {
+
     snomedCodes = [];
+
     if (this.pxe) {
+
         snomedCodes.push([44219007, 3]);
+
     }
+
     return snomedCodes;
+
 };
 
-/**
- * OpenEyes
- *
- * Copyright (C) OpenEyes Foundation, 2011-2017
- * This file is part of OpenEyes.
- * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
- *
- * @package OpenEyes
- * @link http://www.openeyes.org.uk
- * @author OpenEyes <info@openeyes.org.uk>
- * @copyright Copyright 2011-2017, OpenEyes Foundation
- * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
- */
 
 /**
+
+ * OpenEyes
+
  *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
- * @class AntSegAngleMarks
- * @property {String} className Name of doodle subclass
- * @param {Drawing} _drawing
- * @param {Object} _parameterJSON
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
+
+
+
+/**
+
+ *
+
+ *
+
+ * @class AntSegAngleMarks
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
 ED.AntSegAngleMarks = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "AntSegAngleMarks";
 
+
+
+	// Parameters from biometry
+
+	this.axis = 180; // steep axis
+
+	this.flatK = 999.9;
+
+	this.steepK = 999.9;
+
 	
+
+	// Calculated parameter
+
+	this.deltaK = 0;
+
+	
+
 	// Saved parameters
-	this.savedParameterArray = [];
+
+	this.savedParameterArray = ['axis','flatK','steepK','deltaK'];
+
 	
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
-}
+
+};
+
+
 
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.AntSegAngleMarks.prototype = new ED.Doodle;
+
 ED.AntSegAngleMarks.prototype.constructor = ED.AntSegAngleMarks;
+
 ED.AntSegAngleMarks.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets default dragging attributes
+
  */
+
 ED.AntSegAngleMarks.prototype.setPropertyDefaults = function() {
+
 	this.isSelectable = false;
+
 	this.addAtBack = true;
-}
 
-/**
- * Sets default parameters (Only called for new doodles)
- * Use the setParameter function for derived parameters, as this will also update dependent variables
- */
-ED.AntSegAngleMarks.prototype.setParameterDefaults = function() {
-}
-
-/**
- * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
- * The returned parameters are animated if their 'animate' property is set to true
- *
- * @param {String} _parameter Name of parameter that has changed
- * @value {Undefined} _value Value of parameter to calculate
- * @returns {Array} Associative array of values of dependent parameters
- */
-ED.AntSegAngleMarks.prototype.dependentParameterValues = function(_parameter, _value) {
-}
-
-/**
- * Draws doodle or performs a hit test if a Point parameter is passed
- *
- * @param {Point} _point Optional point in canvas plane, passed if performing hit test
- */
-ED.AntSegAngleMarks.prototype.draw = function(_point) {
-	
-	// Axis length
-	var l = 499;
-	
-	// Get context
-	var ctx = this.drawing.context;
-
-	// Call draw method in superclass
-	ED.AntSegAngleMarks.superclass.draw.call(this, _point);
-	
-	// Draw invisible boundary box around canvas
-	ctx.moveTo(-l,-l);
-	ctx.lineTo(-l,l);
-	ctx.lineTo(l,l);
-	ctx.lineTo(l,-l);
-	ctx.lineTo(-l,-l);
-	
-	ctx.fillStyle = "rgba(255, 255, 255, 0)";
-	ctx.strokeStyle = "rgba(0,0,0,0)"
-	
-	// Draw boundary path (also hit testing)
-	this.drawBoundary(_point);
-	
-	// Non boundary drawing
-	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
-		ctx.beginPath();
-		
-		// Set style defaults
-		ctx.font="36px Arial";
-		ctx.fillStyle="black";
-		ctx.textAlign="center"; 
-		ctx.textBaseline = "middle";
-		ctx.lineWidth = 3;
-		ctx.strokeStyle = "black";
-		
-		// Number of tick marks
-		var n = 8;
-		
-		// Distance of tick marks from origin
-		var r = 400;
-		
-		// Length of single tick mark
-		var d = 25;
-		
-		var point1 = new ED.Point(0,0);
-		var point2 = new ED.Point(0,0);
-		var point3 = new ED.Point(0,0);
-		for (var i=0; i<n; i++) {
-			var angleRad = 2*Math.PI / n * i;
-			var angleDeg = angleRad * 180 / Math.PI;
-			
-			point1.setWithPolars(r, 2 * Math.PI - angleRad + 0.5*Math.PI);
-			point2.setWithPolars(r+d, 2 * Math.PI - angleRad + 0.5*Math.PI);
-			point3.setWithPolars(r+d*2.5,2 * Math.PI - angleRad + 0.5*Math.PI);
-			
-			ctx.moveTo(point1.x, point1.y);
-			ctx.lineTo(point2.x, point2.y);
-			ctx.fillText(angleDeg + "\xB0",point3.x,point3.y);
-		}
-		
-/*
-		ctx.moveTo(-500,0);
-		ctx.lineTo(500,0);
-*/
-		
-		ctx.stroke();
-		
-		
-		
-		// If toric lens exists, draw flat axis
-		var toricLens = this.drawing.lastDoodleOfClass('ToricPCIOL');
-		if (toricLens) {
-			var phi = 0.7 * Math.PI / 4;
-			var axisRotation = toricLens.rotation + phi - 0.5077 * Math.PI;
-			
-			ctx.beginPath();
-			ctx.save();
-			ctx.rotate(axisRotation);
-			
-			ctx.strokeStyle = "blue";
-			ctx.lineWidth = 8;
-			
-			var w = 420;
-			var z = Math.round(2 * w / (d*2));
-			for (var j=0; j<z; j++) {
-				ctx.moveTo(-w + j*d*2, 0);
-				ctx.lineTo(-w + j*d*2 + d, 0);
-			};
-/*
-			ctx.moveTo(-w, 0);
-			ctx.lineTo(w,0);
-*/
-			ctx.stroke();
-			ctx.restore();
-		}		
-		
-	}
-
-	// Return value indicating successful hittest
-	return this.isClicked;
-}
-
-
-
-/**
- * OpenEyes
- *
- * Copyright (C) OpenEyes Foundation, 2011-2017
- * This file is part of OpenEyes.
- * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
- *
- * @package OpenEyes
- * @link http://www.openeyes.org.uk
- * @author OpenEyes <info@openeyes.org.uk>
- * @copyright Copyright 2011-2017, OpenEyes Foundation
- * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
- */
-
-
-/**
- * Anterior Segment Cross Section ***TODO***
- *
- * @class AntSegCrossSection
- * @property {String} className Name of doodle subclass
- * @param {Drawing} _drawing
- * @param {Object} _parameterJSON
- */
-ED.AntSegCrossSection = function(_drawing, _parameterJSON) {
-	// Set classname
-	this.className = "AntSegCrossSection";
-
-	// Derived parameters
-	this.pupilSize = 'Large';
-
-	this.colour = 'Blue';
-    
-	// Saved parameters
-	this.savedParameterArray = ['apexY', 'apexX','colour','c'];
-
-    // Call superclass constructor
-	ED.Doodle.call(this, _drawing, _parameterJSON);
-
-  	this.linkedDoodleParameters = {
-    	'AntSeg': {
-      		source: ['apexY', 'colour'],
-      		store: [['apexX', 'csApexX']]
-    	}
-  	};
-
-	// Invariant simple parameters
-	this.originX = 44;
-}
-
-/**
- * Sets superclass and constructor
- */
-ED.AntSegCrossSection.prototype = new ED.Doodle;
-ED.AntSegCrossSection.prototype.constructor = ED.AntSegCrossSection;
-ED.AntSegCrossSection.superclass = ED.Doodle.prototype;
-
-/**
- * Sets handle attributes
- */
-ED.AntSegCrossSection.prototype.setHandles = function() {
-	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
-}
-
-/**
- * Sets default dragging attributes
- */
-ED.AntSegCrossSection.prototype.setPropertyDefaults = function() {
-	this.isDeletable = false;
-	this.isMoveable = false;
-	this.isRotatable = false;
 	this.isUnique = true;
 
-	// Update component of validation array for simple parameters
-	//this.parameterValidationArray['apexX']['range'].setMinAndMax(-140, 0);
-	this.parameterValidationArray['apexY']['range'].setMinAndMax(-280, -60);
+
 
 	// Add complete validation arrays for derived parameters
-	this.parameterValidationArray['pupilSize'] = {
+
+	this.parameterValidationArray.axis = {
+
 		kind: 'derived',
-		type: 'string',
-		list: ['Large', 'Medium', 'Small'],
+
+		type: 'mod',
+
+		range: new ED.Range(0, 180),
+
+		clock: 'bottom',
+
 		animate: true
+
 	};
-	
-	this.parameterValidationArray['c'] = {
-		kind: 'other',
-		type: 'int',
-		animate: false
+
+	this.parameterValidationArray.flatK = {
+
+		kind: 'derived',
+
+		type: 'float',
+
+		range: new ED.Range(0, 1000),
+
+		precision: 2,
+
+		animate: true
+
 	};
-	
-	this.parameterValidationArray.colour = {
-		kind: 'other',
-		type: 'string',
-		list: ['Blue', 'Brown', 'Gray', 'Green'],
-		animate: false
+
+	this.parameterValidationArray.steepK = {
+
+		kind: 'derived',
+
+		type: 'float',
+
+		range: new ED.Range(0, 1000),
+
+		precision: 2,
+
+		animate: true
+
 	};
-}
+
+
+
+};
+
+
 
 /**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
-ED.AntSegCrossSection.prototype.setParameterDefaults = function() {
-	this.setParameterFromString('pupilSize', 'Large');
-	this.setParameterFromString('c', '1');
-	this.apexX = 24;
-}
+
+ED.AntSegAngleMarks.prototype.setParameterDefaults = function() {
+
+};
+
+
 
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
- * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+
+ * The returned parameters are animated if their 'animate' property is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
- * @value {Undefined} _value Value of parameter to calculate
+
+ * @param {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
-ED.AntSegCrossSection.prototype.dependentParameterValues = function(_parameter, _value) {
-	var returnArray = new Array();
 
-	switch (_parameter) {
-		case 'apexY':
-			// ***TOSDP*** Putting this here will cancel out any saved value of apexX
-			// Set apexX and its limits for apexX according to value of apexY (prevents collisions with cornea and lens)
-				/// MSC: Max position dependent on lens type present
-			var lens = this.drawing.lastDoodleOfClass('LensCrossSection');
-			if (!lens) lens = this.drawing.lastDoodleOfClass('PCIOLCrossSection');
-			
-			var maxApexX = (lens.className == 'LensCrossSection') ? 32 - (72 / 220) * (this.apexY + 280) + lens.originX - 44: (lens.className == 'PCIOLCrossSection') ? lens.originX - 21 : 25;
-			this.parameterValidationArray['apexX']['range'].setMinAndMax(-40 - (140 / 220) * (this.apexY + 280), maxApexX);
+ED.AntSegAngleMarks.prototype.dependentParameterValues = function(_parameter, _value) {
 
-			// If being synced, make sensible decision about x
-			// Commented out by MCS as was preventing display of saved values ... the above prevents overlap with the PCIOL though
-			// if (!this.drawing.isActive) {
-			// 	var newOriginX = this.parameterValidationArray['apexX']['range'].max;
-			// } else {
-			// 	var newOriginX = this.parameterValidationArray['apexX']['range'].constrain(this.apexX);
-			// }
-			// this.setSimpleParameter('apexX', newOriginX);
+};
 
-			// Set pupil size value
-			if (_value < -200) returnArray['pupilSize'] = 'Large';
-			else if (_value < -100) returnArray['pupilSize'] = 'Medium';
-			else returnArray['pupilSize'] = 'Small';
-			break;
 
-		case 'pupilSize':
-			switch (_value) {
-				case 'Large':
-					returnArray['apexY'] = -260;
-					break;
-				case 'Medium':
-					returnArray['apexY'] = -200;
-					break;
-				case 'Small':
-					returnArray['apexY'] = -100;
-					break;
-			}
-			break;
-
-		// commented out by MCS as seems to be blocking correct colour selection in view mode
-		// case 'c':
-		// 	if (_value === 1) returnArray['colour'] = 'Blue';
-		// 	else if (_value === 2) returnArray['colour'] = 'Brown';
-		// 	else if (_value === 3) returnArray['colour'] = 'Gray';
-		// 	else returnArray['colour'] = 'Green';
-		// 	break;
-	}
-
-	return returnArray;
-}
 
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
-ED.AntSegCrossSection.prototype.draw = function(_point) {
+
+ED.AntSegAngleMarks.prototype.draw = function(_point) {
+
+	
+
+	// Axis length
+
+	var l = 499;
+
+	
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
+    ccc = ctx;
+
+
+
 	// Call draw method in superclass
-	ED.AntSegCrossSection.superclass.draw.call(this, _point);
 
-	// If lens there, take account of pupil size
-	var marginX = this.apexX;
-	//    var doodle = this.drawing.lastDoodleOfClass("LensCrossSection");
-	//    if (doodle) marginX -= 44 - doodle.originX;
+	ED.AntSegAngleMarks.superclass.draw.call(this, _point);
 
-	// Boundary path
-	ctx.beginPath();
+	
 
-	// Bottom cut away
-	ctx.moveTo(60, 480);
-	ctx.lineTo(140, 480);
-	ctx.lineTo(140, 380);
+	// Draw invisible boundary box around canvas
 
-	// Bottom ciliary body
-	ctx.bezierCurveTo(120, 340, 120, 340, 100, 380);
-	ctx.bezierCurveTo(80, 340, 80, 340, 60, 380);
+	ctx.moveTo(-l,-l);
 
-	// Bottom pupil and angle
-	var f = Math.abs(marginX) * 0.15;
-	ctx.bezierCurveTo(40, 460, marginX + 60 + f, -this.apexY, marginX, -this.apexY);
-	ctx.bezierCurveTo(marginX - 60 - f, -this.apexY, -21, 317, 0, 380);
+	ctx.lineTo(-l,l);
 
-	// Top cut away
-	ctx.moveTo(60, -480);
-	ctx.lineTo(140, -480);
-	ctx.lineTo(140, -380);
+	ctx.lineTo(l,l);
 
-	// Bottom ciliary body
-	ctx.bezierCurveTo(120, -340, 120, -340, 100, -380);
-	ctx.bezierCurveTo(80, -340, 80, -340, 60, -380);
+	ctx.lineTo(l,-l);
 
-	// Bottom pupil and angle
-	ctx.bezierCurveTo(40, -460, marginX + 60 + f, this.apexY, marginX, this.apexY);
-	ctx.bezierCurveTo(marginX - 60 - f, this.apexY, -21, -317, 0, -380);
+	ctx.lineTo(-l,-l);
 
-	// Close path
-	ctx.closePath();
+	
 
-	// Set line attributes
-	ctx.lineWidth = 0;
+	ctx.fillStyle = "rgba(255, 255, 255, 0)";
+
 	ctx.strokeStyle = "rgba(0,0,0,0)";
 
+	
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
-	// Non boundary drawing
-	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
-	    // colour fill for iris
-		ctx.lineWidth = 4;
-		ctx.strokeStyle = "gray";
-		switch (this.colour) {
-			case 'Blue':
-				ctx.fillStyle = "rgba(160, 221, 251, 1)";
-				break;
-			case 'Brown':
-				ctx.fillStyle = "rgba(203, 161, 134, 1)";
-				break;
-			case 'Gray':
-				ctx.fillStyle = "rgba(177, 181, 172, 1)";
-				break;
-			case 'Green':
-				ctx.fillStyle = "rgba(169, 206, 141, 1)";
-				break;
-		}
-		
-// 		ctx.fillStyle = "rgba(255, 160, 40, 1)";
-		
-		// bottom iris
-		ctx.beginPath();
-		ctx.moveTo(70, 380);
-		ctx.lineTo(55, 380);
-		ctx.bezierCurveTo(40, 460, marginX + 60 + f, -this.apexY, marginX, -this.apexY);
-		ctx.bezierCurveTo(marginX - 60 - f, -this.apexY, -21, 317, 0, 380);
-		ctx.lineTo(55,480);
-		ctx.fill();
-		ctx.stroke();
-		ctx.closePath();	
-		
-		// top iris
-		ctx.beginPath();
-		ctx.moveTo(70,-380);
-		ctx.lineTo(55,-380);
-		ctx.bezierCurveTo(40, -460, marginX + 60 + f, this.apexY, marginX, this.apexY);
-		ctx.bezierCurveTo(marginX - 60 - f, this.apexY, -21, -317, 0, -380);
-		ctx.lineTo(55, -480);
-		ctx.fill();
-		ctx.stroke();
-		ctx.closePath();
-		
-		ctx.fillStyle = "rgba(255, 160, 40, 1)";		
-		// top cilliary body and cutaway
-		ctx.beginPath();
-		ctx.moveTo(55, -480);
-		ctx.lineTo(140, -480);
-		ctx.lineTo(140, -380);
 	
-		ctx.bezierCurveTo(120, -340, 120, -340, 100, -380);
-		ctx.bezierCurveTo(80, -340, 80, -340, 55, -380);
-		ctx.fill();
-		ctx.stroke();
-		ctx.closePath();
+
+	// Non boundary drawing
+
+	if (this.drawFunctionMode === ED.drawFunctionMode.Draw) {
+
+		ctx.beginPath();
 
 		
-		// bottom cilliary body	and cut away
-		ctx.beginPath();
-		ctx.moveTo(55, 480);
-		ctx.lineTo(140, 480);
-		ctx.lineTo(140, 380);
-	
-		ctx.bezierCurveTo(120, 340, 120, 340, 100, 380);
-		ctx.bezierCurveTo(80, 340, 80, 340, 55, 380);
-		ctx.fill();
+
+		// Set style defaults
+
+		ctx.font="36px Arial";
+
+		ctx.fillStyle="black";
+
+		ctx.textAlign="center"; 
+
+		ctx.textBaseline = "middle";
+
+		ctx.lineWidth = 3;
+
+		ctx.strokeStyle = "black";
+
+		
+
+		// Number of tick marks
+
+		var n = 8;
+
+		
+
+		// Distance of tick marks from origin
+
+		var r = 400;
+
+		
+
+		// Length of single tick mark
+
+		var d = 25;
+
+		
+
+		var point1 = new ED.Point(0,0);
+
+		var point2 = new ED.Point(0,0);
+
+		var point3 = new ED.Point(0,0);
+
+		for (var i=0; i<n; i++) {
+
+			var angleRad = 2*Math.PI / n * i;
+
+			var angleDeg = angleRad * 180 / Math.PI;
+
+			
+
+			point1.setWithPolars(r, 2 * Math.PI - angleRad + 0.5*Math.PI);
+
+			point2.setWithPolars(r+d, 2 * Math.PI - angleRad + 0.5*Math.PI);
+
+			point3.setWithPolars(r+d*2.5,2 * Math.PI - angleRad + 0.5*Math.PI);
+
+			
+
+			ctx.moveTo(point1.x, point1.y);
+
+			ctx.lineTo(point2.x, point2.y);
+
+			ctx.fillText(angleDeg + "\xB0",point3.x,point3.y);
+
+		}
+
+
+
+		// draw tick marks and label with angle in degrees
+
 		ctx.stroke();
-		ctx.closePath();
+
+		
+
+		// Indicate Infero-nasal corner of canvas
+
+		//// ** TO DO ** confirm will always be in corner of canvas - might need to use this.drawing.canvas.width*0.5 etc
+
+		ctx.beginPath();
+
+		
+
+		// Fill triangle in appropriate corner and colour for eye
+
+		ctx.fillStyle = (this.drawing.eye == ED.eye.Right) ? "green" : "red";
+
+		var eyeToggle = (this.drawing.eye == ED.eye.Right) ? +1 : -1;
+
+		ctx.moveTo(300 * eyeToggle,-500);
+
+		ctx.lineTo(500 * eyeToggle,-500);
+
+		ctx.lineTo(500 * eyeToggle,-300);
+
+		ctx.fill();
+
+		
+
+		// Label "R" or "L" eye
+
+		ctx.font="84px Arial";
+
+		ctx.lineWidth = 3;
+
+		ctx.strokeStyle = ctx.fillStyle;
+
+		var eyeText = (this.drawing.eye == ED.eye.Right) ? "R" : "L";
+
+		ctx.fillText(eyeText,-445 * eyeToggle,-440);
+
+		
+
+		// Label "SN" text in appropriate corner for eye
+
+		ctx.font="56px Arial";
+
+		ctx.fillStyle="white";
+
+		ctx.textAlign="center"; 
+
+		ctx.textBaseline = "middle";
+
+		ctx.lineWidth = 3;
+
+		ctx.strokeStyle = "white";
+
+		ctx.fillText("SN",440 * eyeToggle,-440);
+
+
+
+		// Convert axis from degrees to radians
+
+		var axisRad = this.axis / 180 * Math.PI;		
+
+		
+
+		// Commented out by MSC 05/2018 so will indicate axis for all IOL types, not just the Toric
+
+		// If toric lens exists, draw flat axis
+
+// 		var toricLens = this.drawing.lastDoodleOfClass('ToricPCIOL');
+
+// 		if (toricLens) {
+
+// 			var phi = 0.7 * Math.PI / 4;
+
+// 			var axisRotation = toricLens.rotation + phi - 0.5077 * Math.PI;
+
+
+
+			// Draw steep axis
+
+			ctx.beginPath();
+
+			ctx.strokeStyle = "rgb(242, 72, 72)";
+
+			ctx.lineWidth = 8;
+
+
+
+			ctx.save();
+
+			ctx.rotate(-axisRad);
+
+
+
+			var w = 420;
+
+			var z = Math.round(2 * w / (d*2));
+
+			for (var j=0; j<z; j++) {
+
+				ctx.moveTo(-w + j*d*2, 0);
+
+				ctx.lineTo(-w + j*d*2 + d, 0);
+
+			}
+
+			ctx.stroke();
+
+			ctx.restore();
+
+
+
+			ctx.save();
+
+			ctx.beginPath();
+
+
+
+			var indicator_point = new ED.Point(0,0);
+
+			indicator_point.setWithPolars(r+d+35,2 * Math.PI - axisRad + 0.5*Math.PI);
+
+
+
+			ctx.fillStyle = '#e4edf5';
+
+			ctx.strokeStyle = 'black';
+
+			//ctx.fillStyle = 'white';
+
+			ctx.rect(indicator_point.x-50,indicator_point.y-25,100,50);
+
+			ctx.stroke();
+
+			ctx.fill();
+
+			ctx.font="bold 40px Arial";
+
+			ctx.fillStyle="black";
+
+			ctx.textAlign="center";
+
+			ctx.textBaseline = "middle";
+
+			ctx.lineWidth = 3;
+
+			ctx.strokeStyle = "black";
+
+			ctx.fillText(this.axis + "\xB0",indicator_point.x,indicator_point.y);
+
+
+
+			ctx.restore();
+
+// 		}		
+
+		
+
+		// Legend - steep axis
+
+		ctx.beginPath();
+
+		ctx.moveTo(-495 * eyeToggle, 480);
+
+		ctx.lineTo(-480 * eyeToggle, 480);
+
+		ctx.moveTo(-475 * eyeToggle, 480);
+
+		ctx.lineTo(-460 * eyeToggle, 480);
+
+		ctx.moveTo(-455 * eyeToggle, 480);
+
+		ctx.lineTo(-440 * eyeToggle, 480);
+
+		ctx.stroke();
+
+		
+
+		ctx.font="italic 36px Arial";
+
+		ctx.fillStyle="black";
+
+		ctx.textAlign="center"; 
+
+		ctx.textBaseline = "middle";
+
+		ctx.lineWidth = 3;
+
+		ctx.strokeStyle = "black";
+
+		ctx.fillText("Steep axis",-350 * eyeToggle,480);
+
+		
+
+		// Write delta K value, if derived from biometry (ie. not default values)
+
+		if (this.flatK !== 999.9 && this.steepK !== 999.9) {
+
+			this.calculateDeltaK();
+
+			ctx.font="bold 44px Arial";
+
+			ctx.fillText("\u0394 " + this.deltaK + "D",-400 * eyeToggle,430);
+
+		}
 
 	}
 
-	// Coordinates of handles (in canvas plane)
-	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
 
-	// Draw handles if selected
-	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
 	// Return value indicating successful hittest
+
 	return this.isClicked;
-}
+
+};
+
+
+
+
+
+ED.AntSegAngleMarks.prototype.calculateDeltaK = function(_point) {
+
+	this.deltaK = (this.steepK - this.flatK).toFixed(2);
+
+};
+
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
+
+
+
+
 
 /**
- * Anterior Synechiae
- *
- * @class AntSynech
- * @property {String} className Name of doodle subclass
- * @param {Drawing} _drawing
- * @param {Object} _parameterJSON
- */
-ED.AntSynech = function(_drawing, _parameterJSON) {
-	// Set classname
-	this.className = "AntSynech";
 
-	// Private parameters
-	this.rtmi = 304;
-	this.riri = 176;
+ * Anterior Segment Cross Section ***TODO***
+
+ *
+
+ * @class AntSegCrossSection
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.AntSegCrossSection = function(_drawing, _parameterJSON) {
+
+	// Set classname
+
+	this.className = "AntSegCrossSection";
+
+
+
+	// Derived parameters
+
+	this.pupilSize = 'Large';
+
+
+
+	this.colour = 'Blue';
+
+    
 
 	// Saved parameters
-	this.savedParameterArray = ['arc', 'rotation', 'apexY'];
 
-	// Call superclass constructor
+	this.savedParameterArray = ['apexY', 'apexX','colour','c'];
+
+
+
+    // Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+
+
+  	this.linkedDoodleParameters = {
+
+    	'AntSeg': {
+
+      		source: ['apexY', 'colour'],
+
+      		store: [['apexX', 'csApexX']]
+
+    	}
+
+  	};
+
+
+
+	// Invariant simple parameters
+
+	this.originX = 44;
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
-ED.AntSynech.prototype = new ED.Doodle;
-ED.AntSynech.prototype.constructor = ED.AntSynech;
-ED.AntSynech.superclass = ED.Doodle.prototype;
+
+ED.AntSegCrossSection.prototype = new ED.Doodle;
+
+ED.AntSegCrossSection.prototype.constructor = ED.AntSegCrossSection;
+
+ED.AntSegCrossSection.superclass = ED.Doodle.prototype;
+
+
 
 /**
+
  * Sets handle attributes
+
  */
-ED.AntSynech.prototype.setHandles = function() {
-	this.handleArray[0] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
-	this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+ED.AntSegCrossSection.prototype.setHandles = function() {
+
 	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
 }
 
+
+
 /**
+
  * Sets default dragging attributes
+
  */
-ED.AntSynech.prototype.setPropertyDefaults = function() {
-	this.isScaleable = false;
+
+ED.AntSegCrossSection.prototype.setPropertyDefaults = function() {
+
+	this.isDeletable = false;
+
 	this.isMoveable = false;
 
+	this.isRotatable = false;
+
+	this.isUnique = true;
+
+
+
 	// Update component of validation array for simple parameters
-	this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.125, +1.5);
-	this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.125, +1.5);
-	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
-	this.parameterValidationArray['apexY']['range'].setMinAndMax(-480, -260);
-	this.parameterValidationArray['arc']['range'].setMinAndMax(30 * Math.PI / 180, Math.PI * 2);
+
+	//this.parameterValidationArray['apexX']['range'].setMinAndMax(-140, 0);
+
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-280, -60);
+
+
+
+	// Add complete validation arrays for derived parameters
+
+	this.parameterValidationArray['pupilSize'] = {
+
+		kind: 'derived',
+
+		type: 'string',
+
+		list: ['Large', 'Medium', 'Small'],
+
+		animate: true
+
+	};
+
+	
+
+	this.parameterValidationArray['c'] = {
+
+		kind: 'other',
+
+		type: 'int',
+
+		animate: false
+
+	};
+
+	
+
+	this.parameterValidationArray.colour = {
+
+		kind: 'other',
+
+		type: 'string',
+
+		list: ['Blue', 'Brown', 'Gray', 'Green'],
+
+		animate: false
+
+	};
+
 }
 
+
+
 /**
- * Sets default parameters
+
+ * Sets default parameters (Only called for new doodles)
+
+ * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
-ED.AntSynech.prototype.setParameterDefaults = function() {
-	this.arc = 30 * Math.PI / 180;
-	this.apexY = -this.rtmi;
-	this.setRotationWithDisplacements(0, -60);
+
+ED.AntSegCrossSection.prototype.setParameterDefaults = function() {
+
+	this.setParameterFromString('pupilSize', 'Large');
+
+	this.setParameterFromString('c', '1');
+
+	this.apexX = 24;
+
 }
 
+
+
 /**
- * Draws doodle or performs a hit test if a Point parameter is passed
+
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
+ * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+
  *
- * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ * @param {String} _parameter Name of parameter that has changed
+
+ * @value {Undefined} _value Value of parameter to calculate
+
+ * @returns {Array} Associative array of values of dependent parameters
+
  */
-ED.AntSynech.prototype.draw = function(_point) { console.log(this.apexY);
+
+ED.AntSegCrossSection.prototype.dependentParameterValues = function(_parameter, _value) {
+
+	var returnArray = new Array();
+
+
+
+	switch (_parameter) {
+
+		case 'apexY':
+
+			// ***TOSDP*** Putting this here will cancel out any saved value of apexX
+
+			// Set apexX and its limits for apexX according to value of apexY (prevents collisions with cornea and lens)
+
+				/// MSC: Max position dependent on lens type present
+
+			var lens = this.drawing.lastDoodleOfClass('LensCrossSection');
+
+			if (!lens) lens = this.drawing.lastDoodleOfClass('PCIOLCrossSection');
+
+			if (!lens) lens = this.drawing.lastDoodleOfClass('ToricPCIOLCrossSection');
+
+
+
+			var maxApexX = (lens.className == 'LensCrossSection') ? 32 - (72 / 220) * (this.apexY + 280) + lens.originX - 44: (lens.className == 'PCIOLCrossSection' || lens.className == 'ToricPCIOLCrossSection') ? lens.originX - 21 : 25;
+
+			this.parameterValidationArray['apexX']['range'].setMinAndMax(-40 - (140 / 220) * (this.apexY + 280), maxApexX);
+
+
+
+			// If being synced, make sensible decision about x
+
+			// Commented out by MCS as was preventing display of saved values ... the above prevents overlap with the PCIOL though
+
+			// if (!this.drawing.isActive) {
+
+			// 	var newOriginX = this.parameterValidationArray['apexX']['range'].max;
+
+			// } else {
+
+			// 	var newOriginX = this.parameterValidationArray['apexX']['range'].constrain(this.apexX);
+
+			// }
+
+			// this.setSimpleParameter('apexX', newOriginX);
+
+
+
+			// Set pupil size value
+
+			if (_value < -200) returnArray['pupilSize'] = 'Large';
+
+			else if (_value < -100) returnArray['pupilSize'] = 'Medium';
+
+			else returnArray['pupilSize'] = 'Small';
+
+			break;
+
+
+
+		case 'pupilSize':
+
+			switch (_value) {
+
+				case 'Large':
+
+					returnArray['apexY'] = -260;
+
+					break;
+
+				case 'Medium':
+
+					returnArray['apexY'] = -200;
+
+					break;
+
+				case 'Small':
+
+					returnArray['apexY'] = -100;
+
+					break;
+
+			}
+
+			break;
+
+
+
+		// commented out by MCS as seems to be blocking correct colour selection in view mode
+
+		// case 'c':
+
+		// 	if (_value === 1) returnArray['colour'] = 'Blue';
+
+		// 	else if (_value === 2) returnArray['colour'] = 'Brown';
+
+		// 	else if (_value === 3) returnArray['colour'] = 'Gray';
+
+		// 	else returnArray['colour'] = 'Green';
+
+		// 	break;
+
+	}
+
+
+
+	return returnArray;
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.AntSegCrossSection.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
+	ED.AntSegCrossSection.superclass.draw.call(this, _point);
+
+
+
+	// If lens there, take account of pupil size
+
+	var marginX = this.apexX;
+
+	//    var doodle = this.drawing.lastDoodleOfClass("LensCrossSection");
+
+	//    if (doodle) marginX -= 44 - doodle.originX;
+
+
+
+	// Boundary path
+
+	ctx.beginPath();
+
+
+
+	// Bottom cut away
+
+	ctx.moveTo(60, 480);
+
+	ctx.lineTo(140, 480);
+
+	ctx.lineTo(140, 380);
+
+
+
+	// Bottom ciliary body
+
+	ctx.bezierCurveTo(120, 340, 120, 340, 100, 380);
+
+	ctx.bezierCurveTo(80, 340, 80, 340, 60, 380);
+
+
+
+	// Bottom pupil and angle
+
+	var f = Math.abs(marginX) * 0.15;
+
+	ctx.bezierCurveTo(40, 460, marginX + 60 + f, -this.apexY, marginX, -this.apexY);
+
+	ctx.bezierCurveTo(marginX - 60 - f, -this.apexY, -21, 317, 0, 380);
+
+
+
+	// Top cut away
+
+	ctx.moveTo(60, -480);
+
+	ctx.lineTo(140, -480);
+
+	ctx.lineTo(140, -380);
+
+
+
+	// Bottom ciliary body
+
+	ctx.bezierCurveTo(120, -340, 120, -340, 100, -380);
+
+	ctx.bezierCurveTo(80, -340, 80, -340, 60, -380);
+
+
+
+	// Bottom pupil and angle
+
+	ctx.bezierCurveTo(40, -460, marginX + 60 + f, this.apexY, marginX, this.apexY);
+
+	ctx.bezierCurveTo(marginX - 60 - f, this.apexY, -21, -317, 0, -380);
+
+
+
+	// Close path
+
+	ctx.closePath();
+
+
+
+	// Set line attributes
+
+	ctx.lineWidth = 0;
+
+	ctx.strokeStyle = "rgba(0,0,0,0)";
+
+
+
+	// Draw boundary path (also hit testing)
+
+	this.drawBoundary(_point);
+
+
+
+	// Non boundary drawing
+
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+	    // colour fill for iris
+
+		ctx.lineWidth = 4;
+
+		ctx.strokeStyle = "gray";
+
+		switch (this.colour) {
+
+			case 'Blue':
+
+				ctx.fillStyle = "rgba(160, 221, 251, 1)";
+
+				break;
+
+			case 'Brown':
+
+				ctx.fillStyle = "rgba(203, 161, 134, 1)";
+
+				break;
+
+			case 'Gray':
+
+				ctx.fillStyle = "rgba(177, 181, 172, 1)";
+
+				break;
+
+			case 'Green':
+
+				ctx.fillStyle = "rgba(169, 206, 141, 1)";
+
+				break;
+
+		}
+
+		
+
+// 		ctx.fillStyle = "rgba(255, 160, 40, 1)";
+
+		
+
+		// bottom iris
+
+		ctx.beginPath();
+
+		ctx.moveTo(70, 380);
+
+		ctx.lineTo(55, 380);
+
+		ctx.bezierCurveTo(40, 460, marginX + 60 + f, -this.apexY, marginX, -this.apexY);
+
+		ctx.bezierCurveTo(marginX - 60 - f, -this.apexY, -21, 317, 0, 380);
+
+		ctx.lineTo(55,480);
+
+		ctx.fill();
+
+		ctx.stroke();
+
+		ctx.closePath();	
+
+		
+
+		// top iris
+
+		ctx.beginPath();
+
+		ctx.moveTo(70,-380);
+
+		ctx.lineTo(55,-380);
+
+		ctx.bezierCurveTo(40, -460, marginX + 60 + f, this.apexY, marginX, this.apexY);
+
+		ctx.bezierCurveTo(marginX - 60 - f, this.apexY, -21, -317, 0, -380);
+
+		ctx.lineTo(55, -480);
+
+		ctx.fill();
+
+		ctx.stroke();
+
+		ctx.closePath();
+
+		
+
+		ctx.fillStyle = "rgba(255, 160, 40, 1)";		
+
+		// top cilliary body and cutaway
+
+		ctx.beginPath();
+
+		ctx.moveTo(55, -480);
+
+		ctx.lineTo(140, -480);
+
+		ctx.lineTo(140, -380);
+
+	
+
+		ctx.bezierCurveTo(120, -340, 120, -340, 100, -380);
+
+		ctx.bezierCurveTo(80, -340, 80, -340, 55, -380);
+
+		ctx.fill();
+
+		ctx.stroke();
+
+		ctx.closePath();
+
+
+
+		
+
+		// bottom cilliary body	and cut away
+
+		ctx.beginPath();
+
+		ctx.moveTo(55, 480);
+
+		ctx.lineTo(140, 480);
+
+		ctx.lineTo(140, 380);
+
+	
+
+		ctx.bezierCurveTo(120, 340, 120, 340, 100, 380);
+
+		ctx.bezierCurveTo(80, 340, 80, 340, 55, 380);
+
+		ctx.fill();
+
+		ctx.stroke();
+
+		ctx.closePath();
+
+
+
+	}
+
+
+
+	// Coordinates of handles (in canvas plane)
+
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+
+
+
+	// Draw handles if selected
+
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+	// Return value indicating successful hittest
+
+	return this.isClicked;
+
+}
+
+
+/**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * Anterior Synechiae
+
+ *
+
+ * @class AntSynech
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.AntSynech = function(_drawing, _parameterJSON) {
+
+	// Set classname
+
+	this.className = "AntSynech";
+
+
+
+	// Private parameters
+
+	this.rtmi = 304;
+
+	this.riri = 176;
+
+
+
+	// Saved parameters
+
+	this.savedParameterArray = ['arc', 'rotation', 'apexY'];
+
+
+
+	// Call superclass constructor
+
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+}
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.AntSynech.prototype = new ED.Doodle;
+
+ED.AntSynech.prototype.constructor = ED.AntSynech;
+
+ED.AntSynech.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets handle attributes
+
+ */
+
+ED.AntSynech.prototype.setHandles = function() {
+
+	this.handleArray[0] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+	this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+}
+
+
+
+/**
+
+ * Sets default dragging attributes
+
+ */
+
+ED.AntSynech.prototype.setPropertyDefaults = function() {
+
+	this.isScaleable = false;
+
+	this.isMoveable = false;
+
+
+
+	// Update component of validation array for simple parameters
+
+	this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.125, +1.5);
+
+	this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.125, +1.5);
+
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
+
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-480, -260);
+
+	this.parameterValidationArray['arc']['range'].setMinAndMax(30 * Math.PI / 180, Math.PI * 2);
+
+}
+
+
+
+/**
+
+ * Sets default parameters
+
+ */
+
+ED.AntSynech.prototype.setParameterDefaults = function() {
+
+	this.arc = 30 * Math.PI / 180;
+
+	this.apexY = -this.rtmi;
+
+	this.setRotationWithDisplacements(0, -60);
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.AntSynech.prototype.draw = function(_point) {
+
+	// Get context
+
+	var ctx = this.drawing.context;
+
+
+
+	// Call draw method in superclass
+
 	ED.AntSynech.superclass.draw.call(this, _point);
 
+
+
 	// AntSynech is at equator
+
 	var ras = -this.apexY;
+
 	this.rir = this.riri;
+
+
 
 	var r = this.rir + (ras - this.rir) / 2;
 
+
+
 	// Calculate parameters for arcs
+
 	var theta = this.arc / 2;
+
 	var arcStart = -Math.PI / 2 + theta;
+
 	var arcEnd = -Math.PI / 2 - theta;
+
 	var outArcStart = -Math.PI / 2 + theta - Math.PI / 14;
+
 	var outArcEnd = -Math.PI / 2 - theta + Math.PI / 14;
 
+
+
 	// Coordinates of 'corners' of AntSynech
+
 	var topRightX = this.rir * Math.sin(theta);
+
 	var topRightY = -this.rir * Math.cos(theta);
+
 	var topLeftX = -this.rir * Math.sin(theta);
+
 	var topLeftY = topRightY;
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Path
+
 	ctx.arc(0, 0, this.rir, arcStart, arcEnd, true);
+
 	ctx.arc(0, 0, ras, outArcEnd, outArcStart, false);
 
+
+
 	// Close path
+
 	ctx.closePath();
 
+
+
 	// Set fill attributes (same colour as Iris)
+
 	ctx.fillStyle = "rgba(100, 200, 250, 1.0)";
+
 	ctx.strokeStyle = "rgba(100, 100, 100, 1.0)";
+
 	ctx.lineWidth = 4;
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Coordinates of handles (in canvas plane)
+
 	this.handleArray[0].location = this.transform.transformPoint(new ED.Point(topLeftX, topLeftY));
+
 	this.handleArray[3].location = this.transform.transformPoint(new ED.Point(topRightX, topRightY));
+
 	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(0, this.apexY));
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
+
+
 
 /**
+
  * Returns a String which, if not empty, determines the root descriptions of multiple instances of the doodle
+
  *
+
  * @returns {String} Group description
+
  */
+
 ED.AntSynech.prototype.groupDescription = function() {
+
 	// Calculate total extent in degrees
+
 	var degrees = this.drawing.totalDegreesExtent(this.className);
 
+
+
 	// Return string
+
 	return "Anterior synechiae over " + degrees.toString() + " degrees";
+
 }
+
 
 /**
  * OpenEyes
@@ -17235,181 +21723,556 @@ ED.BiopsySite.prototype.description = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
- * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * (C) Moorfields Eye Hospital NHS Foundation Trust, 2008-2011
+
+ * (C) OpenEyes Foundation, 2011-2013
+
  * This file is part of OpenEyes.
- * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
- * @copyright Copyright 2011-2017, OpenEyes Foundation
- * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ * @copyright Copyright (c) 2008-2011, Moorfields Eye Hospital NHS Foundation Trust
+
+ * @copyright Copyright (c) 2011-2013, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
+
  */
 
+
+
 /**
+
  * Bleb
+
  *
+
  * @class Bleb
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.Bleb = function(_drawing, _parameterJSON) {
-	// Set classname
-	this.className = "Bleb";
 
-	// Saved parameters
-	this.savedParameterArray = ['rotation','arc'];
+    // Set classname
 
-	// Call superclass constructor
-	ED.Doodle.call(this, _drawing, _parameterJSON);
-}
+    this.className = "Bleb";
+
+
+
+    // Other parameters
+
+    this.leakage = "None";
+
+
+
+    // Saved parameters
+
+    this.savedParameterArray = ['rotation', 'arc', 'leakage', 'apexX', 'apexY'];
+
+
+
+    // Parameters in doodle control bar (parameter name: parameter label)
+
+    this.controlParameterArray = {'leakage':'Leakage'};
+
+
+
+    // Call superclass constructor
+
+    ED.Doodle.call(this, _drawing, _parameterJSON);
+
+};
+
+
 
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.Bleb.prototype = new ED.Doodle;
+
 ED.Bleb.prototype.constructor = ED.Bleb;
+
 ED.Bleb.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets handle attributes
+
  */
+
 ED.Bleb.prototype.setHandles = function() {
-	this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
-}
+
+    this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+    this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+};
+
+
 
 /**
+
  * Sets default dragging attributes
+
  */
+
 ED.Bleb.prototype.setPropertyDefaults = function() {
-	this.isScaleable = false;
-	this.isMoveable = false;
-	this.isArcSymmetrical = true;
 
-	// Update component of validation array for simple parameters
-	this.parameterValidationArray['arc']['range'].setMinAndMax(Math.PI / 12, Math.PI / 2);
-}
+    this.isScaleable = false;
+
+    this.isMoveable = false;
+
+    this.isArcSymmetrical = true;
+
+
+
+    // Update component of validation array for simple parameters
+
+    this.parameterValidationArray['arc']['range'].setMinAndMax(Math.PI / 12, Math.PI / 2);
+
+    this.parameterValidationArray['apexX']['range'].setMinAndMax(-100, +100);
+
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-500, -380);
+
+
+
+    // Add complete validation arrays for derived parameters
+
+    this.parameterValidationArray['leakage'] = {
+
+        kind: 'derived',
+
+        type: 'string',
+
+        list: ['None', 'Minimal', 'Moderate', 'Brisk'],
+
+        animate: true
+
+    };
+
+};
+
+
 
 /**
+
  * Sets default parameters
+
  */
+
 ED.Bleb.prototype.setParameterDefaults = function() {
-	this.setRotationWithDisplacements(30, 30);
-	this.arc = Math.PI/8;
-}
+
+    this.setRotationWithDisplacements(30, 30);
+
+    this.arc = Math.PI/8;
+
+    this.apexY = -400;
+
+    this.setParameterFromString('leakage', 'None');
+
+};
+
+
 
 /**
+
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
+ * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+
+ *
+
+ * @param {String} _parameter Name of parameter that has changed
+
+ * @param {undefined} _value Value of parameter to calculate
+
+ * @returns {Array} Associative array of values of dependent parameters
+
+ */
+
+ED.Bleb.prototype.dependentParameterValues = function(_parameter, _value) {
+
+    var returnArray = [];
+
+
+
+    switch (_parameter) {
+
+        case 'arc':
+
+            // Adjust limit of apexX according to size of bleb (represented by arc parameter)
+
+            var lx = 1.2 * 400 * Math.tan(_value/2);
+
+            this.parameterValidationArray['apexX']['range'].setMinAndMax(-lx, +lx);
+
+            var ly = 0.9 * 400 * Math.cos(_value/2);
+
+            this.parameterValidationArray['apexY']['range'].setMinAndMax(-500, -ly);
+
+            break;
+
+    }
+
+
+
+    return returnArray;
+
+};
+
+/**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.Bleb.prototype.draw = function(_point) {
-	// Get context
-	var ctx = this.drawing.context;
 
-	// Call draw method in superclass
-	ED.Bleb.superclass.draw.call(this, _point);
+    // Get context
 
-	// Base radius
-	var r = 384;
+    var ctx = this.drawing.context;
 
-	// Boundary path
-	ctx.beginPath();
 
-	// Radii
-	var ro = 500;
-	var r = 470;
-	var ri = 384;
 
-	// Calculate parameters for arcs
-	var theta = this.arc / 2;
-	var eps = Math.PI/30;
-	var phi = Math.PI/40;
-	var arcStart = -Math.PI / 2 + theta;
-	var arcEnd = -Math.PI / 2 - theta;
+    // Call draw method in superclass
 
-	// Coordinates of 'corners' of doodle
-	var topRightX = ro * Math.sin(theta);
-	var topRightY = -ro * Math.cos(theta);
-	var topLeftX = -ro * Math.sin(theta);
-	var topLeftY = topRightY;
-	var handleRightX = r * Math.sin(theta + eps);
-	var handleRightY = -r * Math.cos(theta + eps);
-	var handleLeftX = -r * Math.sin(theta + eps);
-	var handleLeftY = handleRightY;
-	var cpRightX = r * Math.sin(theta + eps + phi);
-	var cpRightY = -r * Math.cos(theta + eps + phi);
-	var cpLeftX = -r * Math.sin(theta + eps + phi);
-	var cpLeftY = cpRightY;
-	var bottomRightX = ri * Math.sin(theta);
-	var bottomRightY = -ri * Math.cos(theta);
-	var bottomLeftX = -ri * Math.sin(theta);
-	var bottomLeftY = bottomRightY;
+    ED.Bleb.superclass.draw.call(this, _point);
 
-	// Boundary path
-	ctx.beginPath();
 
-	// Arc across
-	ctx.arc(0, 0, ro, -Math.PI / 2 + theta, -Math.PI / 2 - theta, true);
 
-	// Curvy left hand edge
-	ctx.quadraticCurveTo(cpLeftX, cpLeftY, bottomLeftX, bottomLeftY);
+    // Base radius
 
-	// Arc back to mirror image point on the other side
-	ctx.arc(0, 0, ri, -Math.PI / 2 - theta, -Math.PI / 2 + theta, false);
+    var r = 470;
 
-	// Curvy right hand edge
-	ctx.quadraticCurveTo(cpRightX, cpRightY, topRightX, topRightY);
 
-	// Close path
-	ctx.closePath();
 
-	// Colour of fill
-	ctx.fillStyle = "rgba(240,240,240,0.9)";
+    // Boundary path
 
-	// Set line attributes
-	ctx.lineWidth = 4;
+    ctx.beginPath();
 
-	// Colour of outer line is dark gray
-	ctx.strokeStyle = "rgba(120,120,120,0.75)";;
 
-	// Draw boundary path (also hit testing)
-	this.drawBoundary(_point);
 
-	// Non-boundary paths
-	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
-		ctx.beginPath();
-		ctx.moveTo(-50, -ri);
-		ctx.lineTo(-50, -ri * 1.2);
-		ctx.lineTo(50, -ri * 1.2);
-		ctx.lineTo(50, -ri);
-		ctx.stroke();
-	}
+    // Radii
 
-	// Coordinates of handles (in canvas plane)
-	this.handleArray[3].location = this.transform.transformPoint(new ED.Point(handleRightX, handleRightY));
+    var ro = 500;
 
-	// Draw handles if selected
-	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point)
+    var ri = 384;
 
-	// Return value indicating successful hittest
-	return this.isClicked;
-}
+
+
+    // Calculate parameters for arcs
+
+    var theta = this.arc / 2;
+
+    var eps = Math.PI/30;
+
+    var phi = Math.PI/40;
+
+    var arcStart = -Math.PI / 2 + theta;
+
+    var arcEnd = -Math.PI / 2 - theta;
+
+
+
+    // Coordinates of 'corners' of doodle
+
+    var topRightX = ro * Math.sin(theta);
+
+    var topRightY = -ro * Math.cos(theta);
+
+    var topLeftX = -ro * Math.sin(theta);
+
+    var topLeftY = topRightY;
+
+    var handleRightX = r * Math.sin(theta + eps);
+
+    var handleRightY = -r * Math.cos(theta + eps);
+
+    var handleLeftX = -r * Math.sin(theta + eps);
+
+    var handleLeftY = handleRightY;
+
+    var cpRightX = r * Math.sin(theta + eps + phi);
+
+    var cpRightY = -r * Math.cos(theta + eps + phi);
+
+    var cpLeftX = -r * Math.sin(theta + eps + phi);
+
+    var cpLeftY = cpRightY;
+
+    var bottomRightX = ri * Math.sin(theta);
+
+    var bottomRightY = -ri * Math.cos(theta);
+
+    var bottomLeftX = -ri * Math.sin(theta);
+
+    var bottomLeftY = bottomRightY;
+
+
+
+    // Boundary path
+
+    ctx.beginPath();
+
+
+
+    // Arc across
+
+    ctx.arc(0, 0, ro, -Math.PI / 2 + theta, -Math.PI / 2 - theta, true);
+
+
+
+    // Curvy left hand edge
+
+    ctx.quadraticCurveTo(cpLeftX, cpLeftY, bottomLeftX, bottomLeftY);
+
+
+
+    // Arc back to mirror image point on the other side
+
+    ctx.arc(0, 0, ri, -Math.PI / 2 - theta, -Math.PI / 2 + theta, false);
+
+
+
+    // Curvy right hand edge
+
+    ctx.quadraticCurveTo(cpRightX, cpRightY, topRightX, topRightY);
+
+
+
+    // Close path
+
+    ctx.closePath();
+
+
+
+    // Colour of fill
+
+    ctx.fillStyle = "rgba(240,240,240,0.9)";
+
+
+
+    // Set line attributes
+
+    ctx.lineWidth = 4;
+
+
+
+    // Colour of outer line is dark gray
+
+    ctx.strokeStyle = "rgba(120,120,120,0.75)";
+
+
+
+    // Draw boundary path (also hit testing)
+
+    this.drawBoundary(_point);
+
+
+
+    // Non-boundary paths
+
+    if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(-50, -ri);
+
+        ctx.lineTo(-50, -ri * 1.2);
+
+        ctx.lineTo(50, -ri * 1.2);
+
+        ctx.lineTo(50, -ri);
+
+        ctx.stroke();
+
+
+
+        if (this.leakage !== "None") {
+
+
+
+            // Size of triangular leakage area
+
+            var l;
+
+            switch (this.leakage) {
+
+                case 'Minimal':
+
+                    l = 100;
+
+                    break;
+
+                case 'Moderate':
+
+                    l = 150;
+
+                    break;
+
+                case 'Brisk':
+
+                    l = 200;
+
+                    break;
+
+            }
+
+
+
+            // Apex angle of leakage triangle
+
+            var phi = Math.PI/8;
+
+
+
+            // Apex and source of leakage
+
+            ctx.beginPath();
+
+            ctx.moveTo(this.apexX,this.apexY);
+
+
+
+            // Calculate position of points making up triangular area of leakage
+
+            var p1 = new ED.Point(0, 0);
+
+            p1.setWithPolars(-l, phi - this.rotation);
+
+            var p2 = new ED.Point(0, 0);
+
+            p2.setWithPolars(-l, -phi - this.rotation);
+
+
+
+            // Radius of tear drop
+
+            r = p1.distanceTo(p2)/2;
+
+
+
+            // Centre of tear drop
+
+            var p3 = new ED.Point(0, 0);
+
+            p3.setWithPolars(-l, -this.rotation);
+
+
+
+            // Complete path
+
+            ctx.lineTo(this.apexX + p1.x, this.apexY + p1.y);
+
+            ctx.arc(this.apexX + p3.x, this.apexY + p3.y, r, Math.PI - this.rotation, 2 * Math.PI - this.rotation, true);
+
+            ctx.lineTo(this.apexX + p2.x, this.apexY + p2.y);
+
+            ctx.closePath();
+
+
+
+            // Fill it
+
+            ctx.fillStyle = "rgba(0, 255, 0, 0.75)";
+
+            ctx.fill();
+
+        }
+
+    }
+
+
+
+    // Coordinates of handles (in canvas plane)
+
+    this.handleArray[3].location = this.transform.transformPoint(new ED.Point(handleRightX, handleRightY));
+
+    if (this.leakage !== "None") {
+
+        this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+
+    }
+
+    else {
+
+        this.handleArray[4].location = this.transform.transformPoint(new ED.Point(-600, -600));
+
+    }
+
+
+
+    // Draw handles if selected
+
+    if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+    // Return value indicating successful hittest
+
+    return this.isClicked;
+
+};
+
+
 
 /**
- * Returns a string containing a text description of the doodle
- *
- * @returns {String} Description of doodle
- */
-ED.Bleb.prototype.description = function() {
-	return "Trabeculectomy bleb at " + this.clockHour() + " o'clock";;
-}
 
+ * Returns a string containing a text description of the doodle
+
+ *
+
+ * @returns {String} Description of doodle
+
+ */
+
+ED.Bleb.prototype.description = function() {
+
+    var returnString = "Trabeculectomy bleb at " + this.clockHour() + " o'clock";
+
+    if (this.leakage !== "None") {
+
+    	returnString += " with " + this.leakage.toLowerCase() + " leakage";
+
+    }
+
+
+
+    return returnString;
+
+};
 /**
  * OpenEyes
  *
@@ -18562,7 +23425,18 @@ ED.ChoroidalHaemorrhage.prototype.description = function() {
  */
 ED.ChoroidalHaemorrhage.prototype.snomedCode = function() {
 	return 419596007;
-}
+};
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {number} SnoMed code of entity represented by doodle
+ */
+ED.ChoroidalHaemorrhage.prototype.snomedCode = function() {
+    'use strict';
+
+    return 122003;
+};
 
 /**
  * OpenEyes
@@ -19714,6 +24588,335 @@ ED.Conjunctivitis.prototype.description = function() {
   return returnValue;
 }
 /**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * Sector PRP
+
+ *
+
+ * @class Conjunctiva
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.Conjunctiva = function(_drawing, _parameterJSON) {
+
+    // Set classname
+
+    this.className = "Conjunctiva";
+
+
+
+    // Saved parameters
+
+    this.savedParameterArray = ['arc', 'rotation'];
+
+
+
+    // Call super-class constructor
+
+    ED.Doodle.call(this, _drawing, _parameterJSON);
+
+};
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.Conjunctiva.prototype = new ED.Doodle;
+
+ED.Conjunctiva.prototype.constructor = ED.Conjunctiva;
+
+ED.Conjunctiva.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets handle attributes
+
+ */
+
+ED.Conjunctiva.prototype.setHandles = function() {
+
+    this.handleArray[0] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+    this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+};
+
+
+
+/**
+
+ * Set default properties
+
+ */
+
+ED.Conjunctiva.prototype.setPropertyDefaults = function() {
+
+    this.isMoveable = false;
+
+
+
+    // Update component of validation array for simple parameters
+
+    this.parameterValidationArray['arc']['range'].setMinAndMax(Math.PI / 6, Math.PI * 2);
+
+    this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
+
+};
+
+
+
+/**
+
+ * Sets default parameters (Only called for new doodles)
+
+ * Use the setParameter function for derived parameters, as this will also update dependent variables
+
+ */
+
+ED.Conjunctiva.prototype.setParameterDefaults = function() {
+
+    this.arc = 55 * Math.PI / 180;
+
+
+
+    var doodle = this.drawing.lastDoodleOfClass(this.className);
+
+    if (doodle) {
+
+        this.rotation = doodle.rotation + (this.drawing.eye == ED.eye.Right ? -1 : 1) * (doodle.arc / 2 + this.arc / 2 + Math.PI / 12);
+
+    } else {
+
+        this.rotation = (this.drawing.eye == ED.eye.Right ? -1 : 1) * this.arc / 2;
+
+    }
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.Conjunctiva.prototype.draw = function(_point) {
+
+    // Get context
+
+    var ctx = this.drawing.context;
+
+
+
+    // Call draw method in superclass
+
+    ED.Conjunctiva.superclass.draw.call(this, _point);
+
+
+
+    // Radius of outer curve just inside ora on right and left fundus diagrams
+
+    var ro = 952 / 2;
+
+    var ri = 100;
+
+    var r = ri + (ro - ri) / 2;
+
+
+
+    // Calculate parameters for arcs
+
+    var theta = this.arc / 2;
+
+    var arcStart = -Math.PI / 2 + theta;
+
+    var arcEnd = -Math.PI / 2 - theta;
+
+
+
+    // Coordinates of 'corners' of Conjunctiva
+
+    var topRightX = r * Math.sin(theta);
+
+    var topRightY = -r * Math.cos(theta);
+
+    var topLeftX = -r * Math.sin(theta);
+
+    var topLeftY = topRightY;
+
+
+
+    // Boundary path
+
+    ctx.beginPath();
+
+
+
+    // Arc across to mirror image point on the other side
+
+    ctx.arc(0, 0, ro, arcStart, arcEnd, true);
+
+
+
+    // Arc back to mirror image point on the other side
+
+    ctx.arc(0, 0, ri, arcEnd, arcStart, false);
+
+
+
+    // Close path
+
+    ctx.closePath();
+
+
+
+    // Set line attributes
+
+    ctx.lineWidth = 40;
+
+    ctx.fillStyle = "rgba(255,255,255,0)";
+
+    ctx.strokeStyle = "rgba(255,255,255,0)";
+
+
+
+    // Draw boundary path (also hit testing)
+
+    this.drawBoundary(_point);
+
+
+
+    // Non boundary drawing
+
+    if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+        // PRP spot data
+
+        var si = 30;
+
+        var sd = (30 + si);
+
+
+
+        // Array of number of spots for each radius value
+
+        var count = [47, 41, 35, 28, 22, 15];
+
+
+
+        // Iterate through radius and angle to draw sector
+
+        var i = 0;
+
+        for (var r = ro - si; r > ri; r -= sd) {
+
+            var j = 0;
+
+
+
+            for (var a = -Math.PI / 2 - arcStart; a < this.arc - Math.PI / 2 - arcStart; a += sd / r) {
+
+                a = -Math.PI / 2 - arcStart + j * 2 * Math.PI / count[i];
+
+
+
+                var p = new ED.Point(0, 0);
+
+                p.setWithPolars(r, a);
+
+                this.drawLaserSpot(ctx, p.x, p.y);
+
+
+
+                this.drawCircle(ctx, p.x, p.y, r, 'brown', 1, 'brown');
+
+
+
+                j++;
+
+            }
+
+
+
+            i++;
+
+        }
+
+    }
+
+
+
+    // Coordinates of handles (in canvas plane)
+
+    this.handleArray[0].location = this.transform.transformPoint(new ED.Point(topLeftX, topLeftY));
+
+    this.handleArray[3].location = this.transform.transformPoint(new ED.Point(topRightX, topRightY));
+
+
+
+    // Draw handles if selected
+
+    if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+    // Return value indicating successful hit test
+
+    return this.isClicked;
+
+}
+
+
+/**
  * OpenEyes
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
@@ -20561,239 +25764,493 @@ ED.Cornea.prototype.description = function()
     return '';
 };
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * Cornea Cross Section ***TODO***
+
  *
+
  * @class CorneaCrossSection
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.CorneaCrossSection = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "CorneaCrossSection";
 
+
+
 	// Other parameters
+
 	this.shape = "";
+
 	this.pachymetry = 540;
+
 	
+
 	// Saved parameters
+
 	this.savedParameterArray = ['shape', 'pachymetry', 'originX', 'apexX', 'apexY'];
+
 	
+
 	// Parameters in doodle control bar (parameter name: parameter label)
+
 	this.controlParameterArray = {
+
 		'shape':'Shape',
+
 		'pachymetry':'Pachymetry',
+
 	};
+
 	
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
 
+
+
     this.linkedDoodleParameters = {
+
         'Cornea': {
+
             source: ['shape', 'pachymetry'],
+
             store: [['apexX', 'csApexX'], ['apexY', 'csApexY'], ['originX', 'csOriginX']]
+
         }
+
     };
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.CorneaCrossSection.prototype = new ED.Doodle;
+
 ED.CorneaCrossSection.prototype.constructor = ED.CorneaCrossSection;
+
 ED.CorneaCrossSection.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets handle attributes
+
  */
+
 ED.CorneaCrossSection.prototype.setHandles = function() {
+
 	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
 }
 
+
+
 /**
+
  * Sets default dragging attributes
+
  */
+
 ED.CorneaCrossSection.prototype.setPropertyDefaults = function() {
+
 	this.isDeletable = false;
+
 	this.isMoveable = false;
+
 	this.isRotatable = false;
+
 	this.isUnique = true;
+
 	
+
 	// Update validation array for simple parameters
+
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-365, -300);
+
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-100, +100);
+
 	
+
 	// Other parameters
+
 	this.parameterValidationArray['shape'] = {
+
 		kind: 'other',
+
 		type: 'string',
+
 		list: ['Normal', 'Keratoconus', 'Keratoglobus'],
+
 		animate: false
+
 	};
+
 	this.parameterValidationArray['pachymetry'] = {
+
 		kind: 'other',
+
 		type: 'int',
+
 		range: new ED.Range(400, 700),
+
 		precision: 1,
+
 		animate: false
+
 	};
+
 }
 
+
+
 /**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.CorneaCrossSection.prototype.setParameterDefaults = function() {
+
 	this.originX = 50;
+
 	this.apexX = -363;
+
 	this.apexY = 0;
+
 	this.setParameterFromString('shape', 'Normal');
+
 	this.setParameterFromString('pachymetry', '540');
+
 }
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if their 'animate' property is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @value {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.CorneaCrossSection.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = new Array();
 
+
+
 	switch (_parameter) {
+
 		case 'pachymetry':
+
 			returnArray['pachymetry'] = _value;
+
 			break;
+
 	}
+
+
 
 	return returnArray;
+
 }
+
+
 
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.CorneaCrossSection.prototype.draw = function(_point) {
+
 // 	console.log(this.apexX, this.apexY);
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.CorneaCrossSection.superclass.draw.call(this, _point);
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Top cut away
+
 	ctx.moveTo(60, -480);
+
 	ctx.lineTo(-80, -480);
+
 	ctx.bezierCurveTo(-100, -440, -100, -440, -120, -380);
 
+
+
 	// Front of cornea
+
 	switch (this.shape) {
+
 		case "Normal":
+
 			ctx.bezierCurveTo(-240, -260, -320, -160, -320, 0);
+
 			ctx.bezierCurveTo(-320, 160, -240, 260, -120, 380);
+
 			break;
+
 		
+
 		case "Keratoconus":
+
 			ctx.bezierCurveTo(-240, -260, this.apexX, this.apexY - 100, this.apexX, this.apexY);
+
 			ctx.bezierCurveTo(this.apexX, this.apexY + 100, -240, 260, -120, 380);
+
 			break;
+
 			
+
 		case "Keratoglobus":
+
 			ctx.bezierCurveTo(-240, -260, -380, -100, -380, 100);
+
 			ctx.bezierCurveTo(-380, 200, -240, 360, -120, 380);
+
 			break;
+
 	}
+
+
 
 	// Bottom cut away
+
 	ctx.bezierCurveTo(-100, 440, -100, 440, -80, 480);
+
 	ctx.lineTo(60, 480);
+
 	ctx.lineTo(0, 380);
 
+
+
 	// Back of cornea
+
 	var thickness = this.pachymetry/5;
+
 	switch (this.shape) {
+
 		case "Normal":
+
 			ctx.bezierCurveTo(-80, 260, -220, 180, -220, 0);
+
 			ctx.bezierCurveTo(-220, -180, -80, -260, 0, -380);
+
 			break;
+
 		
+
 		case "Keratoconus":
+
 			ctx.bezierCurveTo(-80, 260, this.apexX + thickness, this.apexY + 120, this.apexX + thickness, this.apexY);
+
 			ctx.bezierCurveTo(this.apexX + thickness, this.apexY - 120, -80, -260, 0, -380);
+
 			break;
+
 			
+
 		case "Keratoglobus":
+
 			ctx.bezierCurveTo(-80, 260, -260, 220, -280, 100);
+
 			ctx.bezierCurveTo(-280, -140, -120, -200, 0, -380);
+
 			break;
+
 	}
+
+
 
 	// Close path
+
 	ctx.closePath();
 
+
+
 	// Set path attributes
+
 	ctx.lineWidth = 4;
+
 	ctx.fillStyle = "rgba(245, 245, 245, 0.5)";
+
 	ctx.strokeStyle = "gray";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary drawing
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
 		// Top sclera
+
 		ctx.beginPath();
+
 		ctx.moveTo(56, -478);
+
 		ctx.lineTo(-78, -478);
+
 		ctx.bezierCurveTo(-98, -440, -96, -440, -118, -378);
+
 		ctx.lineTo(-4, -378);
+
 		ctx.lineTo(56, -478);
 
+
+
 		// Bottom scleral
+
 		ctx.moveTo(56, 478);
+
 		ctx.lineTo(-78, 478);
+
 		ctx.bezierCurveTo(-98, 440, -96, 440, -118, 378);
+
 		ctx.lineTo(-4, 378);
+
 		ctx.closePath();
 
+
+
 		ctx.fillStyle = "rgba(255,255,185,1)";
+
 		ctx.fill();
+
 	}
+
 	
+
 	// Apex handle not present if normal
+
 	if (this.shape == "Keratoconus") {
+
 		// Coordinates of handles (in canvas plane)
+
 		this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
 
+
+
 		// Draw handles if selected
+
 		if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
 	}
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
+
+
+
+ED.CorneaCrossSection.prototype.description = function() {
+
+    var desc = [];
+
+    if(this.shape !== 'Normal') {
+
+        desc.push(this.shape);
+
+    }
+
+
+
+    desc = desc.join(", ");
+
+    return desc.charAt(0).toUpperCase() + desc.slice(1);
+
+};
+
 
 /**
  * OpenEyes
@@ -21406,7 +26863,7 @@ ED.CornealErosion.prototype.groupDescription = function() {
  */
 
 /**
- * Corneal Oedema
+ * Corneal Graft
  *
  * @class CornealGraft
  * @property {String} className Name of doodle subclass
@@ -21643,6 +27100,13 @@ ED.CornealGraft.prototype.dependentParameterValues = function(_parameter, _value
 					if (individualSutures[i].cornealGraft == this) individualSutures[i].setSimpleParameter('originX', _value);
 				}
 			}
+			
+			// update rejection, if present
+			var rejectionDoodle = this.drawing.lastDoodleOfClass("CornealGraftRejection");
+			if (rejectionDoodle) {
+				rejectionDoodle.setSimpleParameter('originX', _value);
+				rejectionDoodle.computeDoodleHeight();
+			}
 			break;
 		
 		case 'originY':
@@ -21672,6 +27136,10 @@ ED.CornealGraft.prototype.dependentParameterValues = function(_parameter, _value
 					if (individualSutures[i].cornealGraft == this) individualSutures[i].setSimpleParameter('originY', _value);
 				}
 			}
+			
+			// update rejection, if present
+			var rejectionDoodle = this.drawing.lastDoodleOfClass("CornealGraftRejection");
+			if (rejectionDoodle) rejectionDoodle.setSimpleParameter('originY', _value);
 			break;
 			
 		case 'depth':
@@ -21896,7 +27364,7 @@ ED.CornealGraft.prototype.getSutures = function() {
 
 /**
  * OpenEyes
- * MSC
+ *
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
  * This file is part of OpenEyes.
@@ -22367,6 +27835,1079 @@ ED.CornealGraftCrossSection.prototype.draw = function(_point) {
 		
 	// Non boundary drawing
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {}
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+	// Return value indicating successful hittest
+	return this.isClicked;
+	
+}
+
+
+
+/**
+ * OpenEyes
+ *
+ *
+ * (C) OpenEyes Foundation, 2017
+ * This file is part of OpenEyes.
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package OpenEyes
+ * @link http://www.openeyes.org.uk
+ * @author OpenEyes <info@openeyes.org.uk>
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+ */
+
+/**
+ * Corneal graft rejection (Khodadoust line) drawing
+ *
+ * @class CornealGraftRejection
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Object} _parameterJSON
+ */
+ED.CornealGraftRejection = function(_drawing, _parameterJSON) {
+	// Set classname
+	this.className = "CornealGraftRejection";
+	
+	// Private parameters
+	this.pixelsPerMillimetre = 63.3333;
+	
+	// derived parameter
+	this.oedemaIntensity = 'Mild';
+	this.i = 1;
+	
+	this.complete = false;
+	this.boundaryMin = -380;
+	this.boundaryWidth = 760;
+	this.numberOfHandles = 1;
+	this.mousePoint = new ED.Point(-1000,0); //default off canvas so not visible
+	this.csOriginX = 0;
+
+	// Saved parameters
+	this.savedParameterArray = ['complete','numberOfHandles','originX','originY','oedemaIntensity','boundaryMin','boundaryWidth','apexX','apexY','csOriginX'];
+
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {
+		'oedemaIntensity':'Oedema'
+	};
+
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.CornealGraftRejection.prototype = new ED.Doodle;
+ED.CornealGraftRejection.prototype.constructor = ED.CornealGraftRejection;
+ED.CornealGraftRejection.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.CornealGraftRejection.prototype.setHandles = function() {
+	if (this.numberOfHandles>0) {
+		for (var i = 0; i < this.numberOfHandles; i++) {
+			this.handleArray[i] = new ED.Doodle.Handle(null, true, ED.Mode.Handles, false);
+		}
+	}
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.CornealGraftRejection.prototype.setPropertyDefaults = function() {
+	this.isRotatable = true;
+	this.isMoveable = false;
+	this.isUnique = true;
+	
+	// Add complete validation arrays for derived parameters
+	this.parameterValidationArray['oedemaIntensity'] = {
+		kind: 'derived',
+		type: 'string',
+		list: ['Mild', 'Moderate', 'Severe'],
+		animate: false
+	};
+	this.parameterValidationArray['i'] = {
+		kind: 'other',
+		type: 'int',
+		range: [1, 2, 3],
+		animate: false
+	};
+	
+	// Create ranges to constrain handles
+	this.handleVectorRangeArray = new Array();
+	var range = new Object;
+	range.length = new ED.Range(-this.boundaryMin, -this.boundaryMin);
+	range.angle = new ED.Range(0,2*Math.PI);
+	this.handleVectorRangeArray[0] = range;
+		
+	// Add mouse listener events for doodle
+	var d = this;
+
+	//Complete doodle on double click
+/*
+	d.drawing.canvas.addEventListener('dblclick', function(e) {
+		if (d.isSelected && !d.complete) {
+			d.complete = true;
+			d.drawing.repaint();
+		}
+	}, false);
+*/
+
+	//Draws straight line to mouse
+	this.drawing.canvas.addEventListener('mousemove', function(e) {
+		if (!d.complete && d.isSelected) {
+			var position = ED.findPosition(this, e);
+			var mousePosDoodlePlane = d.drawing.inverseTransform.transformPoint(position); // coordinates of mouse in doodle plane
+			mousePosDoodlePlane.x = mousePosDoodlePlane.x - d.originX;
+			mousePosDoodlePlane.y = mousePosDoodlePlane.y - d.originY;
+			d.mousePoint = new ED.Point(mousePosDoodlePlane.x, mousePosDoodlePlane.y);
+			d.drawing.repaint();
+		}
+	}, false);
+
+	//Draws handle at mousedown location
+	this.drawing.canvas.addEventListener('mousedown', function(e) {
+		if (d.draggingHandleIndex==null && d.isSelected && !d.complete) {
+			var position = ED.findPosition(this, e);
+			var mousePosDoodlePlane = d.drawing.inverseTransform.transformPoint(position); // coordinates of mouse in doodle plane
+			mousePosDoodlePlane.x = mousePosDoodlePlane.x - d.originX;
+			mousePosDoodlePlane.y = mousePosDoodlePlane.y - d.originY;
+			if (mousePosDoodlePlane.x>d.boundaryMin && mousePosDoodlePlane.y>d.boundaryMin && mousePosDoodlePlane.x<(d.boundaryMin+d.boundaryWidth) && mousePosDoodlePlane.y<(d.boundaryMin+d.boundaryWidth)) {
+				d.addHandle(mousePosDoodlePlane);
+			}
+		}
+	}, false);
+
+}
+
+/**
+ * Sets default parameters (Only called for new doodles)
+ * Use the setParameter function for derived parameters, as this will also update dependent variables
+ */
+ED.CornealGraftRejection.prototype.setParameterDefaults = function() {
+	this.apexY = 380;
+	this.apexX = 0;
+	
+	// if corneal graft, set properties to match
+	this.cornealGraft = this.drawing.lastDoodleOfClass("CornealGraft");
+	if (this.cornealGraft) {
+		this.boundaryMin = -this.cornealGraft.diameter * this.pixelsPerMillimetre/2;	
+		this.boundaryWidth = this.cornealGraft.diameter * this.pixelsPerMillimetre;
+		this.originX = this.cornealGraft.originX;
+		this.originY = this.cornealGraft.originY;
+		
+		// update range for original handle to constrain around edge of graft
+		var range = new Object;
+		range.length = new ED.Range(-this.boundaryMin, -this.boundaryMin);
+		range.angle = new ED.Range(0,2*Math.PI);
+		this.handleVectorRangeArray[0] = range;
+	}
+
+	// create the base squiggle
+	var squiggle = new ED.Squiggle(this, new ED.Colour(100, 100, 100, 1), 4, true);
+	this.squiggleArray.push(squiggle);
+	
+	// Populate with handles at equidistant points around circumference
+	var point = new ED.Point(this.boundaryMin, 0);
+	this.addPointToSquiggle(point);
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if their 'animate' property is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.CornealGraftRejection.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = new Array();
+
+	switch (_parameter) {
+// 		case 'complete':
+/*
+			if (this.complete) {
+				// constrain final handle to boundary
+				var range = new Object;
+				range.length = (this.complete) ? new ED.Range(-this.boundaryMin, -this.boundaryMin): new ED.Range(0, -this.boundaryMin);
+				range.angle = new ED.Range(0,2*Math.PI);
+				this.handleVectorRangeArray[this.numberOfHandles-1] = range;
+				
+				// set handle counter
+				this.numberOfHandles = this.squiggleArray[0].pointsArray.length - 1;
+				
+				// update handles
+				this.setHandles();
+			}
+*/
+// 			break;
+		
+		case 'oedemaIntensity':
+			switch (_value) {
+				case 'Mild':
+					returnArray['i'] = 1;
+					break;
+				case 'Moderate':
+					returnArray['i'] = 2;
+					break;
+				case 'Severe':
+					returnArray['i'] = 3;
+					break;
+			}
+			break;
+		
+		case 'handles':
+			this.computeDoodleHeight();
+			break;
+		
+		case 'height':
+// 			console.log(_value);
+			break;
+	}
+	
+	this.computeDoodleHeight();
+	
+	return returnArray;
+}
+
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.CornealGraftRejection.prototype.draw = function(_point) {
+	// Get context
+	var ctx = this.drawing.context;
+
+	// Call draw method in superclass
+	ED.CornealGraftRejection.superclass.draw.call(this, _point);
+
+	var squiggle = this.squiggleArray[0];
+
+	var penultimatePoint = (this.complete) ? squiggle.pointsArray[0] : this.mousePoint;
+	var direction1 = penultimatePoint.direction();
+	var direction2 = squiggle.pointsArray[this.numberOfHandles-1].direction();
+
+	// Boundary path
+	ctx.beginPath();
+	
+	if (!this.complete) {
+		ctx.arc(0,0,-this.boundaryMin,0,2*Math.PI);
+	}
+	else {
+		ctx.arc(0,0,-this.boundaryMin,direction2-0.5*Math.PI,direction1-0.5*Math.PI,true);
+		
+		// Bezier points
+		var fp;
+		var tp;
+		var cp1;
+		var cp2;
+			
+		for (var i=0; i<this.numberOfHandles-1; i++) {
+	
+			// From and to points
+			fp = squiggle.pointsArray[i];
+			tp = squiggle.pointsArray[i+1];
+	
+			// Control points
+			if ((this.numberOfHandles-1)%2==0) {
+	 			if (i==this.numberOfHandles-1 && i%2==0) {
+		 			cp1 = fp;
+					cp2 = new ED.Point(fp.x, tp.y);
+		 		}
+		 		else if(i%2==1) {
+					cp1 = fp;
+					cp2 = new ED.Point(fp.x, tp.y);
+				}
+				else {
+					cp1 = new ED.Point(tp.x, fp.y);
+					cp2 = tp;
+				}
+			}
+			else {
+				if (i==this.numberOfHandles-1 && i%2==0) {
+		 			cp1 = new ED.Point(tp.x, fp.y);
+					cp2 = tp;
+		 		}
+		 		else if(i%2==1) {
+					cp1 = new ED.Point(tp.x, fp.y);
+					cp2 = tp;
+				}
+				else {
+					cp1 = fp;
+					cp2 = new ED.Point(fp.x, tp.y);
+				}
+			}
+			
+			// Draw Bezier curve
+			ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, tp.x, tp.y);
+		}
+	}
+
+	
+	// Set line attributes  
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+	ctx.fillStyle = "rgba(0,0,0,0)";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+
+	// Non boundary paths here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+		
+		// style attributes
+		ctx.fillStyle = "rgba(0, 0, 255, 0.2)";
+		switch (this.oedemaIntensity) {
+			case 'Moderate':
+				ctx.fillStyle = ctx.createPattern(this.drawing.imageArray['OedemaPattern'], 'repeat');
+				break;
+			case 'Severe':
+				ctx.fillStyle = ctx.createPattern(this.drawing.imageArray['OedemaPatternBullous'], 'repeat');
+				break;
+		}
+		
+		
+		// Iterate through squiggle points
+			// fist fill shape
+			// then draw Khodadoust line
+		for (var j=0;j<2;j++) {
+			ctx.beginPath();
+			
+			if (j==0) ctx.arc(0,0,-this.boundaryMin,direction2-0.5*Math.PI,direction1-0.5*Math.PI,true);
+			else if (!this.isSelected || this.complete) ctx.moveTo(squiggle.pointsArray[0].x,squiggle.pointsArray[0].y);
+			
+			// Bezier to mouse coordinates, if doodle selected, incomplete, and within boundary
+			if (this.isSelected && this.draggingHandleIndex==null && !this.complete) {
+				// calculate distance to mouse point
+				var distanceToMousePoint = Math.sqrt(this.mousePoint.x*this.mousePoint.x + this.mousePoint.y*this.mousePoint.y);
+				if (distanceToMousePoint<-this.boundaryMin) {
+					ctx.lineTo(this.mousePoint.x,this.mousePoint.y);
+					// From and to points
+					fp = this.mousePoint;
+					tp = squiggle.pointsArray[0];
+					if ((this.numberOfHandles-1)%2==0) {
+		 				cp1 = fp;
+		 				cp2 = new ED.Point(fp.x, tp.y);
+		 			}
+		 			else {
+			 			cp1 = new ED.Point(tp.x, fp.y);
+						cp2 = tp;
+		 			}
+			 							
+					// Draw Bezier curve
+					ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, tp.x, tp.y);
+				}
+			}
+			
+			for (var i=0; i<this.numberOfHandles-1; i++) {
+	
+				// From and to points
+				fp = squiggle.pointsArray[i];
+				tp = squiggle.pointsArray[i+1];
+		
+				// Control points
+				if ((this.numberOfHandles-1)%2==0) {
+		 			if (i==this.numberOfHandles-1 && i%2==0) {
+			 			cp1 = fp;
+						cp2 = new ED.Point(fp.x, tp.y);
+			 		}
+			 		else if(i%2==1) {
+						cp1 = fp;
+						cp2 = new ED.Point(fp.x, tp.y);
+					}
+					else {
+						cp1 = new ED.Point(tp.x, fp.y);
+						cp2 = tp;
+					}
+				}
+				else {
+					if (i==this.numberOfHandles-1 && i%2==0) {
+			 			cp1 = new ED.Point(tp.x, fp.y);
+						cp2 = tp;
+			 		}
+			 		else if(i%2==1) {
+						cp1 = new ED.Point(tp.x, fp.y);
+						cp2 = tp;
+					}
+					else {
+						cp1 = fp;
+						cp2 = new ED.Point(fp.x, tp.y);
+					}
+				}
+				
+			    
+				// Draw Bezier curve
+				ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, tp.x, tp.y);
+			}
+			
+			if (j==0) {	
+				ctx.fill();
+			}
+			else {
+				ctx.lineWidth = 5;
+				ctx.strokeStyle = "red";
+				ctx.stroke();
+			}
+		}
+
+		// Draw circle to indicate position for next handle
+		if (!this.complete && this.isSelected && this.mousePoint.x>this.boundaryMin && this.mousePoint.y>this.boundaryMin && this.mousePoint.x<(this.boundaryMin+this.boundaryWidth) && this.mousePoint.y<(this.boundaryMin+this.boundaryWidth)) {
+			ctx.beginPath();
+			ctx.arc(this.mousePoint.x,this.mousePoint.y,25,0,2*Math.PI);
+			ctx.strokeStyle="red";
+			ctx.fillStyle="yellow";
+			this.lineWidth = 4;
+			ctx.fill();
+			ctx.stroke();
+		}
+	}
+
+	// Coordinates of handles (in canvas plane)
+	for (var i = 0; i < this.numberOfHandles; i++) {
+		this.handleArray[i].location=this.transform.transformPoint(this.squiggleArray[0].pointsArray[i]);
+	}
+
+	// Draw handles if selected but not if for drawing
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.CornealGraftRejection.prototype.description = function() {    
+	return "Khodadoust line (" + this.oedemaIntensity.toLowerCase() + ")";
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.CornealGraftRejection.prototype.computeDoodleHeight = function() {
+	
+	// initiate min and max as extremes
+	var minY = 1000;
+	var maxY = -1000;
+	
+	var x1;
+	var y1;
+	var x2;
+	var y2;
+	var tStart;
+	var tEnd;
+	
+	// iterate through points to find min and max values
+	for (var i=0;i<this.numberOfHandles;i++) {
+		var yPrime = this.squiggleArray[0].pointsArray[i].y * Math.cos(this.rotation) + this.squiggleArray[0].pointsArray[i].x * Math.sin(this.rotation);
+		
+		if (yPrime<minY) minY = yPrime;
+		if (yPrime>maxY) maxY = yPrime;
+	}
+   
+/*
+	var penultimatePoint = (this.complete) ? this.squiggleArray[0].pointsArray[0] : this.mousePoint;
+	var direction1 = penultimatePoint.direction() - 0.5*Math.PI - this.rotation;
+	var direction2 = this.squiggleArray[0].pointsArray[this.numberOfHandles-1].direction() - 0.5*Math.PI - this.rotation;
+	
+	if (direction1<0) direction1 += 2*Math.PI;
+	else if (direction1>2*Math.PI) direction1 -= 2*Math.PI;
+	if (direction2<0) direction2 += 2*Math.PI;
+	else if (direction2>2*Math.PI) direction2 -= 2*Math.PI;
+	
+*/
+/*
+	console.log(direction1 * 180 / Math.PI);
+	console.log(direction2 * 180 / Math.PI);
+*/
+	
+/*
+    // initialize min and max coordinates to first point
+    var yMin = 1000;
+    var yMax = 0;
+
+	// iterate through polar coordinates to find min and max coordinates
+    var delta = (direction2>direction1) ? 0.1 : -0.1;
+// 	var delta = 0.01;
+    
+    var counter = 0;
+    for (var theta=direction2; theta<=direction1; theta-=delta) {
+        var y = -this.boundaryMin * Math.sin(theta);
+ 
+        if (y > yMax) yMax = y;
+        if (y < yMin) yMin = y;
+        
+        counter++;
+    }
+    
+	// check if min or max Y coordinate for whole shape
+	if (yMin<minY) minY = yMin;
+	if (yMax>maxY) maxY = yMax;
+*/
+	
+	// define height and centre of shape
+	var height = maxY - minY;
+	var centre = minY + 0.5 * height + this.originY;
+		
+	// store parameters in apex for ease so can be synced with side view
+	this.setSimpleParameter('apexY',height);
+	this.setSimpleParameter('apexX',centre);
+
+}
+
+/**
+ * Add handle and control point to doodle arrays
+ */
+ED.CornealGraftRejection.prototype.addHandle = function(_position) {
+	
+	// check if point close to boundary, completing drawing
+	var distanceToPoint = Math.sqrt(_position.x*_position.x + _position.y*_position.y);
+	if ((distanceToPoint>-this.boundaryMin-30 && distanceToPoint<-this.boundaryMin+30) || this.complete) {
+		// complete drawing
+		this.complete = true;
+		// move point so lies directly on boundary
+		var angle = _position.direction();
+		_position.setWithPolars(-this.boundaryMin, angle);
+	}
+	
+	// Add point to squiggle array
+	this.squiggleArray[0].pointsArray.splice(0, 0, _position);
+	
+	// Add handle to handle array
+	this.handleArray.splice(0,0,(new ED.Doodle.Handle(null, true, ED.Mode.Handles, false)));
+	
+	// Increase handle counter
+	this.numberOfHandles++;
+
+	// Constrain handle movement within boundary
+	var range = new Object;
+	range.length = (this.complete) ? new ED.Range(-this.boundaryMin, -this.boundaryMin): new ED.Range(0, -this.boundaryMin);
+	range.angle = new ED.Range(0,2*Math.PI);
+	this.handleVectorRangeArray.splice(0,0,range);
+			
+	// recalculate height for synced doodle
+	this.computeDoodleHeight();
+}
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {Int} SnoMed code of entity representated by doodle
+ */
+ED.CornealGraftRejection.prototype.snomedCode = function() {
+    return 95742008;
+}
+
+
+/**
+ * OpenEyes
+ *
+ *
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+ * This file is part of OpenEyes.
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package OpenEyes
+ * @link http://www.openeyes.org.uk
+ * @author OpenEyes <info@openeyes.org.uk>
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+ */
+
+/**
+ * 
+ *
+ * @class CornealGraftRejectionCrossSection
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Object} _parameterJSON
+ */
+ED.CornealGraftRejectionCrossSection = function(_drawing, _parameterJSON) {
+	// Set classname
+	this.className = "CornealGraftRejectionCrossSection";
+	
+	// Derived parameters
+	this.oedemaIntensity = 'Mild';
+	this.i = 1;
+			
+	// Saved parameters
+	this.savedParameterArray = ['originX', 'apexX', 'apexY', 'oedemaIntensity','i'];
+	
+	// Parameters in doodle control bar
+	this.controlParameterArray = {};
+
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+	
+	this.linkedDoodleParameters = {
+        'CornealGraftRejection': {
+            source: ['originY','apexX','apexY','i','oedemaIntensity'],
+            store: [['originX','csOriginX']]
+        }
+    };
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.CornealGraftRejectionCrossSection.prototype = new ED.Doodle;
+ED.CornealGraftRejectionCrossSection.prototype.constructor = ED.CornealGraftRejectionCrossSection;
+ED.CornealGraftRejectionCrossSection.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.CornealGraftRejectionCrossSection.prototype.setHandles = function() {
+}
+
+/**
+ * Sets default properties
+ */
+ED.CornealGraftRejectionCrossSection.prototype.setPropertyDefaults = function() {
+	this.isSelectable = false;
+	this.isUnique = true;
+		
+	// Update component of validation array for simple parameters
+	this.parameterValidationArray['originX']['range'].setMinAndMax(+50, +50);
+	this.parameterValidationArray['originY']['range'].setMinAndMax(-500, +500);
+	
+	// Validation arrays for other parameters
+	this.parameterValidationArray['oedemaIntensity'] = {
+		kind: 'derived',
+		type: 'string',
+		list: ['Mild', 'Moderate', 'Severe'],
+		animate: false
+	};
+	this.parameterValidationArray['i'] = {
+		kind: 'other',
+		type: 'int',
+		range: [1, 2, 3],
+		animate: false
+	};
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if their 'animate' property is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.CornealGraftRejectionCrossSection.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = new Array();
+
+	switch (_parameter) {
+		case 'i':
+			if (_value === 3) returnArray['oedemaIntensity'] = 'Severe';
+			else if (_value === 2) returnArray['oedemaIntensity'] = 'Moderate';
+			else returnArray['oedemaIntensity'] = 'Mild';
+			break;
+		
+		case 'height':
+			console.log(_value);
+			break;
+			
+	}
+
+	return returnArray;
+}
+
+/**
+ * Sets default parameters
+ */
+ED.CornealGraftRejectionCrossSection.prototype.setParameterDefaults = function() {
+	this.originX = 50; // as is in Cornea cross section doodle to dulicate bezier control points
+	this.apexY = 380;
+	this.apexX = 0;
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.CornealGraftRejectionCrossSection.prototype.draw = function(_point) {
+	
+	// Get context
+	var ctx = this.drawing.context;
+
+	var cornea = this.drawing.lastDoodleOfClass('CorneaCrossSection');
+	var cornealThickness = cornea.pachymetry/5;
+
+	// Call draw method in superclass
+	ED.CornealGraftRejectionCrossSection.superclass.draw.call(this, _point);
+
+	// Boundary path
+	ctx.beginPath();
+	
+	// Calculate segment extent in terms of time along curve
+	var startY = this.apexX - this.apexY/2;
+	var endY = this.apexX + this.apexY/2;
+	
+	var startT = (startY + 380) / 760;
+	if (startT<0) startT = 0;
+	var endT = (endY + 380) / 760;
+	if (endT>1) endT = 1;
+		
+	if (startT < 0.5) {
+		
+		var superiorBezier = new Object;
+		var superiorBezierBack = new Object;
+
+		// define start and end time points
+		var tI0 = startT * 2;
+		var tI1 = (endT < 0.5) ? endT * 2 : 1;
+		
+		// default bezier points (as in cornea cross section)
+		if (cornea && cornea.shape == "Keratoconus") {
+			superiorBezier.SP = new ED.Point(-120, -380);
+			superiorBezier.CP1 = new ED.Point(-240, -260);
+			superiorBezier.CP2 = new ED.Point(cornea.apexX, cornea.apexY - 100);
+			superiorBezier.EP = new ED.Point(cornea.apexX, cornea.apexY);
+			
+			superiorBezierBack.SP = new ED.Point(-120 + 120, -380);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 160, -260);
+			superiorBezierBack.CP2 = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY - 120);
+			superiorBezierBack.EP = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY);
+		}
+		else if (cornea && cornea.shape == "Keratoglobus") {
+			superiorBezier.SP = new ED.Point(-120, -380);
+			superiorBezier.CP1 = new ED.Point(-240, -260);
+			superiorBezier.CP2 = new ED.Point(-380, -100);
+			superiorBezier.EP = new ED.Point(-380, 100);
+			
+			superiorBezierBack.SP = new ED.Point(-120 + 120, -380);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 120, -200);
+			superiorBezierBack.CP2 = new ED.Point(-380 + 100, -140);
+			superiorBezierBack.EP = new ED.Point(-380 + 100, 100);
+		}
+		else {
+			superiorBezier.SP = new ED.Point(-120, -380);
+			superiorBezier.CP1 = new ED.Point(-240, -260);
+			superiorBezier.CP2 = new ED.Point(-320, -160);
+			superiorBezier.EP = new ED.Point(-320, 0);
+			
+			superiorBezierBack.SP = new ED.Point(-120 + 120, -380);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 160, -260);
+			superiorBezierBack.CP2 = new ED.Point(-320 + 100, -160);
+			superiorBezierBack.EP = new ED.Point(-320 + 100, 0);
+		}
+		
+			
+		if (tI0 > 0) {
+		// Trim start of curve			
+			
+			// front of cornea
+			var sq0 = new ED.Point(0,0);
+			sq0.y = (1-tI0)*(1-tI0)*(1-tI0)*superiorBezier.SP.y + 3*(1-tI0)*(1-tI0)*tI0*superiorBezier.CP1.y + 3*(1-tI0)*tI0*tI0*superiorBezier.CP2.y + tI0*tI0*tI0*superiorBezier.EP.y;
+			sq0.x = (1-tI0)*(1-tI0)*(1-tI0)*superiorBezier.SP.x + 3*(1-tI0)*(1-tI0)*tI0*superiorBezier.CP1.x + 3*(1-tI0)*tI0*tI0*superiorBezier.CP2.x + tI0*tI0*tI0*superiorBezier.EP.x;
+			
+			var iP23 = new ED.Point(0,0);
+			iP23.x = superiorBezier.CP1.x + tI0 * (superiorBezier.CP2.x - superiorBezier.CP1.x);
+			iP23.y = superiorBezier.CP1.y + tI0 * (superiorBezier.CP2.y - superiorBezier.CP1.y);
+			
+			var iP34 = new ED.Point(0,0);
+			iP34.x = superiorBezier.CP2.x + tI0 * (superiorBezier.EP.x - superiorBezier.CP2.x);
+			iP34.y = superiorBezier.CP2.y + tI0 * (superiorBezier.EP.y - superiorBezier.CP2.y);
+			
+			var iP2334 = new ED.Point(0,0);
+			iP2334.x = iP23.x + tI0 * (iP34.x - iP23.x);
+			iP2334.y = iP23.y + tI0 * (iP34.y - iP23.y);
+			
+			superiorBezier.SP = sq0;
+			superiorBezier.CP1 = iP2334;
+			superiorBezier.CP2 = iP34;
+			
+			
+			// back of cornea
+			var sq0b = new ED.Point(0,0);
+			sq0b.y = (1-tI0)*(1-tI0)*(1-tI0)*superiorBezierBack.SP.y + 3*(1-tI0)*(1-tI0)*tI0*superiorBezierBack.CP1.y + 3*(1-tI0)*tI0*tI0*superiorBezierBack.CP2.y + tI0*tI0*tI0*superiorBezierBack.EP.y;
+			sq0b.x = (1-tI0)*(1-tI0)*(1-tI0)*superiorBezierBack.SP.x + 3*(1-tI0)*(1-tI0)*tI0*superiorBezierBack.CP1.x + 3*(1-tI0)*tI0*tI0*superiorBezierBack.CP2.x + tI0*tI0*tI0*superiorBezierBack.EP.x;
+			
+			var iP23b = new ED.Point(0,0);
+			iP23b.x = superiorBezierBack.CP1.x + tI0 * (superiorBezierBack.CP2.x - superiorBezierBack.CP1.x);
+			iP23b.y = superiorBezierBack.CP1.y + tI0 * (superiorBezierBack.CP2.y - superiorBezierBack.CP1.y);
+			
+			var iP34b = new ED.Point(0,0);
+			iP34b.x = superiorBezierBack.CP2.x + tI0 * (superiorBezierBack.EP.x - superiorBezierBack.CP2.x);
+			iP34b.y = superiorBezierBack.CP2.y + tI0 * (superiorBezierBack.EP.y - superiorBezierBack.CP2.y);
+			
+			var iP2334b = new ED.Point(0,0);
+			iP2334b.x = iP23b.x + tI0 * (iP34b.x - iP23b.x);
+			iP2334b.y = iP23b.y + tI0 * (iP34b.y - iP23b.y);
+			
+			superiorBezierBack.SP = sq0b;
+			superiorBezierBack.CP1 = iP2334b;
+			superiorBezierBack.CP2 = iP34b;
+		}
+		
+		if (tI1 < 1) {
+		// Trim end of curve
+			
+			// front of cornea
+			var iq1 = new ED.Point(0,0);
+			iq1.y = (1-tI1)*(1-tI1)*(1-tI1)*superiorBezier.SP.y + 3*(1-tI1)*(1-tI1)*tI1*superiorBezier.CP1.y + 3*(1-tI1)*tI1*tI1*superiorBezier.CP2.y + tI1*tI1*tI1*superiorBezier.EP.y;
+			iq1.x = (1-tI1)*(1-tI1)*(1-tI1)*superiorBezier.SP.x + 3*(1-tI1)*(1-tI1)*tI1*superiorBezier.CP1.x + 3*(1-tI1)*tI1*tI1*superiorBezier.CP2.x + tI1*tI1*tI1*superiorBezier.EP.x;
+
+			var iP12 = new ED.Point(0,0);
+			iP12.x = superiorBezier.SP.x + tI1 * (superiorBezier.CP1.x - superiorBezier.SP.x);
+			iP12.y = superiorBezier.SP.y + tI1 * (superiorBezier.CP1.y - superiorBezier.SP.y);
+			
+			var iP23 = new ED.Point(0,0);
+			iP23.x = superiorBezier.CP1.x + tI1 * (superiorBezier.CP2.x - superiorBezier.CP1.x);
+			iP23.y = superiorBezier.CP1.y + tI1 * (superiorBezier.CP2.y - superiorBezier.CP1.y);
+			
+			var iP1223 = new ED.Point(0,0);
+			iP1223.x = iP12.x + tI1 * (iP23.x - iP12.x);
+			iP1223.y = iP12.y + tI1 * (iP23.y - iP12.y);
+			
+			superiorBezier.CP1 = iP12;
+			superiorBezier.CP2 = iP1223;
+			superiorBezier.EP = iq1;
+			
+			
+			// back of cornea
+			var iq1b = new ED.Point(0,0);
+			iq1b.y = (1-tI1)*(1-tI1)*(1-tI1)*superiorBezierBack.SP.y + 3*(1-tI1)*(1-tI1)*tI1*superiorBezierBack.CP1.y + 3*(1-tI1)*tI1*tI1*superiorBezierBack.CP2.y + tI1*tI1*tI1*superiorBezierBack.EP.y;
+			iq1b.x = (1-tI1)*(1-tI1)*(1-tI1)*superiorBezierBack.SP.x + 3*(1-tI1)*(1-tI1)*tI1*superiorBezierBack.CP1.x + 3*(1-tI1)*tI1*tI1*superiorBezierBack.CP2.x + tI1*tI1*tI1*superiorBezierBack.EP.x;
+
+			var iP12b = new ED.Point(0,0);
+			iP12b.x = superiorBezierBack.SP.x + tI1 * (superiorBezierBack.CP1.x - superiorBezierBack.SP.x);
+			iP12b.y = superiorBezierBack.SP.y + tI1 * (superiorBezierBack.CP1.y - superiorBezierBack.SP.y);
+			
+			var iP23b = new ED.Point(0,0);
+			iP23b.x = superiorBezierBack.CP1.x + tI1 * (superiorBezierBack.CP2.x - superiorBezierBack.CP1.x);
+			iP23b.y = superiorBezierBack.CP1.y + tI1 * (superiorBezierBack.CP2.y - superiorBezierBack.CP1.y);
+			
+			var iP1223b = new ED.Point(0,0);
+			iP1223b.x = iP12b.x + tI1 * (iP23b.x - iP12b.x);
+			iP1223b.y = iP12b.y + tI1 * (iP23b.y - iP12b.y);
+			
+			superiorBezierBack.CP1 = iP12b;
+			superiorBezierBack.CP2 = iP1223b;
+			superiorBezierBack.EP = iq1b;
+		}
+	}
+	
+	
+	if (endT > 0.5) {
+		
+		var inferiorBezier = new Object;
+		var inferiorBezierBack = new Object;
+		
+		// define start and end time points
+		var tS0 = (startT > 0.5) ? (startT - 0.5) * 2 : 0;
+		var tS1 = (endT - 0.5) * 2;
+		
+		// default bezier points (as in cornea cross section)
+		if (cornea && cornea.shape == "Keratoconus") {
+			inferiorBezier.SP = new ED.Point(cornea.apexX, cornea.apexY );
+			inferiorBezier.CP1 = new ED.Point(cornea.apexX, cornea.apexY + 100 );
+			inferiorBezier.CP2 = new ED.Point(-240, 260 );
+			inferiorBezier.EP = new ED.Point(-120, 380 );
+			
+			inferiorBezierBack.SP = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY );
+			inferiorBezierBack.CP1 = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY + 120 );
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160, 260 );
+			inferiorBezierBack.EP = new ED.Point(-120 + 120, 380 );
+		}
+		else if (cornea && cornea.shape == "Keratoglobus") {
+			inferiorBezier.SP = new ED.Point(-380, 100 );
+			inferiorBezier.CP1 = new ED.Point(-380, 200 );
+			inferiorBezier.CP2 = new ED.Point(-240, 360 );
+			inferiorBezier.EP = new ED.Point(-120, 380 );
+			
+			inferiorBezierBack.SP = new ED.Point(-380 + 100, 100 );
+			inferiorBezierBack.CP1 = new ED.Point(-380 + 120, 220 );
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160, 260 );
+			inferiorBezierBack.EP = new ED.Point(-120 + 120, 380 );
+		}
+		else {
+			inferiorBezier.SP = new ED.Point(-320, -0 );
+			inferiorBezier.CP1 = new ED.Point(-320, 160 );
+			inferiorBezier.CP2 = new ED.Point(-240, 260 );
+			inferiorBezier.EP = new ED.Point(-120, 380 );
+			
+			inferiorBezierBack.SP = new ED.Point(-320 + 100, -0 );
+			inferiorBezierBack.CP1 = new ED.Point(-320 + 100, 160 );
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160, 260 );
+			inferiorBezierBack.EP = new ED.Point(-120 + 120, 380 );
+		}			
+		
+		
+		if (tS0 > 0) {
+		// Trim start of curve
+		
+			// front of cornea			
+			var sq0 = new ED.Point(0,0);
+			sq0.y = (1-tS0)*(1-tS0)*(1-tS0)*inferiorBezier.SP.y + 3*(1-tS0)*(1-tS0)*tS0*inferiorBezier.CP1.y + 3*(1-tS0)*tS0*tS0*inferiorBezier.CP2.y + tS0*tS0*tS0*inferiorBezier.EP.y;
+			sq0.x = (1-tS0)*(1-tS0)*(1-tS0)*inferiorBezier.SP.x + 3*(1-tS0)*(1-tS0)*tS0*inferiorBezier.CP1.x + 3*(1-tS0)*tS0*tS0*inferiorBezier.CP2.x + tS0*tS0*tS0*inferiorBezier.EP.x;
+			
+			var sP23 = new ED.Point(0,0);
+			sP23.x = inferiorBezier.CP1.x + tS0 * (inferiorBezier.CP2.x - inferiorBezier.CP1.x);
+			sP23.y = inferiorBezier.CP1.y + tS0 * (inferiorBezier.CP2.y - inferiorBezier.CP1.y);
+			
+			var sP34 = new ED.Point(0,0);
+			sP34.x = inferiorBezier.CP2.x + tS0 * (inferiorBezier.EP.x - inferiorBezier.CP2.x);
+			sP34.y = inferiorBezier.CP2.y + tS0 * (inferiorBezier.EP.y - inferiorBezier.CP2.y);
+			
+			var sP2334 = new ED.Point(0,0);
+			sP2334.x = sP23.x + tS0 * (sP34.x - sP23.x);
+			sP2334.y = sP23.y + tS0 * (sP34.y - sP23.y);
+			
+			inferiorBezier.SP = sq0;
+			inferiorBezier.CP1 = sP2334;
+			inferiorBezier.CP2 = sP34;
+			
+			// back of cornea
+			var sq0b = new ED.Point(0,0);
+			sq0b.y = (1-tS0)*(1-tS0)*(1-tS0)*inferiorBezierBack.SP.y + 3*(1-tS0)*(1-tS0)*tS0*inferiorBezierBack.CP1.y + 3*(1-tS0)*tS0*tS0*inferiorBezierBack.CP2.y + tS0*tS0*tS0*inferiorBezierBack.EP.y;
+			sq0b.x = (1-tS0)*(1-tS0)*(1-tS0)*inferiorBezierBack.SP.x + 3*(1-tS0)*(1-tS0)*tS0*inferiorBezierBack.CP1.x + 3*(1-tS0)*tS0*tS0*inferiorBezierBack.CP2.x + tS0*tS0*tS0*inferiorBezierBack.EP.x;
+			
+			var sP23b = new ED.Point(0,0);
+			sP23b.x = inferiorBezierBack.CP1.x + tS0 * (inferiorBezierBack.CP2.x - inferiorBezierBack.CP1.x);
+			sP23b.y = inferiorBezierBack.CP1.y + tS0 * (inferiorBezierBack.CP2.y - inferiorBezierBack.CP1.y);
+			
+			var sP34b = new ED.Point(0,0);
+			sP34b.x = inferiorBezierBack.CP2.x + tS0 * (inferiorBezierBack.EP.x - inferiorBezierBack.CP2.x);
+			sP34b.y = inferiorBezierBack.CP2.y + tS0 * (inferiorBezierBack.EP.y - inferiorBezierBack.CP2.y);
+			
+			var sP2334b = new ED.Point(0,0);
+			sP2334b.x = sP23b.x + tS0 * (sP34b.x - sP23b.x);
+			sP2334b.y = sP23b.y + tS0 * (sP34b.y - sP23b.y);
+			
+			inferiorBezierBack.SP = sq0b;
+			inferiorBezierBack.CP1 = sP2334b;
+			inferiorBezierBack.CP2 = sP34b;
+		}
+		
+		if (tS1 < 1) {
+		// Trim end of curve
+		
+			// front of cornea
+			var sq1 = new ED.Point(0,0);
+			sq1.y = (1-tS1)*(1-tS1)*(1-tS1)*inferiorBezier.SP.y + 3*(1-tS1)*(1-tS1)*tS1*inferiorBezier.CP1.y + 3*(1-tS1)*tS1*tS1*inferiorBezier.CP2.y + tS1*tS1*tS1*inferiorBezier.EP.y;
+			sq1.x = (1-tS1)*(1-tS1)*(1-tS1)*inferiorBezier.SP.x + 3*(1-tS1)*(1-tS1)*tS1*inferiorBezier.CP1.x + 3*(1-tS1)*tS1*tS1*inferiorBezier.CP2.x + tS1*tS1*tS1*inferiorBezier.EP.x;
+
+			var sP12 = new ED.Point(0,0);
+			sP12.x = inferiorBezier.SP.x + tS1 * (inferiorBezier.CP1.x - inferiorBezier.SP.x);
+			sP12.y = inferiorBezier.SP.y + tS1 * (inferiorBezier.CP1.y - inferiorBezier.SP.y);
+			
+			var sP23 = new ED.Point(0,0);
+			sP23.x = inferiorBezier.CP1.x + tS1 * (inferiorBezier.CP2.x - inferiorBezier.CP1.x);
+			sP23.y = inferiorBezier.CP1.y + tS1 * (inferiorBezier.CP2.y - inferiorBezier.CP1.y);
+			
+			var sP1223 = new ED.Point(0,0);
+			sP1223.x = sP12.x + tS1 * (sP23.x - sP12.x);
+			sP1223.y = sP12.y + tS1 * (sP23.y - sP12.y);
+
+			inferiorBezier.CP1 = sP12;
+			inferiorBezier.CP2 = sP1223;
+			inferiorBezier.EP = sq1;
+			
+			
+			// back of cornea
+			var sq1b = new ED.Point(0,0);
+			sq1b.y = (1-tS1)*(1-tS1)*(1-tS1)*inferiorBezierBack.SP.y + 3*(1-tS1)*(1-tS1)*tS1*inferiorBezierBack.CP1.y + 3*(1-tS1)*tS1*tS1*inferiorBezierBack.CP2.y + tS1*tS1*tS1*inferiorBezierBack.EP.y;
+			sq1b.x = (1-tS1)*(1-tS1)*(1-tS1)*inferiorBezierBack.SP.x + 3*(1-tS1)*(1-tS1)*tS1*inferiorBezierBack.CP1.x + 3*(1-tS1)*tS1*tS1*inferiorBezierBack.CP2.x + tS1*tS1*tS1*inferiorBezierBack.EP.x;
+
+			var sP12b = new ED.Point(0,0);
+			sP12b.x = inferiorBezierBack.SP.x + tS1 * (inferiorBezierBack.CP1.x - inferiorBezierBack.SP.x);
+			sP12b.y = inferiorBezierBack.SP.y + tS1 * (inferiorBezierBack.CP1.y - inferiorBezierBack.SP.y);
+			
+			var sP23b = new ED.Point(0,0);
+			sP23b.x = inferiorBezierBack.CP1.x + tS1 * (inferiorBezierBack.CP2.x - inferiorBezierBack.CP1.x);
+			sP23b.y = inferiorBezierBack.CP1.y + tS1 * (inferiorBezierBack.CP2.y - inferiorBezierBack.CP1.y);
+			
+			var sP1223b = new ED.Point(0,0);
+			sP1223b.x = sP12b.x + tS1 * (sP23b.x - sP12b.x);
+			sP1223b.y = sP12b.y + tS1 * (sP23b.y - sP12b.y);
+
+			inferiorBezierBack.CP1 = sP12b;
+			inferiorBezierBack.CP2 = sP1223b;
+			inferiorBezierBack.EP = sq1b;
+		}
+	}
+	
+	if (inferiorBezier) {
+		ctx.moveTo(inferiorBezierBack.EP.x, inferiorBezierBack.EP.y);
+		ctx.bezierCurveTo(inferiorBezierBack.CP2.x, inferiorBezierBack.CP2.y, inferiorBezierBack.CP1.x, inferiorBezierBack.CP1.y, inferiorBezierBack.SP.x, inferiorBezierBack.SP.y);
+		ctx.lineTo(inferiorBezier.SP.x, inferiorBezier.SP.y);
+		ctx.bezierCurveTo(inferiorBezier.CP1.x, inferiorBezier.CP1.y, inferiorBezier.CP2.x, inferiorBezier.CP2.y, inferiorBezier.EP.x, inferiorBezier.EP.y);
+	}
+	if (superiorBezier) {
+		ctx.moveTo(superiorBezierBack.EP.x, superiorBezierBack.EP.y);
+		ctx.bezierCurveTo(superiorBezierBack.CP2.x, superiorBezierBack.CP2.y, superiorBezierBack.CP1.x, superiorBezierBack.CP1.y, superiorBezierBack.SP.x, superiorBezierBack.SP.y);
+		ctx.lineTo(superiorBezier.SP.x, superiorBezier.SP.y);
+		ctx.bezierCurveTo(superiorBezier.CP1.x, superiorBezier.CP1.y, superiorBezier.CP2.x, superiorBezier.CP2.y, superiorBezier.EP.x, superiorBezier.EP.y);
+	}
+	
+	
+	// Close path
+	ctx.closePath();
+
+	// Set attributes
+	ctx.lineWidth = 0;
+	ctx.fillStyle = "rgba(0, 0, 255, 0.2)";
+	switch (this.oedemaIntensity) {
+		case 'Moderate':
+			ctx.fillStyle = ctx.createPattern(this.drawing.imageArray['OedemaPattern'], 'repeat');
+			break;
+		case 'Severe':
+			ctx.fillStyle = ctx.createPattern(this.drawing.imageArray['OedemaPatternBullous'], 'repeat');
+			break;
+	}
+	ctx.strokeStyle = "rgba(0,0,0,0)";
+
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+		
+	// Non boundary drawing
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+		
+		// endothelium
+		ctx.beginPath();
+		
+		if (inferiorBezier) {
+			ctx.moveTo(inferiorBezierBack.SP.x, inferiorBezierBack.SP.y);
+			ctx.bezierCurveTo(inferiorBezierBack.CP1.x, inferiorBezierBack.CP1.y, inferiorBezierBack.CP2.x, inferiorBezierBack.CP2.y, inferiorBezierBack.EP.x, inferiorBezierBack.EP.y);
+		}
+		if (superiorBezier) {
+			ctx.moveTo(superiorBezierBack.SP.x, superiorBezierBack.SP.y);
+			ctx.bezierCurveTo(superiorBezierBack.CP1.x, superiorBezierBack.CP1.y, superiorBezierBack.CP2.x, superiorBezierBack.CP2.y, superiorBezierBack.EP.x, superiorBezierBack.EP.y);
+		}
+		switch (this.oedemaIntensity) {
+			case 'Mild':
+				ctx.strokeStyle = "rgba(0, 0, 255, 0.4)";
+				break;
+			case 'Moderate':
+				ctx.strokeStyle = "rgba(0, 0, 255, 0.4)";
+				break;
+			case 'Severe':
+				ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
+				break;
+		}
+		ctx.lineWidth = 12;
+		ctx.stroke();
+	}
 	
 	// Draw handles if selected
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
@@ -23010,6 +29551,7 @@ ED.CornealLaceration.prototype.snomedCodes = function() {
 /**
  * OpenEyes
  *
+ *
  * Copyright (C) OpenEyes Foundation, 2011-2017
  * This file is part of OpenEyes.
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -23042,6 +29584,7 @@ ED.CornealOedema = function(_drawing, _parameterJSON) {
 	// Derived parameters
 	this.intensity = 'Mild';
 	this.i = 1;
+	this.csOriginX = 0;
 	
 	// Other parameters
 	this.stromal = true;
@@ -23049,7 +29592,7 @@ ED.CornealOedema = function(_drawing, _parameterJSON) {
 	this.endothelial = false;
 
 	// Saved parameters
-	this.savedParameterArray = ['originX', 'originY', 'apexX', 'apexY', 'rotation', 'intensity', 'stromal', 'epithelial', 'endothelial','i'];
+	this.savedParameterArray = ['originX', 'originY', 'apexX', 'apexY', 'rotation', 'intensity', 'stromal', 'epithelial', 'endothelial','i','csOriginX'];
 
 	// Parameters in doodle control bar (parameter name: parameter label)
 	this.controlParameterArray = {'intensity':'Intensity',  'epithelial':'Epithelial', 'stromal':'Stromal','endothelial':'Endothelial'};
@@ -23323,7 +29866,7 @@ ED.CornealOedema.prototype.description = function() {
 
 /**
  * OpenEyes
- * MSC
+ * 
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
  * This file is part of OpenEyes.
@@ -23376,13 +29919,20 @@ ED.CornealOedemaCrossSection = function(_drawing, _parameterJSON) {
 	this.maxY = this.initialRadius;
 	
 	// Saved parameters
-	this.savedParameterArray = ['originX', 'originY', 'apexX', 'apexY', 'rotation', 'intensity', 'stromal', 'epithelial', 'endothelial','i'];
+	this.savedParameterArray = ['originX', 'originY', 'apexX', 'apexY', 'rotation', 'intensity', 'stromal', 'epithelial', 'endothelial','i','epi','str','endo'];
 	
 	// Parameters in doodle control bar
 	this.controlParameterArray = {};
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+	
+	this.linkedDoodleParameters = {
+        'CornealOedema': {
+            source: ['originY','apexX','apexY','i','intensity','epi','str','endo','stromal', 'epithelial', 'endothelial'],
+            store: [['originX','csOriginX']]
+        }
+    };
 }
 
 /**
@@ -26837,6 +33387,385 @@ ED.CutterPI.prototype.groupDescription = function() {
 }
 
 /**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * Cypass (single)
+
+ *
+
+ * @class Cypass
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.Cypass = function(_drawing, _parameterJSON) {
+
+	// Set classname
+
+	this.className = "Cypass";
+
+
+
+	// Private parameters
+
+	this.limbus = -400;
+
+    this.radius = 462;
+
+
+
+    // Derived parameters
+
+    this.miotic = 'Miochol';
+
+    this.viscoelastic = 'Viscoelastic';
+
+    this.complication = 'Haemorrhage +';
+
+
+
+	// Saved parameters
+
+	this.savedParameterArray = ['rotation', 'radius', 'miotic', 'viscoelastic', 'complication'];
+
+
+
+    this.controlParameterArray = {
+
+        'miotic':'Miotic',
+
+        'viscoelastic':'Viscoelastic',
+
+        'complication':'Complication',
+
+    };
+
+
+
+	// Call superclass constructor
+
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+}
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.Cypass.prototype = new ED.Doodle;
+
+ED.Cypass.prototype.constructor = ED.Cypass;
+
+ED.Cypass.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets default dragging attributes
+
+ */
+
+ED.Cypass.prototype.setPropertyDefaults = function() {
+
+    this.isScaleable = false;
+
+    this.isMoveable = false;
+
+    this.isUnique = true;
+
+
+
+    this.parameterValidationArray['radius']['range'].setMinAndMax(415, 480);
+
+
+
+    this.parameterValidationArray['miotic'] = {
+
+        kind: 'derived',
+
+        type: 'string',
+
+        list: ['Miochol', 'Carbachol', 'Pilocarpine 2%'],
+
+        animate: true
+
+    };
+
+
+
+    this.parameterValidationArray['viscoelastic'] = {
+
+        kind: 'derived',
+
+        type: 'string',
+
+        list: ['Viscoelastic'],
+
+        animate: true
+
+    };
+
+
+
+    this.parameterValidationArray['complication'] = {
+
+        kind: 'derived',
+
+        type: 'string',
+
+        list: ['Haemorrhage +', 'Haemorrhage ++', 'Haemorrhage +++'],
+
+        animate: true
+
+    };
+
+}
+
+
+
+/**
+
+ * Sets default parameters
+
+ */
+
+ED.Cypass.prototype.setParameterDefaults = function() {
+
+
+
+    this.radius = 462;
+
+    this.setRotationWithDisplacements(315, 270);
+
+
+
+    this.setParameterFromString('miotic', 'Miochol');
+
+    this.setParameterFromString('viscoelastic', 'Viscoelastic');
+
+    this.setParameterFromString('complication', 'Haemorrhage +');
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.Cypass.prototype.draw = function(_point) {
+
+	// Get context
+
+	var ctx = this.drawing.context;
+
+    var r = this.radius;
+
+
+
+	// Call draw method in superclass
+
+	ED.Cypass.superclass.draw.call(this, _point);
+
+
+
+	// Set line attributes
+
+	ctx.lineWidth = 2;
+
+	ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+
+	ctx.fillStyle = "rgba(0, 0, 0, 0)";
+
+
+
+	// Draw boundary path (also hit testing)
+
+	this.drawBoundary(_point);
+
+
+
+	// Non boundary paths
+
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+		var ring = {w: 14, h: 36},
+
+            ringDistance = 19;
+
+
+
+		//Corneal incision
+
+        ctx.beginPath();
+
+        ctx.moveTo(360,-60);
+
+        ctx.lineTo(360,60);
+
+        ctx.strokeStyle = "rgba(0, 0, 0, 1)";
+
+        ctx.stroke();
+
+        ctx.closePath();
+
+
+
+		// Body
+
+		ctx.beginPath();
+
+
+
+		//the body
+
+        ctx.rect(-200-(r), -10, 300, 20);
+
+
+
+        //rings
+
+        for (var i = 1; i < 4; i++) {
+
+            ctx.rect( (99-(r)-5) - (i*ringDistance), -18, ring.w, ring.h);
+
+        }
+
+
+
+        //collar
+
+        ctx.rect(99-(r), -(18), ring.w + 6, ring.h);
+
+
+
+		ctx.fillStyle = "rgba(112, 96, 0, 1)";
+
+		ctx.fill();
+
+        ctx.closePath();
+
+
+
+        //fenestrations
+
+        ctx.beginPath();
+
+        for (var i = 1; i < 6; i++) {
+
+            ctx.arc((-200-(r)+5)+(i*40), 0, 5, 0, 2 * Math.PI, false);
+
+        }
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+
+        ctx.fill();
+
+        ctx.closePath();
+
+
+
+        //we redraw an invisible device body to be draggable
+
+        ctx.beginPath();
+
+        ctx.rect(-200-(r), -15, 300, 30);
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0)";
+
+        ctx.fill();
+
+	}
+
+
+
+	// Return value indicating successful hittest
+
+	return this.isClicked;
+
+};
+
+
+
+/**
+
+ * Returns a string containing a text description of the doodle
+
+ *
+
+ * @returns {String} Description of doodle
+
+ */
+
+ED.Cypass.prototype.description = function() {
+
+	var desc = '';
+
+
+
+    desc += "Miotic: " + this.miotic + "\n";
+
+    desc += "Viscoelastic: " + this.viscoelastic + "\n";
+
+    desc += "Complication: " + this.complication + "\n";
+
+    desc += "Cypass stent at " + this.clockHour(-3) + " o'clock";
+
+
+
+    return desc;
+
+};
+
+
+/**
  * OpenEyes
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
@@ -27196,16 +34125,18 @@ ED.DendriticUlcer.prototype.draw = function(_point) {
  */
 ED.DendriticUlcer.prototype.description = function() {
 	return 'Dendritic ulcer';
-}
+};
 
 /**
  * Returns the SnoMed code of the doodle
  *
- * @returns {Int} SnoMed code of entity representated by doodle
+ * @returns {number} SnoMed code of entity represented by doodle
  */
-// ED.DendriticUlcer.prototype.snomedCode = function() {
-// 	return 11111111;
-// }
+ED.DendriticUlcer.prototype.snomedCode = function() {
+    'use strict';
+
+    return 193764001;
+};
 
 /**
  * OpenEyes
@@ -28098,6 +35029,411 @@ ED.DrainageSite.prototype.description = function() {
 }
 
 /**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * Hard Drusen
+
+ *
+
+ * @class Drusen
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.Drusen = function(_drawing, _parameterJSON) {
+
+	// Set classname
+
+	this.className = "Drusen";
+
+
+
+    this.drusenType = 'Hard';
+
+    this.blur = 0;
+
+
+
+	// Saved parameters
+
+	this.savedParameterArray = ['apexY', 'scaleX', 'scaleY', 'drusenType', 'blur'];
+
+
+
+    this.controlParameterArray = {
+
+        'drusenType':'Drusen type'
+
+    }
+
+
+
+	// Call superclass constructor
+
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+}
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.Drusen.prototype = new ED.Doodle;
+
+ED.Drusen.prototype.constructor = ED.Drusen;
+
+ED.Drusen.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets handle attributes
+
+ */
+
+ED.Drusen.prototype.setHandles = function() {
+
+	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Scale, false);
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+}
+
+
+
+/**
+
+ * Sets default dragging attributes
+
+ */
+
+ED.Drusen.prototype.setPropertyDefaults = function() {
+
+	this.isMoveable = false;
+
+	this.isRotatable = false;
+
+	this.isUnique = true;
+
+
+
+	// Update component of validation array for simple parameters
+
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
+
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-160, +0);
+
+	this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.5, +1.5);
+
+	this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.5, +1.5);
+
+
+
+    this.parameterValidationArray.drusenType = {
+
+        kind: 'derived',
+
+        type: 'string',
+
+        list: ['Hard', 'Soft', 'Confluent'],
+
+    };
+
+}
+
+
+
+/**
+
+ * Sets default parameters (Only called for new doodles)
+
+ * Use the setParameter function for derived parameters, as this will also update dependent variables
+
+ */
+
+ED.Drusen.prototype.setParameterDefaults = function() {
+
+	// Hard drusen is displaced for Fundus, central for others
+
+	if (this.drawing.hasDoodleOfClass('Fundus')) {
+
+		this.originX = this.drawing.eye == ED.eye.Right ? -100 : 100;
+
+		this.scaleX = 0.5;
+
+		this.scaleY = 0.5;
+
+	}
+
+
+
+    this.setParameterFromString('drusenType', 'Hard');
+
+}
+
+
+
+/**
+
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
+ * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+
+ *
+
+ * @param {String} _parameter Name of parameter that has changed
+
+ * @value {Undefined} _value Value of parameter to calculate
+
+ * @returns {Array} Associative array of values of dependent parameters
+
+ */
+
+ED.Drusen.prototype.dependentParameterValues = function(_parameter, _value) {
+
+    var returnArray = new Array();
+
+
+
+    switch (_parameter) {
+
+        case 'drusenType':
+
+            switch (_value) {
+
+                case 'Hard':
+
+                    returnArray.blur = 0;
+
+                    break;
+
+                case 'Soft':
+
+                    returnArray.blur = 1;
+
+                    break;
+
+                case 'Confluent':
+
+                    returnArray.blur = 2;
+
+                    break;
+
+            }
+
+	}
+
+
+
+	return returnArray;
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.Drusen.prototype.draw = function(_point) {
+
+	// Get context
+
+	var ctx = this.drawing.context;
+
+
+
+	// Call draw method in superclass
+
+	ED.Drusen.superclass.draw.call(this, _point);
+
+
+
+	// Boundary path
+
+	ctx.beginPath();
+
+
+
+	// Invisible boundary
+
+	var r = 200;
+
+	ctx.arc(0, 0, r, 0, Math.PI * 2, true);
+
+
+
+	// Close path
+
+	ctx.closePath();
+
+
+
+	// Set line attributes
+
+	ctx.lineWidth = 0;
+
+	ctx.fillStyle = "rgba(0, 0, 0, 0)";
+
+	ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+
+
+
+	// Draw boundary path (also hit testing)
+
+	this.drawBoundary(_point);
+
+
+
+	// Non boundary paths
+
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+		// Colours
+
+		var fill = "lightgray",
+
+			dr, gradient,
+
+        	base_radius = this.drusenType === 'Soft' ? 25 : ( this.drusenType === 'Confluent' ? 31 : 10);
+
+
+
+        var p = new ED.Point(0, 0);
+
+        var n = 20 + Math.abs(Math.floor(this.apexY / 2));
+
+
+
+        dr = base_radius / this.scaleX;
+
+
+
+		for (var i = 0; i < n; i++) {
+
+			p.setWithPolars(r * ED.randomArray[i], 2 * Math.PI * ED.randomArray[i + 100]);
+
+            ctx.beginPath();
+
+            ctx.arc(p.x, p.y, dr, 0, Math.PI * 2, true);
+
+
+
+            gradient = ctx.createRadialGradient(p.x, p.y, (10 / this.scaleX), p.x, p.y, dr);
+
+            gradient.addColorStop(0, fill);
+
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+            ctx.fillStyle = this.drusenType === 'Hard' ? fill : gradient;
+
+            ctx.lineWidth = 0;
+
+            ctx.fill();
+
+            ctx.stroke();
+
+            ctx.closePath();
+
+		}
+
+	}
+
+
+
+	// Coordinates of handles (in canvas plane)
+
+	this.handleArray[2].location = this.transform.transformPoint(new ED.Point(r * 0.7, -r * 0.7));
+
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+
+
+
+	// Draw handles if selected
+
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+	// Return value indicating successful hittest
+
+	return this.isClicked;
+
+}
+
+
+
+/**
+
+ * Returns a string containing a text description of the doodle
+
+ *
+
+ * @returns {String} Description of doodle
+
+ */
+
+ED.Drusen.prototype.description = function() {
+
+	var returnString = "Signficant numbers of ";
+
+	if (this.apexY > -100) returnString = "Moderate numbers of ";
+
+	if (this.apexY > -50) returnString = "Several ";
+
+
+
+	return returnString + this.drusenType.toLowerCase() + " drusen";
+
+}
+/**
  * OpenEyes
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
@@ -28245,6 +35581,1018 @@ ED.EncirclingBand.prototype.description = function() {
 	returnString = returnString + " quadrant";
 
 	return returnString;
+}
+
+/**
+ * OpenEyes
+ *
+ *
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+ * This file is part of OpenEyes.
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package OpenEyes
+ * @link http://www.openeyes.org.uk
+ * @author OpenEyes <info@openeyes.org.uk>
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+ */
+
+/**
+ * Endothelial Keraoplasty (DSAEK / DMEK)
+ *
+ * @class EndothelialKeratoplasty
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Object} _parameterJSON
+ */
+ED.EndothelialKeratoplasty = function(_drawing, _parameterJSON) {
+	// Set classname
+	this.className = "EndothelialKeratoplasty";
+
+	// Private parameters
+	this.pixelsPerMillimetre = 63.3333;
+	this.antsegRadius = 190;
+
+	// Derived parameters
+	this.diameter = 9;
+	this.type = 'DMEK';
+	this.typeSimple = 1;
+	
+	// cross section parameters
+	this.csOriginX = 0;
+
+	// Saved parameters
+	this.savedParameterArray = ['originX', 'originY', 'apexY', 'type','typeSimple','csOriginX'];
+
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {'type':'Type'};
+
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.EndothelialKeratoplasty.prototype = new ED.Doodle;
+ED.EndothelialKeratoplasty.prototype.constructor = ED.EndothelialKeratoplasty;
+ED.EndothelialKeratoplasty.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.EndothelialKeratoplasty.prototype.setHandles = function() {
+// 	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+	this.handleArray[0] = new ED.Doodle.Handle(null, true, ED.Mode.Handles, false);
+}
+
+/**
+ * Sets default properties
+ */
+ED.EndothelialKeratoplasty.prototype.setPropertyDefaults = function() {
+	this.isRotatable = false;
+	this.isUnique = false;
+
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-11.9 * this.pixelsPerMillimetre/2, -6.5 * this.pixelsPerMillimetre/2);
+
+	// Create ranges to constrain handles
+	this.handleCoordinateRangeArray = new Array();
+	this.handleCoordinateRangeArray[0] = {
+		x: new ED.Range(-0, +0), 
+		y: new ED.Range(-2.9 * this.pixelsPerMillimetre/2, 2.5 * this.pixelsPerMillimetre/2)
+	}
+
+	// Add complete validation arrays for derived parameters
+	this.parameterValidationArray['type'] = {
+		kind: 'derived',
+		type: 'string',
+		list: ['DMEK', 'DSEAK'],
+		animate: false
+	};
+	this.parameterValidationArray['typeSimple'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(1, 2),
+		animate: false
+	};
+	this.parameterValidationArray['diameter'] = {
+		kind: 'derived',
+		type: 'float',
+		range: new ED.Range(6.5, 12),
+		animate: true
+	};
+}
+
+/**
+ * Sets default parameters
+ */
+ED.EndothelialKeratoplasty.prototype.setParameterDefaults = function() {
+	this.setParameterFromString('diameter', '9.0');
+// 	this.setParameterFromString('sutureType', 'Continuous');
+	
+	// Create a squiggle to store the handles points
+	var squiggle = new ED.Squiggle(this, new ED.Colour(100, 100, 100, 1), 4, true);
+
+	// Add it to squiggle array
+	this.squiggleArray.push(squiggle);
+	
+	// Add point to squiggle for handle
+	var point = new ED.Point(0, 0);
+	this.addPointToSquiggle(point);	
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if their 'animate' property is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.EndothelialKeratoplasty.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = new Array();
+
+	switch (_parameter) {
+		case 'apexY':
+			returnArray['diameter'] = -2 * _value/this.pixelsPerMillimetre;
+			
+			// update range for x and y accordingly
+			var y = Math.sqrt((this.antsegRadius+this.antsegRadius+_value)*(this.antsegRadius+this.antsegRadius+_value) - this.originY*this.originY); 
+			var x = Math.sqrt((this.antsegRadius+this.antsegRadius+_value)*(this.antsegRadius+this.antsegRadius+_value) - this.originX*this.originX); 
+
+			this.parameterValidationArray['originY']['range'].setMinAndMax(-y,+y);
+			this.parameterValidationArray['originX']['range'].setMinAndMax(-x,+x);
+			
+			// If being synced, make sensible decision about y
+/*
+			if (!this.drawing.isActive) {
+				var newX = this.parameterValidationArray['originX'] ['range'].max;
+				var newY = this.parameterValidationArray['originY'] ['range'].max;
+			}
+			else {
+*/
+				var newX = this.parameterValidationArray['originX'] ['range'].constrain(this.originX);
+				var newY = this.parameterValidationArray['originY'] ['range'].constrain(this.originY);
+// 			}
+			this.setSimpleParameter('originY', newY);
+			this.setSimpleParameter('originX', newX);
+			break;
+
+		case 'diameter':
+			returnArray['apexY'] = -_value * this.pixelsPerMillimetre/2;
+			break;
+		
+		case 'originX':
+			// update boundary range for y coordinate so constrained within AntSeg
+				// using equation of circle, using (radius of antseg + difference in graft size) for length of one side
+			var y = Math.sqrt((this.antsegRadius+this.antsegRadius+this.apexY)*(this.antsegRadius+this.antsegRadius+this.apexY) - _value*_value); 
+			this.parameterValidationArray['originY']['range'].setMinAndMax(-y,+y);
+			
+			// If being synced, make sensible decision about y
+			if (!this.drawing.isActive) {
+				var newY = this.parameterValidationArray['originY']['range'].max;
+			}
+			else {
+				var newY = this.parameterValidationArray['originY'] ['range'].constrain(this.originY);
+			}
+			this.setSimpleParameter('originY', newY);
+			
+			// update rejection, if present
+			var rejectionDoodle = this.drawing.lastDoodleOfClass("EndothelialKeratoplastyRejection");
+			if (rejectionDoodle) rejectionDoodle.setSimpleParameter('originX', _value);
+			break;
+		
+		case 'originY':
+			// update boundary range for x coordinate within a circle
+			var x = Math.sqrt((this.antsegRadius+this.antsegRadius+this.apexY)*(this.antsegRadius+this.antsegRadius+this.apexY) - _value*_value);
+			this.parameterValidationArray['originX']['range'].setMinAndMax(-x,+x);
+			
+			// If being synced, make sensible decision about x 
+			if (!this.drawing.isActive) {
+				var newX = this.originX;
+			}
+			else {
+				var newX = this.parameterValidationArray['originX'] ['range'].constrain(this.originX);
+			}
+			this.setSimpleParameter('originX', newX);
+			
+			// update rejection, if present
+			var rejectionDoodle = this.drawing.lastDoodleOfClass("EndothelialKeratoplastyRejection");
+			if (rejectionDoodle) rejectionDoodle.setSimpleParameter('originY', _value);
+			break;
+			
+		case 'depth':
+			returnArray['d'] = parseInt(_value);
+			break;
+			
+		case 'handles':
+			// update apex and diameter values - historically used to draw doodle (TODO remove)
+			var newApexY = this.squiggleArray[0].pointsArray[0].y - 9 * this.pixelsPerMillimetre/2;
+			returnArray['diameter'] = -2 * newApexY/this.pixelsPerMillimetre;
+			returnArray['apexY'] = newApexY;
+			
+			// update origin range
+			var y = Math.sqrt((this.antsegRadius+this.antsegRadius+newApexY)*(this.antsegRadius+this.antsegRadius+newApexY) - this.originY*this.originY); 
+			var x = Math.sqrt((this.antsegRadius+this.antsegRadius+newApexY)*(this.antsegRadius+this.antsegRadius+newApexY) - this.originX*this.originX); 
+
+			this.parameterValidationArray['originY']['range'].setMinAndMax(-y,+y);
+			this.parameterValidationArray['originX']['range'].setMinAndMax(-x,+x);
+			
+			var newX = this.parameterValidationArray['originX'] ['range'].constrain(this.originX);
+			var newY = this.parameterValidationArray['originY'] ['range'].constrain(this.originY);
+			this.setSimpleParameter('originY', newY);
+			this.setSimpleParameter('originX', newX);
+			break;
+		
+		case 'type':
+			if (_value=="DMEK") returnArray['typeSimple'] = 1;
+			else returnArray['typeSimple'] = 2;
+			break;
+			
+	}
+
+	return returnArray;
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.EndothelialKeratoplasty.prototype.draw = function(_point) {
+	// Get context
+	var ctx = this.drawing.context;
+
+	// Call draw method in superclass
+	ED.EndothelialKeratoplasty.superclass.draw.call(this, _point);
+
+	// Boundary path
+	ctx.beginPath();
+
+	// Circular graft
+	var r = -this.apexY;
+
+	// Outer 360 arc
+	ctx.arc(0, 0, r,  0, Math.PI * 2, true);
+
+	// Set attributes
+	ctx.lineWidth = 4;
+	ctx.strokeStyle = "gray";
+	ctx.fillStyle = "rgba(255, 255, 255, 0)";
+	ctx.stroke();
+
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	ctx.closePath();
+
+	// Non boundary paths
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+	}
+
+	// Coordinates of handles (in canvas plane)
+	this.handleArray[0].location = this.transform.transformPoint(this.squiggleArray[0].pointsArray[0]);
+
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+	
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {Int} SnoMed code of entity representated by doodle
+ */
+/*
+ED.EndothelialKeratoplasty.prototype.snomedCode = function() {
+	return (this.depth=="Full" ? 424960002 : 0); // no appropriate SNOMED CT code available for DSEAK/DMEK in 2017 v1.36.4
+}
+*/
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.EndothelialKeratoplasty.prototype.description = function() {
+	return this.type;
+}
+
+
+/**
+ * OpenEyes
+ *
+ *
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+ * This file is part of OpenEyes.
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package OpenEyes
+ * @link http://www.openeyes.org.uk
+ * @author OpenEyes <info@openeyes.org.uk>
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+ */
+
+/**
+ * 
+ *
+ * @class EndothelialKeratoplastyCrossSection
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Object} _parameterJSON
+ */
+ED.EndothelialKeratoplastyCrossSection = function(_drawing, _parameterJSON) {
+	
+	// Set classname
+	this.className = "EndothelialKeratoplastyCrossSection";
+
+	// Private parameters
+	this.pixelsPerMillimetre = 63.3333;
+	this.initialRadius = 360;
+	
+	// Derived parameters
+	this.diameter = 9;
+	
+	// Other parameters
+	this.d = 100;
+	this.typeSimple = 1; // inherited from en face view
+							// 1: DSEK, 2: DMEAK
+	this.handle1Y = -4.5 * this.pixelsPerMillimetre;
+	this.handle1X = -60;
+	this.handle2Y = 0;
+	this.handle2X = -220;
+	this.handle3Y = 4.5 * this.pixelsPerMillimetre;
+	this.handle3X = -60;
+	
+	// Saved parameters
+	this.savedParameterArray = ['originX', 'originY', 'apexY','d','diameter','typeSimple'];
+	
+	// Parameters in doodle control bar
+	this.controlParameterArray = {};
+
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+	
+	this.linkedDoodleParameters = {
+        'EndothelialKeratoplasty': {
+            source: ['originY','apexY','d','diameter','typeSimple'],
+            store: [['originX','csOriginX']]
+        }
+    };
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.EndothelialKeratoplastyCrossSection.prototype = new ED.Doodle;
+ED.EndothelialKeratoplastyCrossSection.prototype.constructor = ED.EndothelialKeratoplastyCrossSection;
+ED.EndothelialKeratoplastyCrossSection.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.EndothelialKeratoplastyCrossSection.prototype.setHandles = function() {
+	// create 3 handles
+	for (var i = 0; i < 3; i++) {
+		this.handleArray[i] = new ED.Doodle.Handle(null, true, ED.Mode.Handles, false);
+	}
+}
+
+/**
+ * Sets default properties
+ */
+ED.EndothelialKeratoplastyCrossSection.prototype.setPropertyDefaults = function() {
+	this.isUnique = false;
+	this.isFilled = false;
+	
+	this.apexY = -4.5 * this.pixelsPerMillimetre;
+		
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-12.0 * this.pixelsPerMillimetre/2, -6.5 * this.pixelsPerMillimetre/2);
+
+	// Add complete validation arrays for derived parameters
+	this.parameterValidationArray['d'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(1, 100),
+		animate: false
+	};
+	
+	this.parameterValidationArray['diameter'] = {
+		kind: 'derived',
+		type: 'float',
+		range: new ED.Range(6.5, 12),
+		precision: 1,
+		animate: true
+	};
+	
+	this.parameterValidationArray['typeSimple'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(1, 2),
+		animate: false
+	};
+	
+	// Create ranges to constrain handles
+		// within dimension of graft, and within anterior chamber
+	this.handleCoordinateRangeArray = new Array();
+	this.handleCoordinateRangeArray[0] = {
+		x: new ED.Range(-500,+500), 
+		y: new ED.Range(-4.5 * this.pixelsPerMillimetre, -4.5 * this.pixelsPerMillimetre)
+	}
+	this.handleCoordinateRangeArray[1] = {
+		x: new ED.Range(-500,+500), 
+		y: new ED.Range(-4.5 * this.pixelsPerMillimetre, 4.5 * this.pixelsPerMillimetre)
+	}
+	this.handleCoordinateRangeArray[2] = {
+		x: new ED.Range(-500,+500), 
+		y: new ED.Range(4.5 * this.pixelsPerMillimetre, 4.5 * this.pixelsPerMillimetre)
+	}
+}
+
+/**
+ * Sets default parameters
+ */
+ED.EndothelialKeratoplastyCrossSection.prototype.setParameterDefaults = function() {
+	this.originX = 50; // as is in Cornea cross section doodle to dulicate bezier control points
+	this.setParameterFromString('diameter', '9.0');
+	
+	// create the base squiggle
+	var squiggle = new ED.Squiggle(this, new ED.Colour(100, 100, 100, 1), 4, true);
+	this.squiggleArray.push(squiggle);
+	
+	// Populate with handles at equidistant points around circumference
+	var point1 = new ED.Point(this.handle1X, this.handle1Y); // TODO: check this enables storing & rendering of cross section handle points, assuming pointsArray not stored for cross section doodles
+	this.addPointToSquiggle(point1);
+	var point2 = new ED.Point(this.handle2X, this.handle2Y); // TODO: check this enables storing & rendering of cross section handle points, assuming pointsArray not stored for cross section doodles
+	this.addPointToSquiggle(point2);
+	var point3 = new ED.Point(this.handle3X, this.handle3Y); // TODO: check this enables storing & rendering of cross section handle points, assuming pointsArray not stored for cross section doodles
+	this.addPointToSquiggle(point3);
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if their 'animate' property is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.EndothelialKeratoplastyCrossSection.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = new Array();
+
+	switch (_parameter) {
+		case 'apexY':
+			returnArray['diameter'] = -2 * _value/this.pixelsPerMillimetre;
+			if (this.squiggleArray.length>0) {
+				// update handle position
+				
+				var sup = this.getXLimitOnCornea(_value);
+				var inf = this.getXLimitOnCornea(-_value);
+				this.squiggleArray[0].pointsArray[0].y = new ED.Point(sup,_value);
+				this.squiggleArray[0].pointsArray[2].y = new ED.Point(inf,-_value);
+				
+				// update handle range
+				this.handleCoordinateRangeArray[0] = {
+					x: new ED.Range(sup,+200), 
+					y: new ED.Range(_value, _value)
+				}
+/*
+				this.handleCoordinateRangeArray[1] = {
+					x: new ED.Range(220+crrctr,220+crrctr), 
+					y: new ED.Range(_value, -_value)
+				}
+*/
+				this.handleCoordinateRangeArray[2] = {
+					x: new ED.Range(inf,+200), 
+					y: new ED.Range(-_value, -_value)
+				}
+			}
+			this.handle1Y = _value;
+			this.handle3Y = -_value;
+			break;
+
+		case 'diameter':
+			returnArray['apexY'] = -_value * this.pixelsPerMillimetre/2;
+			break;
+		
+		case 'd':
+			returnArray['d'] = parseInt(_value);
+			
+			// update handle range boundaries
+			
+			// update handle positions
+			
+			break;
+		
+		case 'typeSimple':
+			returnArray['typeSimple'] = parseInt(_value);
+			break;
+			
+		case 'handles':
+			//console.log(this.draggingHandleIndex);
+			// update parameters storing handle positions
+			if (this.draggingHandleIndex == 0) {
+				this.handle1X = this.squiggleArray[0].pointsArray[0].x;
+				this.handle1Y = this.squiggleArray[0].pointsArray[0].y;
+			}
+			else if (this.draggingHandleIndex == 1) {
+				this.handle2X = this.squiggleArray[0].pointsArray[1].x;
+				this.handle2Y = this.squiggleArray[0].pointsArray[1].y;
+			}
+			else if (this.draggingHandleIndex == 2) {
+				this.handle3X = this.squiggleArray[0].pointsArray[2].x;
+				this.handle3Y = this.squiggleArray[0].pointsArray[2].y;
+			}
+			
+			// update range
+			var x = this.getXLimitOnCornea(this.squiggleArray[0].pointsArray[this.draggingHandleIndex].y);
+			this.handleCoordinateRangeArray[this.draggingHandleIndex].x = new ED.Range(x,+200);
+			
+			break;
+	}
+
+	return returnArray;
+}
+
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.EndothelialKeratoplastyCrossSection.prototype.draw = function(_point) {
+
+	// Get context
+	var ctx = this.drawing.context;
+
+	var cornea = this.drawing.lastDoodleOfClass('CorneaCrossSection');
+	var cornealThickness = cornea.pachymetry/5;
+
+	// Call draw method in superclass
+	ED.EndothelialKeratoplastyCrossSection.superclass.draw.call(this, _point);
+
+	// Boundary path
+	ctx.beginPath();
+	
+	// Calculate segment extent in terms of time along curve
+	var startY = this.originY + this.apexY;
+	var endY = this.originY - this.apexY;
+	
+	var startT = (startY + 380) / 760;
+	if (startT<0) startT = 0;
+	var endT = (endY + 380) / 760;
+	if (endT>1) endT = 1;
+	
+	// define width using corrections for each bezier point
+		// width depends on DMEK / DSAEK parameter
+	var crrctr1 = 10;
+	var crrctr2 = 6;
+	var crrctr3 = 6;
+	var crrctr4 = 4;
+	if (this.typeSimple == 2) {
+		crrctr1 = 50;
+		crrctr2 = 30;
+		crrctr3 = 30;
+		crrctr4 = 20;
+	}
+		
+	if (startT < 0.5) {
+		
+		var superiorBezier = new Object;
+		var superiorBezierBack = new Object;
+
+		// define start and end time points
+		var tI0 = startT * 2;
+		var tI1 = (endT < 0.5) ? endT * 2 : 1;
+		
+		// default bezier points (as in cornea cross section)
+		if (cornea && cornea.shape == "Keratoconus") {
+			superiorBezier.SP = new ED.Point(-120 + 120, -380 - this.originY);
+			superiorBezier.CP1 = new ED.Point(-240 + 160, -260 - this.originY);
+			superiorBezier.CP2 = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY - 120 - this.originY);
+			superiorBezier.EP = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY - this.originY);
+			
+			superiorBezierBack.SP = new ED.Point(-120 + 120 + crrctr1, -380 - this.originY);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 160 + crrctr2, -260 - this.originY);
+			superiorBezierBack.CP2 = new ED.Point(cornea.apexX + cornealThickness + crrctr3, cornea.apexY - 120 - this.originY);
+			superiorBezierBack.EP = new ED.Point(cornea.apexX + cornealThickness + crrctr4, cornea.apexY - this.originY);
+		}
+		else if (cornea && cornea.shape == "Keratoglobus") {			
+			superiorBezier.SP = new ED.Point(-120 + 120, -380 - this.originY);
+			superiorBezier.CP1 = new ED.Point(-240 + 120, -200 - this.originY);
+			superiorBezier.CP2 = new ED.Point(-380 + 100, -140 - this.originY);
+			superiorBezier.EP = new ED.Point(-380 + 100, 100 - this.originY);
+			
+			superiorBezierBack.SP = new ED.Point(-120 + 120 + crrctr1, -380 - this.originY);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 120 + crrctr2, -200 - this.originY);
+			superiorBezierBack.CP2 = new ED.Point(-380 + 100 + crrctr3, -140 - this.originY);
+			superiorBezierBack.EP = new ED.Point(-380 + 100 + crrctr4, 100 - this.originY);
+		}
+		else {
+			superiorBezier.SP = new ED.Point(-120 + 120, -380 - this.originY);
+			superiorBezier.CP1 = new ED.Point(-240 + 160, -260 - this.originY);
+			superiorBezier.CP2 = new ED.Point(-320 + 100, -160 - this.originY);
+			superiorBezier.EP = new ED.Point(-320 + 100, 0 - this.originY);
+			
+			superiorBezierBack.SP = new ED.Point(this.handle1X, this.handle1Y);
+			superiorBezierBack.CP1 = new ED.Point(-240 + 160 + crrctr2, -260 - this.originY);
+			superiorBezierBack.CP2 = new ED.Point(-320 + 100 + crrctr3, -160 - this.originY);
+			superiorBezierBack.EP = new ED.Point(-220,0);
+		}
+		
+			
+		if (tI0 > 0) {
+		// Trim start of curve			
+			
+			// front of cornea
+			var sq0 = new ED.Point(0,0);
+			sq0.y = (1-tI0)*(1-tI0)*(1-tI0)*superiorBezier.SP.y + 3*(1-tI0)*(1-tI0)*tI0*superiorBezier.CP1.y + 3*(1-tI0)*tI0*tI0*superiorBezier.CP2.y + tI0*tI0*tI0*superiorBezier.EP.y;
+			sq0.x = (1-tI0)*(1-tI0)*(1-tI0)*superiorBezier.SP.x + 3*(1-tI0)*(1-tI0)*tI0*superiorBezier.CP1.x + 3*(1-tI0)*tI0*tI0*superiorBezier.CP2.x + tI0*tI0*tI0*superiorBezier.EP.x;
+			
+			var iP23 = new ED.Point(0,0);
+			iP23.x = superiorBezier.CP1.x + tI0 * (superiorBezier.CP2.x - superiorBezier.CP1.x);
+			iP23.y = superiorBezier.CP1.y + tI0 * (superiorBezier.CP2.y - superiorBezier.CP1.y);
+			
+			var iP34 = new ED.Point(0,0);
+			iP34.x = superiorBezier.CP2.x + tI0 * (superiorBezier.EP.x - superiorBezier.CP2.x);
+			iP34.y = superiorBezier.CP2.y + tI0 * (superiorBezier.EP.y - superiorBezier.CP2.y);
+			
+			var iP2334 = new ED.Point(0,0);
+			iP2334.x = iP23.x + tI0 * (iP34.x - iP23.x);
+			iP2334.y = iP23.y + tI0 * (iP34.y - iP23.y);
+			
+			superiorBezier.SP = sq0;
+			superiorBezier.CP1 = iP2334;
+			superiorBezier.CP2 = iP34;
+			
+			
+			// back of cornea
+			var sq0b = new ED.Point(0,0);
+			sq0b.y = (1-tI0)*(1-tI0)*(1-tI0)*superiorBezierBack.SP.y + 3*(1-tI0)*(1-tI0)*tI0*superiorBezierBack.CP1.y + 3*(1-tI0)*tI0*tI0*superiorBezierBack.CP2.y + tI0*tI0*tI0*superiorBezierBack.EP.y;
+			sq0b.x = (1-tI0)*(1-tI0)*(1-tI0)*superiorBezierBack.SP.x + 3*(1-tI0)*(1-tI0)*tI0*superiorBezierBack.CP1.x + 3*(1-tI0)*tI0*tI0*superiorBezierBack.CP2.x + tI0*tI0*tI0*superiorBezierBack.EP.x;
+			
+			var iP23b = new ED.Point(0,0);
+			iP23b.x = superiorBezierBack.CP1.x + tI0 * (superiorBezierBack.CP2.x - superiorBezierBack.CP1.x);
+			iP23b.y = superiorBezierBack.CP1.y + tI0 * (superiorBezierBack.CP2.y - superiorBezierBack.CP1.y);
+			
+			var iP34b = new ED.Point(0,0);
+			iP34b.x = superiorBezierBack.CP2.x + tI0 * (superiorBezierBack.EP.x - superiorBezierBack.CP2.x);
+			iP34b.y = superiorBezierBack.CP2.y + tI0 * (superiorBezierBack.EP.y - superiorBezierBack.CP2.y);
+			
+			var iP2334b = new ED.Point(0,0);
+			iP2334b.x = iP23b.x + tI0 * (iP34b.x - iP23b.x);
+			iP2334b.y = iP23b.y + tI0 * (iP34b.y - iP23b.y);
+			
+			superiorBezierBack.SP = sq0b;
+			superiorBezierBack.CP1 = iP2334b;
+			superiorBezierBack.CP2 = iP34b;
+		}
+		
+		if (tI1 < 1) {
+		// Trim end of curve
+			
+			// front of cornea
+			var iq1 = new ED.Point(0,0);
+			iq1.y = (1-tI1)*(1-tI1)*(1-tI1)*superiorBezier.SP.y + 3*(1-tI1)*(1-tI1)*tI1*superiorBezier.CP1.y + 3*(1-tI1)*tI1*tI1*superiorBezier.CP2.y + tI1*tI1*tI1*superiorBezier.EP.y;
+			iq1.x = (1-tI1)*(1-tI1)*(1-tI1)*superiorBezier.SP.x + 3*(1-tI1)*(1-tI1)*tI1*superiorBezier.CP1.x + 3*(1-tI1)*tI1*tI1*superiorBezier.CP2.x + tI1*tI1*tI1*superiorBezier.EP.x;
+
+			var iP12 = new ED.Point(0,0);
+			iP12.x = superiorBezier.SP.x + tI1 * (superiorBezier.CP1.x - superiorBezier.SP.x);
+			iP12.y = superiorBezier.SP.y + tI1 * (superiorBezier.CP1.y - superiorBezier.SP.y);
+			
+			var iP23 = new ED.Point(0,0);
+			iP23.x = superiorBezier.CP1.x + tI1 * (superiorBezier.CP2.x - superiorBezier.CP1.x);
+			iP23.y = superiorBezier.CP1.y + tI1 * (superiorBezier.CP2.y - superiorBezier.CP1.y);
+			
+			var iP1223 = new ED.Point(0,0);
+			iP1223.x = iP12.x + tI1 * (iP23.x - iP12.x);
+			iP1223.y = iP12.y + tI1 * (iP23.y - iP12.y);
+			
+			superiorBezier.CP1 = iP12;
+			superiorBezier.CP2 = iP1223;
+			superiorBezier.EP = iq1;
+			
+			
+			// back of cornea
+			var iq1b = new ED.Point(0,0);
+			iq1b.y = (1-tI1)*(1-tI1)*(1-tI1)*superiorBezierBack.SP.y + 3*(1-tI1)*(1-tI1)*tI1*superiorBezierBack.CP1.y + 3*(1-tI1)*tI1*tI1*superiorBezierBack.CP2.y + tI1*tI1*tI1*superiorBezierBack.EP.y;
+			iq1b.x = (1-tI1)*(1-tI1)*(1-tI1)*superiorBezierBack.SP.x + 3*(1-tI1)*(1-tI1)*tI1*superiorBezierBack.CP1.x + 3*(1-tI1)*tI1*tI1*superiorBezierBack.CP2.x + tI1*tI1*tI1*superiorBezierBack.EP.x;
+
+			var iP12b = new ED.Point(0,0);
+			iP12b.x = superiorBezierBack.SP.x + tI1 * (superiorBezierBack.CP1.x - superiorBezierBack.SP.x);
+			iP12b.y = superiorBezierBack.SP.y + tI1 * (superiorBezierBack.CP1.y - superiorBezierBack.SP.y);
+			
+			var iP23b = new ED.Point(0,0);
+			iP23b.x = superiorBezierBack.CP1.x + tI1 * (superiorBezierBack.CP2.x - superiorBezierBack.CP1.x);
+			iP23b.y = superiorBezierBack.CP1.y + tI1 * (superiorBezierBack.CP2.y - superiorBezierBack.CP1.y);
+			
+			var iP1223b = new ED.Point(0,0);
+			iP1223b.x = iP12b.x + tI1 * (iP23b.x - iP12b.x);
+			iP1223b.y = iP12b.y + tI1 * (iP23b.y - iP12b.y);
+			
+			superiorBezierBack.CP1 = iP12b;
+			superiorBezierBack.CP2 = iP1223b;
+			superiorBezierBack.EP = iq1b;
+		}
+	}
+	
+	
+	if (endT > 0.5) {
+		
+		var inferiorBezier = new Object;
+		var inferiorBezierBack = new Object;
+		
+		// define start and end time points
+		var tS0 = (startT > 0.5) ? (startT - 0.5) * 2 : 0;
+		var tS1 = (endT - 0.5) * 2;
+		
+		// default bezier points (as in cornea cross section)
+		if (cornea && cornea.shape == "Keratoconus") {
+			inferiorBezier.SP = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY - this.originY);
+			inferiorBezier.CP1 = new ED.Point(cornea.apexX + cornealThickness, cornea.apexY + 120 - this.originY);
+			inferiorBezier.CP2 = new ED.Point(-240 + 160, 260 - this.originY);
+			inferiorBezier.EP = new ED.Point(-120 + 120, 380 - this.originY);
+			
+			inferiorBezierBack.SP = new ED.Point(cornea.apexX + cornealThickness + crrctr4, cornea.apexY - this.originY);
+			inferiorBezierBack.CP1 = new ED.Point(cornea.apexX + cornealThickness + crrctr3, cornea.apexY + 120 - this.originY);
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160 + crrctr2, 260 - this.originY);
+			inferiorBezierBack.EP = new ED.Point(-120 + 120 + crrctr1, 380 - this.originY);
+		}
+		else if (cornea && cornea.shape == "Keratoglobus") {
+			inferiorBezier.SP = new ED.Point(-380 + 100, 100 - this.originY);
+			inferiorBezier.CP1 = new ED.Point(-380 + 120, 220 - this.originY);
+			inferiorBezier.CP2 = new ED.Point(-240 + 160, 260 - this.originY);
+			inferiorBezier.EP = new ED.Point(-120 + 120, 380 - this.originY);
+			
+			inferiorBezierBack.SP = new ED.Point(-380 + 100 + crrctr4, 100 - this.originY);
+			inferiorBezierBack.CP1 = new ED.Point(-380 + 120 + crrctr3, 220 - this.originY);
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160 + crrctr2, 260 - this.originY);
+			inferiorBezierBack.EP = new ED.Point(-120 + 120 + crrctr1, 380 - this.originY);
+		}
+		else {
+			inferiorBezier.SP = new ED.Point(-320 + 100, -0 - this.originY);
+			inferiorBezier.CP1 = new ED.Point(-320 + 100, 160 - this.originY);
+			inferiorBezier.CP2 = new ED.Point(-240 + 160, 260 - this.originY);
+			inferiorBezier.EP = new ED.Point(-120 + 120, 380 - this.originY);
+			
+			inferiorBezierBack.SP = new ED.Point(-220, 0);
+			inferiorBezierBack.CP1 = new ED.Point(-320 + 100 + crrctr3, 160 - this.originY);
+			inferiorBezierBack.CP2 = new ED.Point(-240 + 160 + crrctr2, 260 - this.originY);
+			inferiorBezierBack.EP = new ED.Point(this.handle3X, this.handle3Y);
+		}			
+		
+		
+		if (tS0 > 0) {
+		// Trim start of curve
+		
+			// front of cornea			
+			var sq0 = new ED.Point(0,0);
+			sq0.y = (1-tS0)*(1-tS0)*(1-tS0)*inferiorBezier.SP.y + 3*(1-tS0)*(1-tS0)*tS0*inferiorBezier.CP1.y + 3*(1-tS0)*tS0*tS0*inferiorBezier.CP2.y + tS0*tS0*tS0*inferiorBezier.EP.y;
+			sq0.x = (1-tS0)*(1-tS0)*(1-tS0)*inferiorBezier.SP.x + 3*(1-tS0)*(1-tS0)*tS0*inferiorBezier.CP1.x + 3*(1-tS0)*tS0*tS0*inferiorBezier.CP2.x + tS0*tS0*tS0*inferiorBezier.EP.x;
+			
+			var sP23 = new ED.Point(0,0);
+			sP23.x = inferiorBezier.CP1.x + tS0 * (inferiorBezier.CP2.x - inferiorBezier.CP1.x);
+			sP23.y = inferiorBezier.CP1.y + tS0 * (inferiorBezier.CP2.y - inferiorBezier.CP1.y);
+			
+			var sP34 = new ED.Point(0,0);
+			sP34.x = inferiorBezier.CP2.x + tS0 * (inferiorBezier.EP.x - inferiorBezier.CP2.x);
+			sP34.y = inferiorBezier.CP2.y + tS0 * (inferiorBezier.EP.y - inferiorBezier.CP2.y);
+			
+			var sP2334 = new ED.Point(0,0);
+			sP2334.x = sP23.x + tS0 * (sP34.x - sP23.x);
+			sP2334.y = sP23.y + tS0 * (sP34.y - sP23.y);
+			
+			inferiorBezier.SP = sq0;
+			inferiorBezier.CP1 = sP2334;
+			inferiorBezier.CP2 = sP34;
+			
+			// back of cornea
+			var sq0b = new ED.Point(0,0);
+			sq0b.y = (1-tS0)*(1-tS0)*(1-tS0)*inferiorBezierBack.SP.y + 3*(1-tS0)*(1-tS0)*tS0*inferiorBezierBack.CP1.y + 3*(1-tS0)*tS0*tS0*inferiorBezierBack.CP2.y + tS0*tS0*tS0*inferiorBezierBack.EP.y;
+			sq0b.x = (1-tS0)*(1-tS0)*(1-tS0)*inferiorBezierBack.SP.x + 3*(1-tS0)*(1-tS0)*tS0*inferiorBezierBack.CP1.x + 3*(1-tS0)*tS0*tS0*inferiorBezierBack.CP2.x + tS0*tS0*tS0*inferiorBezierBack.EP.x;
+			
+			var sP23b = new ED.Point(0,0);
+			sP23b.x = inferiorBezierBack.CP1.x + tS0 * (inferiorBezierBack.CP2.x - inferiorBezierBack.CP1.x);
+			sP23b.y = inferiorBezierBack.CP1.y + tS0 * (inferiorBezierBack.CP2.y - inferiorBezierBack.CP1.y);
+			
+			var sP34b = new ED.Point(0,0);
+			sP34b.x = inferiorBezierBack.CP2.x + tS0 * (inferiorBezierBack.EP.x - inferiorBezierBack.CP2.x);
+			sP34b.y = inferiorBezierBack.CP2.y + tS0 * (inferiorBezierBack.EP.y - inferiorBezierBack.CP2.y);
+			
+			var sP2334b = new ED.Point(0,0);
+			sP2334b.x = sP23b.x + tS0 * (sP34b.x - sP23b.x);
+			sP2334b.y = sP23b.y + tS0 * (sP34b.y - sP23b.y);
+			
+			inferiorBezierBack.SP = sq0b;
+			inferiorBezierBack.CP1 = sP2334b;
+			inferiorBezierBack.CP2 = sP34b;
+		}
+		
+		if (tS1 < 1) {
+		// Trim end of curve
+		
+			// front of cornea
+			var sq1 = new ED.Point(0,0);
+			sq1.y = (1-tS1)*(1-tS1)*(1-tS1)*inferiorBezier.SP.y + 3*(1-tS1)*(1-tS1)*tS1*inferiorBezier.CP1.y + 3*(1-tS1)*tS1*tS1*inferiorBezier.CP2.y + tS1*tS1*tS1*inferiorBezier.EP.y;
+			sq1.x = (1-tS1)*(1-tS1)*(1-tS1)*inferiorBezier.SP.x + 3*(1-tS1)*(1-tS1)*tS1*inferiorBezier.CP1.x + 3*(1-tS1)*tS1*tS1*inferiorBezier.CP2.x + tS1*tS1*tS1*inferiorBezier.EP.x;
+
+			var sP12 = new ED.Point(0,0);
+			sP12.x = inferiorBezier.SP.x + tS1 * (inferiorBezier.CP1.x - inferiorBezier.SP.x);
+			sP12.y = inferiorBezier.SP.y + tS1 * (inferiorBezier.CP1.y - inferiorBezier.SP.y);
+			
+			var sP23 = new ED.Point(0,0);
+			sP23.x = inferiorBezier.CP1.x + tS1 * (inferiorBezier.CP2.x - inferiorBezier.CP1.x);
+			sP23.y = inferiorBezier.CP1.y + tS1 * (inferiorBezier.CP2.y - inferiorBezier.CP1.y);
+			
+			var sP1223 = new ED.Point(0,0);
+			sP1223.x = sP12.x + tS1 * (sP23.x - sP12.x);
+			sP1223.y = sP12.y + tS1 * (sP23.y - sP12.y);
+
+			inferiorBezier.CP1 = sP12;
+			inferiorBezier.CP2 = sP1223;
+			inferiorBezier.EP = sq1;
+			
+			
+			// back of cornea
+			var sq1b = new ED.Point(0,0);
+			sq1b.y = (1-tS1)*(1-tS1)*(1-tS1)*inferiorBezierBack.SP.y + 3*(1-tS1)*(1-tS1)*tS1*inferiorBezierBack.CP1.y + 3*(1-tS1)*tS1*tS1*inferiorBezierBack.CP2.y + tS1*tS1*tS1*inferiorBezierBack.EP.y;
+			sq1b.x = (1-tS1)*(1-tS1)*(1-tS1)*inferiorBezierBack.SP.x + 3*(1-tS1)*(1-tS1)*tS1*inferiorBezierBack.CP1.x + 3*(1-tS1)*tS1*tS1*inferiorBezierBack.CP2.x + tS1*tS1*tS1*inferiorBezierBack.EP.x;
+
+			var sP12b = new ED.Point(0,0);
+			sP12b.x = inferiorBezierBack.SP.x + tS1 * (inferiorBezierBack.CP1.x - inferiorBezierBack.SP.x);
+			sP12b.y = inferiorBezierBack.SP.y + tS1 * (inferiorBezierBack.CP1.y - inferiorBezierBack.SP.y);
+			
+			var sP23b = new ED.Point(0,0);
+			sP23b.x = inferiorBezierBack.CP1.x + tS1 * (inferiorBezierBack.CP2.x - inferiorBezierBack.CP1.x);
+			sP23b.y = inferiorBezierBack.CP1.y + tS1 * (inferiorBezierBack.CP2.y - inferiorBezierBack.CP1.y);
+			
+			var sP1223b = new ED.Point(0,0);
+			sP1223b.x = sP12b.x + tS1 * (sP23b.x - sP12b.x);
+			sP1223b.y = sP12b.y + tS1 * (sP23b.y - sP12b.y);
+
+			inferiorBezierBack.CP1 = sP12b;
+			inferiorBezierBack.CP2 = sP1223b;
+			inferiorBezierBack.EP = sq1b;
+		}
+	}
+	
+	if (inferiorBezier) {
+		ctx.moveTo(inferiorBezier.EP.x, inferiorBezier.EP.y);	
+		ctx.lineTo(inferiorBezierBack.EP.x, inferiorBezierBack.EP.y);
+		ctx.bezierCurveTo(inferiorBezierBack.CP2.x, inferiorBezierBack.CP2.y, inferiorBezierBack.CP1.x, inferiorBezierBack.CP1.y, inferiorBezierBack.SP.x, inferiorBezierBack.SP.y);
+		ctx.moveTo(inferiorBezier.EP.x, inferiorBezier.EP.y);
+	}
+	if (superiorBezier) {
+		ctx.moveTo(superiorBezierBack.EP.x, superiorBezierBack.EP.y);
+		ctx.bezierCurveTo(superiorBezierBack.CP2.x, superiorBezierBack.CP2.y, superiorBezierBack.CP1.x, superiorBezierBack.CP1.y, superiorBezierBack.SP.x, superiorBezierBack.SP.y);
+		ctx.moveTo(superiorBezierBack.SP.x, superiorBezierBack.SP.y);
+		ctx.lineTo(superiorBezier.SP.x, superiorBezier.SP.y);
+	}
+	
+	
+	// Close path
+	ctx.closePath();
+
+	// Set attributes
+	ctx.lineWidth = 4;
+	ctx.fillStyle = "rgba(0,0,0,0)";
+	ctx.strokeStyle = "gray";
+
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+		
+	// Non boundary drawing
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+		// Draw endothelia
+		ctx.beginPath();
+		
+		if (inferiorBezier) {
+			ctx.moveTo(inferiorBezierBack.EP.x, inferiorBezierBack.EP.y);
+			ctx.bezierCurveTo(inferiorBezierBack.CP2.x, inferiorBezierBack.CP2.y, inferiorBezierBack.CP1.x, inferiorBezierBack.CP1.y, inferiorBezierBack.SP.x, inferiorBezierBack.SP.y);
+			if (superiorBezier) ctx.lineTo(superiorBezierBack.EP.x, superiorBezierBack.EP.y);
+		}
+		if (superiorBezier) {
+			ctx.moveTo(superiorBezierBack.EP.x, superiorBezierBack.EP.y);
+			ctx.bezierCurveTo(superiorBezierBack.CP2.x, superiorBezierBack.CP2.y, superiorBezierBack.CP1.x, superiorBezierBack.CP1.y, superiorBezierBack.SP.x, superiorBezierBack.SP.y);
+		}
+		
+		// set style attributes
+		ctx.strokeStyle = "gray";
+		ctx.lineWidth = 15;
+		ctx.lineJoin='miter';
+		ctx.miterLimit = 200;
+		
+		ctx.stroke();
+	}
+	
+	// define handle positions
+	this.handleArray[0].location=this.transform.transformPoint(this.squiggleArray[0].pointsArray[0]);
+	this.handleArray[1].location=this.transform.transformPoint(this.squiggleArray[0].pointsArray[1]);
+	this.handleArray[2].location=this.transform.transformPoint(this.squiggleArray[0].pointsArray[2]);
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+	// Return value indicating successful hittest
+	return this.isClicked;
+	
+}
+
+
+/**
+ * 
+ *
+ * @returns {Float} X coordinate for Y along posterior corneal surface
+ */
+ED.EndothelialKeratoplastyCrossSection.prototype.getXLimitOnCornea = function(_y) {
+
+	var cornea = this.drawing.lastDoodleOfClass('CorneaCrossSection');
+	var cornealThickness = cornea.pachymetry/5;
+
+	var yTranspose = this.originY + _y; // transpose y to corneal plane
+	
+	var sp;
+	var cp1;
+	var cp2;
+	var ep;
+	
+	// define width using corrections for each bezier point
+		// width depends on DMEK / DSAEK parameter
+	var crrctr1 = 10;
+	var crrctr2 = 6;
+	var crrctr3 = 6;
+	var crrctr4 = 4;
+	if (this.typeSimple == 2) {
+		crrctr1 = 50;
+		crrctr2 = 30;
+		crrctr3 = 30;
+		crrctr4 = 20;
+	}
+	
+	var time = (yTranspose + 380) / 760;
+	if (time<0) time = 0;
+	if (time>1) time = 1;
+	
+	if (time <= 0.5) {
+		time = time * 2;
+
+		if (cornea && cornea.shape == "Keratoconus") {
+			sp = new ED.Point(-120 + 120 + crrctr1, -380);
+			cp1 = new ED.Point(-240 + 160 + crrctr2, -260);
+			cp2 = new ED.Point(cornea.apexX + cornealThickness + crrctr3, cornea.apexY - 120);
+			ep = new ED.Point(cornea.apexX + cornealThickness + crrctr4, cornea.apexY);
+		}
+		else if (cornea && cornea.shape == "Keratoglobus") {
+			sp = new ED.Point(-120 + 120 + crrctr1, -380);
+			cp1 = new ED.Point(-240 + 120 + crrctr2, -200);
+			cp2 = new ED.Point(-380 + 100 + crrctr3, -140);
+			ep = new ED.Point(-380 + 100 + crrctr4, 100);
+		}
+		else {
+			sp = new ED.Point(-120 + 120 + crrctr1, -380);
+			cp1 = new ED.Point(-240 + 160 + crrctr2, -260);
+			cp2 = new ED.Point(-320 + 100 + crrctr3, -160);
+			ep = new ED.Point(-320 + 100 + crrctr4, 0);
+		}
+	}
+	
+	
+	if (time > 0.5) {		
+		time = (time - 0.5) * 2;
+		
+		// default bezier points (as in cornea cross section)
+		if (cornea && cornea.shape == "Keratoconus") {
+			sp = new ED.Point(cornea.apexX + cornealThickness + crrctr4, cornea.apexY );
+			cp1 = new ED.Point(cornea.apexX + cornealThickness + crrctr3, cornea.apexY + 120 );
+			cp2 = new ED.Point(-240 + 160 + crrctr2, 260 );
+			ep = new ED.Point(-120 + 120 + crrctr1, 380 );
+		}
+		else if (cornea && cornea.shape == "Keratoglobus") {
+			sp = new ED.Point(-380 + 100 + crrctr4, 100 );
+			cp1 = new ED.Point(-380 + 120 + crrctr3, 220 );
+			cp2 = new ED.Point(-240 + 160 + crrctr2, 260 );
+			ep = new ED.Point(-120 + 120 + crrctr1, 380 );
+		}
+		else {
+			sp = new ED.Point(-320 + 100 + crrctr4, -0 );
+			cp1 = new ED.Point(-320 + 100 + crrctr3, 160 );
+			cp2 = new ED.Point(-240 + 160 + crrctr2, 260 );
+			ep = new ED.Point(-120 + 120 + crrctr1, 380 );
+		}	
+	}		
+
+	var pointOnCornea = sp.bezierPointAtParameter(time, cp1, cp2, ep);
+
+	return pointOnCornea.x;
 }
 
 /**
@@ -28804,7 +37152,18 @@ ED.Episcleritis.prototype.drawSoftLine = function(x1, y1, x2, y2, lineWidth, r, 
 	ctx.lineTo(x2, y2);
 	ctx.stroke();
 	ctx.restore();
-}
+};
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {number} SnoMed code of entity represented by doodle
+ */
+ED.Episcleritis.prototype.snomedCode = function() {
+    'use strict';
+
+    return 815008;
+};
 
 /**
  * OpenEyes
@@ -29716,133 +38075,261 @@ ED.FocalLaser.prototype.groupDescription = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * Fuch's endothelial Dystrophy
+
  *
+
  * @class Fuchs
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.Fuchs = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "Fuchs";
 
+
+
 	// Saved parameters
+
 	this.savedParameterArray = ['originX', 'originY', 'scaleX', 'scaleY'];
 
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
 };
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.Fuchs.prototype = new ED.Doodle;
+
 ED.Fuchs.prototype.constructor = ED.Fuchs;
+
 ED.Fuchs.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets handle attributes
+
  */
+
 ED.Fuchs.prototype.setHandles = function() {
+
 	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Scale, false);
+
 };
 
+
+
 /**
+
  * Sets default properties
+
  */
+
 ED.Fuchs.prototype.setPropertyDefaults = function() {
+
 	this.isRotatable = false;
+
 	this.isSqueezable = true;
+
 	this.isUnique = true;
+
 };
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.Fuchs.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.Fuchs.superclass.draw.call(this, _point);
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Fuchs
+
 	var r = 300;
+
 	ctx.arc(0, 0, r, 0, Math.PI * 2, false);
 
+
+
 	// Close path
+
 	ctx.closePath();
 
+
+
 	// Create fill pattern
+
 	var ptrn = ctx.createPattern(this.drawing.imageArray['FuchsPattern'], 'repeat');
+
 	ctx.fillStyle = ptrn;
 
+
+
 	// Transparent stroke
+
 	ctx.strokeStyle = "rgba(255,255,255,0)";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Coordinates of handles (in canvas plane)
+
 	var point = new ED.Point(0, 0);
+
 	point.setWithPolars(r, Math.PI / 4);
+
 	this.handleArray[2].location = this.transform.transformPoint(point);
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 };
 
+
+
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.Fuchs.prototype.description = function() {
+
 	return "Guttata";
+
 };
 
+
+
 /**
+
  * Returns the SnoMed code of the doodle
+
  *
+
  * @returns {Int} SnoMed code of entity representated by doodle
+
  */
+
 ED.Fuchs.prototype.snomedCode = function() {
-	return 0;
+
+	return 373424008;
+
 };
 
+
+
 /**
+
  * Returns a number indicating position in a hierarchy of diagnoses from 0 to 9 (highest)
+
  *
+
  * @returns {Int} Position in diagnostic hierarchy
+
  */
+
 ED.Fuchs.prototype.diagnosticHierarchy = function() {
+
 	return 2;
+
 };
+
 
 /**
  * OpenEyes
@@ -31378,7 +39865,18 @@ ED.Hyphaema.prototype.draw = function(_point) {
 ED.Hyphaema.prototype.description = function() {
 	var percent = 10 * Math.round(10 * (this.ro - this.apexY) / (2 * this.ro));
 	return percent + "% hyphaema";
-}
+};
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {number} SnoMed code of entity represented by doodle
+ */
+ED.Hyphaema.prototype.snomedCode = function() {
+	'use strict';
+
+    return 75229002;
+};
 
 /**
  * OpenEyes
@@ -31881,7 +40379,18 @@ ED.Hypopyon.prototype.draw = function(_point) {
 ED.Hypopyon.prototype.description = function() {
 	var height = Math.round(10 * (this.ro - this.apexY) / (2 * this.ro));
 	return height + "mm hypopyon";
-}
+};
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {number} SnoMed code of entity represented by doodle
+ */
+ED.Hypopyon.prototype.snomedCode = function() {
+    'use strict';
+
+    return 87807004;
+};
 
 /**
  * OpenEyes
@@ -35569,426 +44078,891 @@ ED.Lattice.prototype.diagnosticHierarchy = function()
 }
 
 /**
+
  * OpenEyes
+
  * MSC mod
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * Lens
+
  *
+
  * @class Lens
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.Lens = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "Lens";
 
+
+
 	// Derived parameters
+
 	this.nuclearGrade = 'None';
+
 	this.corticalGrade = 'None';
+
 	this.posteriorSubcapsularGrade = 'None';
+
 	this.anteriorPolar = false;
+
 	this.posteriorPolar = false;
+
 	this.coronary = false;
+
+	this.blueDot = false;
+
 	this.phakodonesis = false;
+
 	this.csOriginX = 0;
 
+
+
 	// Saved parameters
-	this.savedParameterArray = ['rotation', 'originX', 'originY', 'nuclearGrade', 'corticalGrade', 'posteriorSubcapsularGrade', 'anteriorPolar', 'posteriorPolar', 'coronary', 'phakodonesis', 'csOriginX'];
+
+	this.savedParameterArray = ['rotation', 'originX', 'originY', 'nuclearGrade', 'corticalGrade', 'posteriorSubcapsularGrade', 'anteriorPolar', 'posteriorPolar', 'coronary', 'phakodonesis','blueDot', 'csOriginX'];
+
+
 
 	// Parameters in doodle control bar (parameter name: parameter label)
+
 	this.controlParameterArray = {
+
 		'nuclearGrade':'Nuclear',
+
 		'corticalGrade':'Cortical',
+
 		'posteriorSubcapsularGrade':'Posterior subcapsular',
+
 		'anteriorPolar':'Anterior polar',
+
 		'posteriorPolar':'Posterior polar',
+
 		'coronary':'Coronary',
+
 		'phakodonesis':'Phacodonesis',
+
+        'blueDot':'Blue Dot',
+
 		};
 
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.Lens.prototype = new ED.Doodle;
+
 ED.Lens.prototype.constructor = ED.Lens;
+
 ED.Lens.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets default dragging attributes
+
  */
+
 ED.Lens.prototype.setPropertyDefaults = function() {
+
 	this.isUnique = true;
+
 	this.addAtBack = true;
 
+
+
 	// Update component of validation array for simple parameters
+
 	this.parameterValidationArray['originX']['range'].setMinAndMax(-125, +125);
+
 	this.parameterValidationArray['originY']['range'].setMinAndMax(-125, +125);
 
+
+
 	this.parameterValidationArray['nuclearGrade'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['None', 'Mild', 'Moderate', 'Brunescent'],
+
 		animate: false
+
 	};
+
 	this.parameterValidationArray['corticalGrade'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['None', 'Mild', 'Moderate', 'White'],
+
 		animate: false
+
 	};
+
 	this.parameterValidationArray['posteriorSubcapsularGrade'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['None', 'Small', 'Medium', 'Large'],
+
 		animate: false
+
 	};
+
 	this.parameterValidationArray['anteriorPolar'] = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: false
+
 	};
+
 	this.parameterValidationArray['posteriorPolar'] = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: false
+
 	};
+
 	this.parameterValidationArray['coronary'] = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: false
+
 	};
+
+	this.parameterValidationArray['blueDot'] = {
+
+		kind: 'derived',
+
+		type: 'bool',
+
+		display: false
+
+	};
+
+
+
 	this.parameterValidationArray['phakodonesis'] = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: false
+
 	};
+
 }
 
+
+
 /**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.Lens.prototype.setParameterDefaults = function() {}
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.Lens.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.Lens.superclass.draw.call(this, _point);
 
+
+
 	// Height of cross section (half value of ro in AntSeg doodle)
+
 	var ro = 240;
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Do a 360 arc
+
 	ctx.arc(0, 0, ro, 0, 2 * Math.PI, true);
 
+
+
 	// Move to inner circle
+
 	ctx.closePath();
 
+
+
 	// Set line attributes
+
 	ctx.lineWidth = 4;
+
 	ctx.fillStyle = "rgba(255, 255, 255, 0)";
+
 	ctx.strokeStyle = "gray";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary drawing
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
 
+
+
 		// Posterior subcapsular
+
 		if (this.posteriorSubcapsularGrade != 'None') {
+
 			var rp;
+
 			switch (this.posteriorSubcapsularGrade) {
+
 				case 'Small':
+
 					rp = 30;
+
 					break;
+
 				case 'Medium':
+
 					rp = 60;
+
 					break;
+
 				case 'Large':
+
 					rp = 90;
+
 					break;
+
 			}
+
 			ctx.beginPath();
+
 			ctx.arc(0, 0, rp, 0, Math.PI * 2, false);
+
 			var ptrn = ctx.createPattern(this.drawing.imageArray['PSCPattern'], 'repeat');
+
 			ctx.fillStyle = ptrn;
+
 			ctx.strokeStyle = "lightgray";
+
 			ctx.fill();
+
 			ctx.stroke();
+
 		}
+
+
 
 		// Posterior Polar
+
 		if (this.posteriorPolar) {
+
 			var rap = 50;
+
 			ctx.beginPath();
+
 			ctx.arc(0, 0, rap, 0, Math.PI * 2, false);
+
 			ctx.fillStyle = "rgba(140,140,140,0.75)";
+
 			ctx.strokeStyle = "gray";
+
 			ctx.fill();
+
 			ctx.stroke();
+
 		}
+
+
 
 		// Nuclear cataract
+
 		var ri = ro - 60;
+
 		ctx.beginPath();
+
 		ctx.arc(0, 0, ri, 0, 2 * Math.PI, true);
+
 		ctx.strokeStyle = "rgba(220, 220, 220, 0.75)";
+
 		ctx.stroke();
+
 		if (this.nuclearGrade != 'None') {
+
 			var col;
+
 			switch (this.nuclearGrade) {
+
 				case 'Mild':
+
 					col = -120;
+
 					break;
+
 				case 'Moderate':
+
 					col = -80;
+
 					break;
+
 				case 'Brunescent':
+
 					col = +0;
+
 					break;
+
 			}
+
 			yellowColour = "rgba(255, 255, 0, 0.75)";
+
 			var brownColour = "rgba(" + Math.round(120 - col) + ", " + Math.round(60 - col) + ", 0, 0.75)";
+
 			var gradient = ctx.createRadialGradient(0, 0, 210, 0, 0, 50);
+
 			gradient.addColorStop(0, yellowColour);
+
 			gradient.addColorStop(1, brownColour);
+
 			ctx.fillStyle = gradient;
+
 			ctx.fill();
+
 		}
+
+
 
 		// Cortical cataract
+
 		if (this.corticalGrade != 'None') {
+
 			// Parameters
+
 			var n = 16; // Number of cortical spokes
+
 			var ro = 240; // Outer radius of cataract
+
 			var rs = 230; // Outer radius of spoke
+
 			var theta = 2 * Math.PI / n; // Angle of outer arc of cortical shard
+
 			var phi = theta / 2; // Half theta
+
 			var ri;
+
 			switch (this.corticalGrade) {
+
 				case 'Mild':
+
 					ri = 180;
+
 					break;
+
 				case 'Moderate':
+
 					ri = 100;
+
 					break;
+
 				case 'White':
+
 					ri = 20;
+
 					break;
+
 			}
+
+
 
 			// Spokes
+
 			ctx.beginPath();
+
 			var sp = new ED.Point(0, 0);
+
 			sp.setWithPolars(rs, -phi);
+
 			ctx.moveTo(sp.x, sp.y);
 
+
+
 			for (var i = 0; i < n; i++) {
+
 				var startAngle = i * theta - phi;
+
 				var endAngle = startAngle + theta;
 
+
+
 				var op = new ED.Point(0, 0);
+
 				op.setWithPolars(rs, startAngle);
+
 				ctx.lineTo(op.x, op.y);
 
+
+
 				//ctx.arc(0, 0, ro, startAngle, endAngle, false);
+
 				var ip = new ED.Point(0, 0);
+
 				ip.setWithPolars(ri, i * theta);
+
 				ctx.lineTo(ip.x, ip.y);
+
 			}
+
 			ctx.lineTo(sp.x, sp.y);
 
+
+
 			// Ring
+
 			ctx.moveTo(ro, 0);
+
 			ctx.arc(0, 0, ro, 0, 2 * Math.PI, true);
 
+
+
 			// Set boundary path attributes
+
 			ctx.lineWidth = 4;
+
 			ctx.lineJoin = 'bevel';
+
 			ctx.fillStyle = "rgba(200,200,200,0.75)";
+
 			ctx.fill();
+
 		}
+
+
 
 		// Coronary cataracts
+
+        // Spot data
+
+        var rc = 130;
+
+        var sr = 10;
+
+        var inc = Math.PI / 8;
+
 		if (this.coronary) {
-			// Spot data
-			var rc = 130;
-			var sr = 10;
-			var inc = Math.PI / 8;
+
+
 
 			// Iterate through radius and angle to draw spots
+
 			for (var a = 0; a < 2 * Math.PI; a += inc) {
+
 				var p = new ED.Point(0, 0);
+
 				p.setWithPolars(rc, a);
+
 				this.drawCircle(ctx, p.x, p.y, sr, "rgba(200,200,255,1)", 4, "rgba(200,200,255,1)");
+
 			}
+
 		}
+
+
+
+        //Blue dots
+
+		if(this.blueDot){
+
+            for (var a = 0; a < 2 * Math.PI; a += Math.PI / 6) {
+
+                var p = new ED.Point(0, 0);
+
+                p.setWithPolars(rc+72, a);
+
+                this.drawCircle(ctx, p.x, p.y, sr+5, "rgba(168,194,218,1)", 4, "rgba(168,194,218,1)");
+
+            }
+
+		}
+
+
 
 		// Anterior Polar
+
 		if (this.anteriorPolar) {
+
 			var rap = 30;
+
 			ctx.beginPath();
+
 			ctx.arc(0, 0, rap, 0, Math.PI * 2, false);
+
 			ctx.fillStyle = "rgba(120,120,120,0.5)";
+
 			ctx.strokeStyle = "gray";
+
 			ctx.fill();
+
 			ctx.stroke();
+
 		}
+
+
 
 		// Phacodonesis
+
 		if (this.phakodonesis) {
+
 			// Sine wave between arrow heads:
+
 			//Set amplitude and width of the wave as well as sample rate
+
 			var amplitude = 20;
+
 			var width = 100;
+
 			var srate = 1;
 
+
+
 			//Draw sine wave
+
 			ctx.beginPath();
+
 			ctx.moveTo(-150,0);
+
 			for (x=0; x<=300; x+= srate){
+
 				ctx.lineTo(-150+x, amplitude*Math.sin(2*Math.PI*x/width));
+
 			}
 
+
+
 			// Set line attributes
+
 			ctx.lineWidth = 4;
+
 			ctx.strokeStyle = "blue";
+
 			ctx.stroke();
 
+
+
 			// Left arrow:
+
 			ctx.beginPath();
+
 			ctx.moveTo(-150,-20);
+
 			ctx.lineTo(-225,0);
+
 			ctx.lineTo(-150,20);
 
+
+
 			// Set line attributes
+
 			ctx.lineWidth = 4;
+
 			ctx.fillStyle = "blue";
+
 			ctx.fill();
+
+
 
 			// Right arrow:
+
 			ctx.beginPath();
+
 			ctx.moveTo(150,-20);
+
 			ctx.lineTo(225,0);
+
 			ctx.lineTo(150,20);
 
+
+
 			// Set line attributes
+
 			ctx.lineWidth = 4;
+
 			ctx.fillStyle = "blue";
+
 			ctx.fill();
+
 		}
 
+
+
 	}
+
+
 
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
 
+
+
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.Lens.prototype.description = function() {
+
 	returnValue = "";
 
+
+
 	if (this.originY < -30) {
+
 		returnValue += 'Lens subluxation: superior';
+
 	}
+
 	else if (this.originY > 30) {
+
 		returnValue += 'Lens subluxation: inferior';
+
 	}
+
 	if (this.nuclearGrade != 'None') {
+
 		returnValue += returnValue.length > 0?", ":"";
+
 		returnValue += this.nuclearGrade + ' nuclear cataract';
+
 	}
+
 	if (this.corticalGrade != 'None') {
+
 		returnValue += returnValue.length > 0?", ":"";
+
 		returnValue += this.corticalGrade + ' cortical cataract';
+
 	}
+
 	if (this.posteriorSubcapsularGrade != 'None') {
+
 		returnValue += returnValue.length > 0?", ":"";
+
 		returnValue += this.posteriorSubcapsularGrade + ' posterior subcapsular cataract';
+
 	}
+
 	if (this.coronary) {
+
 		returnValue += returnValue.length > 0?", ":"";
+
 		returnValue += 'Coronary cataract';
+
 	}
+
+	if (this.blueDot) {
+
+		returnValue += returnValue.length > 0?", ":"";
+
+		returnValue += 'Blue dot cataract';
+
+	}
+
+
+
 	if (this.anteriorPolar) {
+
 		returnValue += returnValue.length > 0?", ":"";
+
 		returnValue += 'Anterior polar cataract';
+
 	}
+
 	if (this.posteriorPolar) {
+
 		returnValue += returnValue.length > 0?", ":"";
+
 		returnValue += 'Posterior polar cataract';
+
 	}
+
 	if (this.phakodonesis) {
+
 		returnValue += returnValue.length > 0?", ":"";
+
 		returnValue += 'Phacodonesis';
+
 	}
+
 	return returnValue;
+
 };
+
+
 
 ED.Lens.prototype.snomedCodes = function()
+
 {
+
 	snomedCodes = new Array();
+
     if (this.nuclearGrade != 'None') {
+
         snomedCodes.push([53889007, 3]);
-    }
-    if (this.corticalGrade != 'None') {
-        snomedCodes.push([193576003, 3]);
-    }
-    if (this.posteriorSubcapsularGrade != 'None') {
-        snomedCodes.push([315353005, 3]);
-    }
-    if (this.coronary) {
-    	snomedCodes.push([12195004, 3]);
-    }
-    if (this.anteriorPolar) {
-    	snomedCodes.push([253224008, 3]);
-    }
-    if (this.posteriorPolar) {
-        snomedCodes.push([253225009, 3]);
-    }
-    if (this.phakodonesis) {
-    	snomedCodes.push([116669003, 3]);
+
     }
 
+    if (this.corticalGrade != 'None') {
+
+        snomedCodes.push([193576003, 3]);
+
+    }
+
+    if (this.posteriorSubcapsularGrade != 'None') {
+
+        snomedCodes.push([315353005, 3]);
+
+    }
+
+    if (this.coronary) {
+
+    	snomedCodes.push([12195004, 3]);
+
+    }
+
+    if (this.anteriorPolar) {
+
+    	snomedCodes.push([253224008, 3]);
+
+    }
+
+    if (this.posteriorPolar) {
+
+        snomedCodes.push([253225009, 3]);
+
+    }
+
+    if (this.phakodonesis) {
+
+    	snomedCodes.push([116669003, 3]);
+
+    }
+
+
+
     return snomedCodes;
+
 };
+
 
 /**
  * OpenEyes
@@ -37034,6 +46008,257 @@ ED.Macroaneurysm.prototype.snomedCode = function() {
 }
 
 /**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * MaculaPostPole template with disc and arcades
+
+ *
+
+ * @class MaculaPostPole
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.MaculaPostPole = function(_drawing, _parameterJSON) {
+
+	// Set classname
+
+	this.className = "MaculaPostPole";
+
+
+
+    // Other parameters
+
+    this.watzke = 'Not assessed';
+
+
+
+	// Saved parameters
+
+	this.savedParameterArray = ['watzke'];
+
+
+
+    this.controlParameterArray = {
+
+        'watzke': 'Watzke Result'
+
+    };
+
+
+
+	// Call superclass constructor
+
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+}
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.MaculaPostPole.prototype = new ED.Doodle;
+
+ED.MaculaPostPole.prototype.constructor = ED.MaculaPostPole;
+
+ED.MaculaPostPole.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets handle attributes
+
+ */
+
+ED.MaculaPostPole.prototype.setHandles = function() {}
+
+
+
+/**
+
+ * Set default properties
+
+ */
+
+ED.MaculaPostPole.prototype.setPropertyDefaults = function() {
+
+	this.isDeletable = false;
+
+	this.isScaleable = false;
+
+	this.isMoveable = false;
+
+	this.isRotatable = false;
+
+	this.isUnique = true;
+
+    this.willReport = true;
+
+    this.inFrontOfClassArray = ['PostPole'];
+
+
+
+    this.parameterValidationArray.watzke = {
+
+		kind: 'derived',
+
+		type: 'string',
+
+		list: ['Not assessed', 'Normal', 'Abnormal'],
+
+		animate: true
+
+    };
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.MaculaPostPole.prototype.draw = function(_point) {
+
+	// Get context
+
+	var ctx = this.drawing.context;
+
+    var foveaX = 0;
+
+
+
+	// Call draw method in superclass
+
+	ED.MaculaPostPole.superclass.draw.call(this, _point);
+
+
+
+	// Disc location
+
+	var x = this.drawing.eye == ED.eye.Right ? 300 : -300;
+
+
+
+	// Boundary path
+
+	ctx.beginPath();
+
+
+
+	// Set attributes
+
+	ctx.lineWidth = 4;
+
+	ctx.strokeStyle = "rgba(249,187,76,0)";
+
+	ctx.fillStyle = "rgba(249,187,76,0)";
+
+
+
+	ctx.arc(0,0,20,0,2*Math.PI,true);
+
+
+
+    // Draw boundary path (also hit testing)
+
+    this.drawBoundary(_point);
+
+
+
+	// Return value indicating successful hittest
+
+	return this.isClicked;
+
+}
+
+
+
+/**
+
+ * Returns a string containing a text description of the doodle
+
+ *
+
+ * @returns {String} Description of doodle
+
+ */
+
+ED.MaculaPostPole.prototype.description = function() {
+
+    var returnValue = "";
+
+
+
+	if(this.watzke !== 'Not assessed'){
+
+		returnValue += 'Watzke: ' + this.watzke.toLowerCase() + " ";
+
+	}
+
+
+
+    if (returnValue.length === 0 && this.drawing.doodleArray.length === 1) {
+
+        returnValue = "No abnormality";
+
+	}
+
+
+
+	return returnValue;
+
+}
+
+
+/**
  * OpenEyes
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
@@ -37907,7 +47132,7 @@ ED.MarginalKeratitis = function(_drawing, _parameterJSON) {
 	
 	// Parameters in doodle control bar (parameter name: parameter label)
 	this.controlParameterArray = {
-		'epithelialDefectPercent':"% Epithelial defect of corneal infiltrate"
+		'epithelialDefectPercent':"% Epithelial defect \n of corneal infiltrate"
 	};
 
 	// Call superclass constructor
@@ -38126,7 +47351,18 @@ ED.MarginalKeratitis.prototype.draw = function(_point) {
  */
 ED.MarginalKeratitis.prototype.description = function() {
 	return "Marginal keratitis";
-}
+};
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {number} SnoMed code of entity represented by doodle
+ */
+ED.MarginalKeratitis.prototype.snomedCode = function() {
+    'use strict';
+
+    return 95730003;
+};
 
 /**
  * OpenEyes
@@ -38255,216 +47491,457 @@ ED.MattressSuture.prototype.description = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * (C) OpenEyes Foundation, 2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * Metallic Foreign Body
+
  *
+
  * @class MetallicForeignBody
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.MetallicForeignBody = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "MetallicForeignBody";
 
+
+
 	// Private parameters used in bound sideview doodle
+
 	this.mfb = true;
+
 	this.coats = false;
+
 	this.rustRing = false;
+
 	this.h = 30;
+
 	this.fb=1;
+
 	
+
 	// Saved parameters
+
 	this.savedParameterArray = ['originX','originY','scaleX', 'scaleY','mfb','coats','rustRing','h'];
 
+
+
 	this.controlParameterArray = {
+
 		'mfb':'Metallic foreign body',
+
 		'rustRing':'Rust ring',
+
 		'coats':'Coats ring'
+
 	};
+
+
 
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.MetallicForeignBody.prototype = new ED.Doodle;
+
 ED.MetallicForeignBody.prototype.constructor = ED.MetallicForeignBody;
+
 ED.MetallicForeignBody.superclass = ED.Doodle.prototype;
 
-/**
- * Sets handle attributes
- */
-ED.MetallicForeignBody.prototype.setHandles = function() {
-	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Scale, false);
-}
+
 
 /**
- * Sets default dragging attributes
+
+ * Sets handle attributes
+
  */
+
+ED.MetallicForeignBody.prototype.setHandles = function() {
+
+	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Scale, false);
+
+}
+
+
+
+/**
+
+ * Sets default dragging attributes
+
+ */
+
 ED.MetallicForeignBody.prototype.setPropertyDefaults = function() {
+
 	this.isRotatable = false;
+
 	this.isUnique = false;
 
+
+
 	// Update component of validation array for simple parameters
+
 	this.parameterValidationArray['scaleX']['range'].setMinAndMax(+1, +2.5);
+
 	this.parameterValidationArray['scaleY']['range'].setMinAndMax(+1, +2.5);
+
 	
+
 	
+
 	this.parameterValidationArray['mfb'] = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: false
+
 	};
+
 	
+
 	this.parameterValidationArray['coats'] = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: false
+
 	};
+
 	
+
 	this.parameterValidationArray['rustRing'] = {
+
 		kind: 'derived',
+
 		type: 'bool',
+
 		display: false
+
 	};
+
 	
+
 	this.parameterValidationArray['h'] = {
+
 		kind: 'derived',
+
 		type: 'int',
+
 		animate: false
+
 	};
+
 	this.parameterValidationArray['fb'] = {
+
 		kind: 'other',
+
 		type: 'int',
+
 		range: [0,1],
+
 		animate: false
+
 	};
+
 }
 
+
+
 /**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.MetallicForeignBody.prototype.setParameterDefaults = function() {
+
 }
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @param {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.MetallicForeignBody.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = {},
+
 		returnValue;
 
+
+
 	switch (_parameter) {
+
 		case 'coats':
-			if (_value==true) {
-				returnArray.rustRing = false;
-				returnArray.mfb = false;
+
+			if (_value == true) {
+
+				this.setParameterFromString('rustRing', 'false', true);
+
+				this.setParameterFromString('mfb', 'false', true);
+
 			}
+
 			break;
+
 			
+
 		case 'scaleX':
+
 			returnArray.h = Math.round(_value * 30);
+
 			break;
+
 			
+
 		case 'mfb':
+
 			if (_value == true) returnArray['fb'] = 1;
+
 			else if (_value == false) returnArray['fb'] = 0;
+
 			break;
+
 						
+
 	}
+
+
 
 	return returnArray;
+
 }
+
+
 
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.MetallicForeignBody.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.MetallicForeignBody.superclass.draw.call(this, _point);
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Invisible boundary
+
 	var r = 30;
+
 	ctx.arc(0, 0, r, 0, Math.PI * 2, true);
 
+
+
 	// Close path
+
 	ctx.closePath();
 
+
+
 	// Set line attributes
+
 	ctx.lineWidth = 0;
+
 	ctx.fillStyle = "rgba(0, 0, 0, 0)";
+
 	ctx.strokeStyle = "rgba(0, 0, 0, 0)";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary paths
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
 		if (this.mfb) {
+
 			ctx.beginPath()
+
 			ctx.arc(0,0,r*0.8,0,2*Math.PI,true);
+
 			ctx.fillStyle = "brown";
+
 			ctx.fill();
+
 		}
+
 		
+
 		if (this.rustRing) {
+
 			ctx.beginPath()
+
 			ctx.arc(0,0,r*1.05,0,2*Math.PI,true);
+
 			ctx.lineWidth = 8;
+
 			ctx.strokeStyle = "brown";
+
 			ctx.stroke();
+
 		}
+
 		
+
 		if (this.coats) {
+
 			ctx.beginPath()
+
 			ctx.arc(0,0,r,0,2*Math.PI,true);
+
 			ctx.lineWidth = 12;
+
 			ctx.strokeStyle = "rgba(180,180,180,1)";
+
 			ctx.stroke();
+
 		}
+
 	}
 
+
+
 	// Coordinates of handles (in canvas plane)
+
 	this.handleArray[2].location = this.transform.transformPoint(new ED.Point(r, -r));
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
+
+
+
+ED.MetallicForeignBody.prototype.description = function() {
+
+	var desc = [];
+
+    if(this.fb === 1) {
+
+        desc.push("metallic foreign body");
+
+    }
+
+    if(this.rustRing) {
+
+        desc.push("rust ring");
+
+    }
+
+    if(this.coats) {
+
+        desc.push("coats ring");
+
+    }
+
+    desc = desc.join(", ");
+
+    return desc.charAt(0).toUpperCase() + desc.slice(1);
+
+};
+
 
 /**
  * OpenEyes
@@ -40942,496 +50419,1378 @@ ED.Patch.prototype.description = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * Posterior chamber IOL
+
  *
+
  * @class PCIOL
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.PCIOL = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "PCIOL";
 
+
+
 	// Other parameters
+
 	this.fixation = 'In-the-bag';
+
 	this.fx = 1;
+
     this.csOriginX = 0;
 
+
+
 	// Saved parameters
+
 	this.savedParameterArray = ['fixation', 'fx', 'originX', 'originY', 'rotation', 'csOriginX'];
 
+
+
 	// Parameters in doodle control bar
+
 	this.controlParameterArray = {'fixation':'Fixation'};
 
+
+
 	
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
 
+
+
 	// Invariate parameters
+
 	this.scaleX = 0.75;
+
 	this.scaleY = 0.75;
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.PCIOL.prototype = new ED.Doodle;
+
 ED.PCIOL.prototype.constructor = ED.PCIOL;
+
 ED.PCIOL.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets handle attributes
+
  */
+
 ED.PCIOL.prototype.setHandles = function() {
+
 	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Rotate, false);
+
 }
 
+
+
 /**
+
  * Sets default properties
+
  */
+
 ED.PCIOL.prototype.setPropertyDefaults = function() {
+
 	this.addAtBack = true;
+
 	this.isScaleable = false;
+
 	this.isUnique = true;
+
 	
+
 	// Validation arrays for other parameters
+
 	this.parameterValidationArray['fixation'] = {
+
 		kind: 'derived',
+
 		type: 'string',
-		list: ['In-the-bag', 'Ciliary sulcus'],
+
+		list: ['In-the-bag', 'Ciliary sulcus', 'Partly in the bag'],
+
 		animate: true
+
 	};
+
 	this.parameterValidationArray['fx'] = {
+
 		kind: 'other',
+
 		type: 'int',
-		range: [1, 2],
+
+		range:  new ED.Range(1, 8),
+
 		animate: false
+
 	};
+
 	
+
 	// Update component of validation array for simple parameters
+
 	this.parameterValidationArray['originX']['range'].setMinAndMax(-200, +200);
+
 	this.parameterValidationArray['originY']['range'].setMinAndMax(-200, +200);
+
 }
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if their 'animate' property is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @value {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.PCIOL.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = new Array();
 
+
+
 	switch (_parameter) {
+
 		case 'fx':
-			if (_value === 2) returnArray['fixation'] = 'Ciliary sulcus';
-			else returnArray['fixation'] = 'In-the-bag';
+
+			if (_value === 1){ returnArray['fixation'] = 'In-the-bag'; }
+
+			if (_value === 2){ returnArray['fixation'] = 'Partly in the bag'; }
+
+			if (_value === 3){ returnArray['fixation'] = 'Ciliary sulcus'; }
+
 			break;
+
+
 
 		case 'fixation':
+
 			switch (_value) {
+
 				case 'In-the-bag':
-					returnArray['fx'] = 1;
+
+					this.setParameterFromString('fx', '1', true);
+
 					break;
+
+				case 'Partly in the bag':
+
+					this.setParameterFromString('fx', '2', true);
+
+					break;
+
 				case 'Ciliary sulcus':
-					returnArray['fx'] = 2;
+
+					this.setParameterFromString('fx', '3', true);
+
 					break;
+
 			}
+
 			break;
+
 	}
 
+
+
 	return returnArray;
-}
+
+};
+
+
+
+
 
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.PCIOL.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.PCIOL.superclass.draw.call(this, _point);
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Radius of IOL optic
+
 	var r = 240;
 
+
+
 	// Draw optic
+
 	ctx.arc(0, 0, r, 0, Math.PI * 2, false);
 
+
+
 	// Draw upper haptic
+
 	ctx.moveTo(150, -190);
+
 	ctx.bezierCurveTo(160, -200, 190, -350, 160, -380);
+
 	ctx.bezierCurveTo(90, -440, -150, -410, -220, -370);
+
 	ctx.bezierCurveTo(-250, -350, -260, -400, -200, -430);
+
 	ctx.bezierCurveTo(-110, -480, 130, -470, 200, -430);
+
 	ctx.bezierCurveTo(270, -390, 220, -140, 220, -100);
 
+
+
 	// Draw lower haptic
+
 	ctx.moveTo(-150, 190);
+
 	ctx.bezierCurveTo(-160, 200, -190, 350, -160, 380);
+
 	ctx.bezierCurveTo(-90, 440, 150, 410, 220, 370);
+
 	ctx.bezierCurveTo(250, 350, 260, 400, 200, 430);
+
 	ctx.bezierCurveTo(110, 480, -130, 470, -200, 430);
+
 	ctx.bezierCurveTo(-270, 390, -220, 140, -220, 100);
 
+
+
 	// Colour of fill is white but with transparency
+
 	ctx.fillStyle = "rgba(255,255,255,0.75)";
 
+
+
 	// Set line attributes
+
 	ctx.lineWidth = 4;
 
+
+
 	// Colour of outer line is dark gray
+
 	ctx.strokeStyle = "darkgray";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Coordinates of handles (in canvas plane)
+
 	var point = new ED.Point(0, 0)
+
 	point.setWithPolars(r, Math.PI / 4);
+
 	this.handleArray[2].location = this.transform.transformPoint(point);
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
 
+
+
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.PCIOL.prototype.description = function() {
+
 	var returnValue = "Posterior chamber IOL";
+
 	returnValue += " (" + this.fixation + " fixation)";
 
+
+
 	// Displacement limit
+
 	var limit = 40;
+
+
 
 	var displacementValue = "";
 
+
+
 	if (this.originY < -limit) {
+
 		if (displacementValue.length > 0) displacementValue += " and";
+
 		displacementValue += " superiorly";
+
 	}
+
 	if (this.originY > limit) {
+
 		if (displacementValue.length > 0) displacementValue += " and";
+
 		displacementValue += " inferiorly";
+
 	}
+
 	if (this.originX < -limit) {
+
 		if (displacementValue.length > 0) displacementValue += " and";
+
 		displacementValue += (this.drawing.eye == ED.eye.Right) ? " temporally" : " nasally";
+
 	}
+
 	if (this.originX > limit) {
+
 		if (displacementValue.length > 0) displacementValue += " and";
+
 		displacementValue += (this.drawing.eye == ED.eye.Right) ? " nasally" : " temporally";
+
 	}
+
+
 
 	// Add displacement description
+
 	if (displacementValue.length > 0) returnValue += " displaced" + displacementValue;
 
+
+
 	return returnValue;
-}
+
+};
+
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * PCIOL Cross Section ***TODO***
+
  *
+
  * @class PCIOLCrossSection
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.PCIOLCrossSection = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "PCIOLCrossSection";
+
 	
+
 	// Other parameters
+
 	this.fixation = 'In-the-bag';
+
 	this.fx = 1;
+
 	
+
 	// Saved parameters
+
 	this.savedParameterArray = ['fixation', 'fx', 'originX', 'originY'];
+
 	
+
 	// Parameters in doodle control bar
+
 	this.controlParameterArray = {'fixation':'Fixation'};
 
 
+
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
 
+
+
     this.linkedDoodleParameters = {
+
         'PCIOL': {
+
             source: ['fixation', 'fx', 'originY'],
+
             store: [['originX', 'csOriginX']]
+
         }
+
     };
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.PCIOLCrossSection.prototype = new ED.Doodle;
+
 ED.PCIOLCrossSection.prototype.constructor = ED.PCIOLCrossSection;
+
 ED.PCIOLCrossSection.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets default dragging attributes
+
  */
+
 ED.PCIOLCrossSection.prototype.setPropertyDefaults = function() {
+
 	this.isUnique = true;
+
 	this.inFrontOfClassArray = ["HypopyonCrossSection", "HyphaemaCrossSection" ];
+
 	this.addAtBack = true;
 
+
+
 	// Validation arrays for other parameters
+
 	this.parameterValidationArray['fixation'] = {
+
 		kind: 'derived',
+
 		type: 'string',
-		list: ['In-the-bag', 'Ciliary sulcus'],
+
+		list: ['In-the-bag', 'Ciliary sulcus', 'Partly in the bag'],
+
 		animate: true
+
 	};
+
 	this.parameterValidationArray['fx'] = {
+
 		kind: 'other',
+
 		type: 'int',
-		range: [1, 2],
+
+		range: new ED.Range(1, 3),
+
 		animate: false
+
 	};
+
 	
+
 	// Update component of validation array for simple parameters
+
 	this.parameterValidationArray['originX']['range'].setMinAndMax(-150, +44);
+
 	this.parameterValidationArray['originY']['range'].setMinAndMax(-140, +140);
+
 }
 
+
+
 /**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.PCIOLCrossSection.prototype.setParameterDefaults = function() {
+
 	this.originX = 44;
+
 }
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if their 'animate' property is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @value {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.PCIOLCrossSection.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = new Array();
 
+
+
 	switch (_parameter) {
-		case 'fx':
-			if (_value === 2) returnArray['fixation'] = 'Ciliary sulcus';
-			else returnArray['fixation'] = 'In-the-bag';
+
+        case 'fx':
+
+            if (_value === 1){ returnArray['fixation'] = 'In-the-bag'; }
+
+            if (_value === 2){ returnArray['fixation'] = 'Partly in the bag'; }
+
+            if (_value === 3){ returnArray['fixation'] = 'Ciliary sulcus'; }
+
+            break;
+
+
+
+        case 'fixation':
+
+            switch (_value) {
+
+                case 'In-the-bag':
+
+                    this.setParameterFromString('fx', '1', true);
+
+                    break;
+
+                case 'Partly in the bag':
+
+                    this.setParameterFromString('fx', '2', true);
+
+                    break;
+
+                case 'Ciliary sulcus':
+
+                    this.setParameterFromString('fx', '3', true);
+
+                    break;
+
+            }
+
+            break;
+
+			
+
+		case 'originX':
+
+			var iris = this.drawing.lastDoodleOfClass('AntSegCrossSection');
+
+			if (iris) {
+
+				var minApexX = iris.parameterValidationArray['apexX']['range'].min;
+
+				var maxApexX = 32 - (72 / 220) * (iris.apexY + 280) + this.originX;
+
+				if (maxApexX < minApexX) maxApexX = minApexX;
+
+				iris.parameterValidationArray['apexX']['range'].setMinAndMax(-40 - (140 / 220) * (iris.apexY + 280), maxApexX);
+
+	
+
+				// If being synced, make sensible decision about x
+
+				if (!this.drawing.isActive) {
+
+					var newOriginX = iris.parameterValidationArray['apexX']['range'].max;
+
+				} else {
+
+					var newOriginX = iris.parameterValidationArray['apexX']['range'].constrain(iris.apexX);
+
+				}
+
+				iris.setSimpleParameter('apexX', newOriginX);
+
+			}
+
 			break;
 
-		case 'fixation':
-			switch (_value) {
-				case 'In-the-bag':
-					returnArray['fx'] = 1;
-					break;
-				case 'Ciliary sulcus':
-					returnArray['fx'] = 2;
-					break;
-			}
-			break;
-			
-		case 'originX':
-			var iris = this.drawing.lastDoodleOfClass('AntSegCrossSection');
-			if (iris) {
-				var minApexX = iris.parameterValidationArray['apexX']['range'].min;
-				var maxApexX = 32 - (72 / 220) * (iris.apexY + 280) + this.originX;
-				if (maxApexX < minApexX) maxApexX = minApexX;
-				iris.parameterValidationArray['apexX']['range'].setMinAndMax(-40 - (140 / 220) * (iris.apexY + 280), maxApexX);
-	
-				// If being synced, make sensible decision about x
-				if (!this.drawing.isActive) {
-					var newOriginX = iris.parameterValidationArray['apexX']['range'].max;
-				} else {
-					var newOriginX = iris.parameterValidationArray['apexX']['range'].constrain(iris.apexX);
-				}
-				iris.setSimpleParameter('apexX', newOriginX);
-			}
-			break;
 	}
+
+
 
 	return returnArray;
+
 }
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.PCIOLCrossSection.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.PCIOLCrossSection.superclass.draw.call(this, _point);
 
+
+
 	// Height of cross section (half value of ro in AntSeg doodle)
+
 	var h = 240;
 
+
+
 	// Arbitrary radius of curvature
+
 	var r = 450;
 
+
+
 	// Displacement of lens from centre
+
 	var ld = 100;
 
+
+
 	// Angle of arc
+
 	var theta = Math.asin(h / r);
 
+
+
 	// X coordinate of centre of circle
+
 	var x = r * Math.cos(theta);
 
+
+
 	// Measurements of nucleus
+
 	var rn = r - 60;
 
+
+
 	// Calculate nucleus angles
+
 	var phi = Math.acos(x / rn);
 
+
+
 	// Draw lens
+
 	ctx.beginPath();
+
 	
+
 	if (this.fixation == 'In-the-bag') {
+
 		ctx.ellipse(100, 0, 160, 20, 0.5 * Math.PI, 0, 2 * Math.PI);
+
 	}
+
 	else {
+
 		ctx.ellipse(50, 0, 160, 25, 0.5 * Math.PI, 0, 2 * Math.PI);
+
 	}
+
+
+
 
 
 	// Set line attributes
+
 	ctx.lineWidth = 5;
+
 	ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+
 	ctx.strokeStyle = "#898989";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary drawing
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
 		
+
 		var xShift = (this.fixation == 'In-the-bag') ? 0 : this.originX - 44;
+
 		
+
 		// Lens bag
+
 		ctx.beginPath();
+
 		ctx.arc(ld - x - xShift, 0 - this.originY, r, theta, -theta, true);
+
 		ctx.arc(ld + x - xShift, 0 - this.originY, r, Math.PI + theta, Math.PI + 0.75*theta, true);
+
 		ctx.moveTo(ld - xShift, 240 - this.originY);
+
 		ctx.arc(ld + x - xShift, 0 - this.originY, r, Math.PI - theta, Math.PI - 0.75*theta, false);
+
 		ctx.strokeStyle = "gray";
+
 		ctx.lineWidth = 3;
+
 		ctx.stroke();
+
+
 
 		// Loops
+
 		ctx.beginPath();
+
 		if (this.fixation == 'In-the-bag') {	
+
 /*
+
 			ctx.arc(30 + 115 - this.originX, -210 - this.originY, 10, 2.2*Math.PI, 1*Math.PI, true);
+
 			ctx.lineTo(85,-125);
+
 			ctx.moveTo(120 - this.originX, 210 - this.originY);
+
 			ctx.arc(25 + 115 - this.originX, 210 - this.originY, 13, 0, 1*Math.PI, false);
+
 			ctx.moveTo(100 - this.originX, 210 - this.originY);
+
 			ctx.lineTo(44 + 65,125);	
+
 */	
+
 			ctx.ellipse(144 - 44, 0 - this.originY, 227, 20, 0.5 * Math.PI, 0.5 * Math.PI, 1.2 * Math.PI);
+
 			ctx.moveTo(164 - 44,0 - this.originY);
+
 			ctx.ellipse(144 - 44, 0 - this.originY, 227, 20, 0.5 * Math.PI, 1.5 * Math.PI, 0.2 * Math.PI);
+
 		}
-		else {
+
+		else if (this.fixation == 'Ciliary sulcus') {
+
 			ctx.arc(115 - this.originX, -350 - this.originY, 15, 0*Math.PI, 1*Math.PI, true);
+
 			ctx.lineTo(35,-125);
+
 			ctx.moveTo(120 - this.originX, 350 - this.originY);
+
 			ctx.arc(115 - this.originX, 350 - this.originY, 15, 0, 1*Math.PI, false);
+
 			ctx.moveTo(100 - this.originX, 350 - this.originY);
+
 			ctx.lineTo(65,125);
+
+		} else {
+
+            ctx.ellipse(144 - this.originX, 0 - this.originY , 227, 20, 0.5 * Math.PI, 0.9 * Math.PI, 1.2 * Math.PI);
+
+            ctx.moveTo(144 - this.originX, -227 - this.originY);
+
+            ctx.lineTo(50,-160);
+
+
+
+            ctx.moveTo(120 - this.originX, 350 - this.originY);
+
+            ctx.arc(115 - this.originX, 350 - this.originY, 15, 0, 1*Math.PI, false);
+
+            ctx.moveTo(100 - this.originX, 350 - this.originY);
+
+            ctx.lineTo(65,125);
+
 		}
+
 		ctx.strokeStyle = "#898989";
+
 		ctx.lineWidth = 5;
+
 		ctx.stroke();
+
+
 
 		
+
 		// Zonules
+
 		ctx.beginPath();
 
+
+
 		// Top zonules
+
 		ctx.moveTo(44 - this.originX + 80, - this.originY - 349);
+
 		ctx.lineTo(80 - xShift, -207 - this.originY);
+
 		ctx.moveTo(44 - this.originX + 80, - this.originY - 349);
+
 		ctx.lineTo(120 - xShift, -207 - this.originY);
+
 		ctx.moveTo(44  - this.originX + 120, - this.originY - 349);
+
 		ctx.lineTo(80 - xShift, -207 - this.originY);
+
 		ctx.moveTo(44 - this.originX + 120, - this.originY - 349);
+
 		ctx.lineTo(120 - xShift, -207 - this.originY);
+
+
 
 		// Bottom zonules
+
 		ctx.moveTo(44 - this.originX + 80, -this.originY + 349);
+
 		ctx.lineTo(80 - xShift, 207 - this.originY);
+
 		ctx.moveTo(44 - this.originX + 80, -this.originY + 349);
+
 		ctx.lineTo(120 - xShift, 207 - this.originY);
+
 		ctx.moveTo(44 - this.originX + 120, -this.originY + 349);
+
 		ctx.lineTo(80 - xShift, 207 - this.originY);
+
 		ctx.moveTo(44 - this.originX + 120, -this.originY + 349);
+
 		ctx.lineTo(120 - xShift, 207 - this.originY);
+
+
 
 		ctx.lineWidth = 2;
+
 		ctx.strokeStyle = "gray";
+
 		ctx.stroke();
+
 	}
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
 
+
+/**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * Corneal Oedema
+
+ *
+
+ * @class PCV
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.PCV = function(_drawing, _parameterJSON) {
+
+    // Set classname
+
+    this.className = "PCV";
+
+
+
+    this.savedParameterArray = ['originX', 'originY', 'scaleX', 'scaleY'];
+
+
+
+    // Call superclass constructor
+
+    ED.Doodle.call(this, _drawing, _parameterJSON);
+
+};
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.PCV.prototype = new ED.Doodle;
+
+ED.PCV.prototype.constructor = ED.PCV;
+
+ED.PCV.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets handle attributes
+
+ */
+
+ED.PCV.prototype.setHandles = function() {
+
+    this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Scale, false);
+
+};
+
+
+
+/**
+
+ * Sets default properties
+
+ */
+
+ED.PCV.prototype.setPropertyDefaults = function() {
+
+    this.isRotatable = false;
+
+    this.isUnique = false;
+
+
+
+    this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.5, +1.2);
+
+    this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.5, +1.2);
+
+
+
+    this.parameterValidationArray['originY']['range'].setMinAndMax(-200, 200);
+
+    this.parameterValidationArray['originX']['range'].setMinAndMax(-200 , 200);
+
+
+
+};
+
+
+
+ED.PCV.prototype.setParameterDefaults = function() {
+
+    this.scaleY = 0.5;
+
+    this.scaleX = 0.5;
+
+};
+
+
+
+/**
+
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
+ * The returned parameters are animated if their 'animate' property is set to true
+
+ *
+
+ * @param {String} _parameter Name of parameter that has changed
+
+ * @param {Undefined} _value Value of parameter to calculate
+
+ * @returns {Array} Associative array of values of dependent parameters
+
+ */
+
+ED.PCV.prototype.dependentParameterValues = function(_parameter, _value) {
+
+
+
+    var returnArray = [];
+
+
+
+    var r = 175;
+
+    switch (_parameter) {
+
+        case 'scaleX':
+
+        case 'scaleY':
+
+            this.parameterValidationArray['originX']['range'].setMinAndMax(-300+(r*_value), 300-(r*_value));
+
+            this.parameterValidationArray['originY']['range'].setMinAndMax(-300+(r*_value), 300-(r*_value));
+
+
+
+            var newOriginY = this.parameterValidationArray['originY']['range'].constrain(this.originY);
+
+            var newOriginX = this.parameterValidationArray['originX']['range'].constrain(this.originX);
+
+
+
+            this.setSimpleParameter('originX', newOriginX);
+
+            this.setSimpleParameter('originY', newOriginY);
+
+
+
+            break;
+
+    }
+
+
+
+    return returnArray;
+
+};
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.PCV.prototype.draw = function(_point) {
+
+
+
+    // Get context
+
+    var ctx = this.drawing.context;
+
+
+
+    // Call draw method in superclass
+
+    ED.PCV.superclass.draw.call(this, _point);
+
+
+
+    // Boundary path
+
+    ctx.beginPath();
+
+
+
+    // Invisible boundary
+
+    var r = 200;
+
+    ctx.arc(0, 0, r, 0, Math.PI * 2, true);
+
+
+
+    // Set line attributes
+
+    ctx.lineWidth = 0;
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0)";
+
+    ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+
+    ctx.closePath();
+
+
+
+    this.drawBoundary(_point);
+
+
+
+
+
+    // Non boundary paths
+
+    if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+
+
+        var angle = Math.PI / 180;
+
+        var angles = [33, 64 , 121, 153, 200, 232, 305, 338];
+
+        var blood_color = 'rgba(188, 25, 0, 1)';
+
+
+
+        ctx.beginPath();
+
+        for (var i = 0; i < 8; i++) {
+
+            var blob = new ED.Point(0, 0);
+
+            blob.setWithPolars(155, angle * angles[i]);
+
+            this.drawSpot(ctx, blob.x, blob.y, 20, blood_color);
+
+
+
+            ctx.moveTo(0,0);
+
+            //Bezier Curve to draw squiggly blood vessels - maybe later
+
+            ctx.bezierCurveTo(0,0,0,0,blob.x, blob.y);
+
+            ctx.lineWidth = 5;
+
+            ctx.strokeStyle = blood_color;
+
+            ctx.stroke();
+
+        }
+
+        ctx.closePath();
+
+        ctx.beginPath();
+
+
+
+        ctx.fillStyle = blood_color;
+
+        ctx.ellipse(0,0, 85,70, 0, 0, 360);
+
+        ctx.fill();
+
+    }
+
+
+
+
+
+    // Coordinates of handles (in canvas plane)
+
+    this.handleArray[2].location = this.transform.transformPoint(new ED.Point(r * 0.7, -r * 0.7));
+
+
+
+    // Draw handles if selected
+
+    if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+    // Return value indicating successful hittest
+
+    return this.isClicked;
+
+};
+
+
+
+/**
+
+ * Returns a string containing a text description of the doodle
+
+ *
+
+ * @returns {String} Description of doodle
+
+ */
+
+ED.PCV.prototype.description = function() {
+
+    return 'Polypoidal choroidal vasculopathy';
+
+};
+
+
+
+ED.PCV.prototype.snomedCode = function() {
+
+    return 313001006;
+
+};
 /**
  * OpenEyes
  *
@@ -42052,585 +52411,723 @@ ED.PeripheralRRD.prototype.diagnosticHierarchy = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
- */
- 
-/**
- * 
- *
- * @class PeripheralVascularisation
- * @property {String} className Name of doodle subclass
- * @param {Drawing} _drawing
- * @param {Object} _parameterJSON
- */
-ED.PeripheralVascularisation = function(_drawing, _parameterJSON) {
-	// Set classname
-	this.className = "PeripheralVascularisation";
-	
-	this.ghostVessels= false;
-	
-	this.plane = 0;
 
-	// Saved parameters
-	this.savedParameterArray = ['apexY', 'arc', 'rotation','ghostVessels'];
-	
-	// Parameters in doodle control bar (parameter name: parameter label)
-	this.controlParameterArray = {
-		'ghostVessels':'Ghost vessels',
-	};
-
-	// Call superclass constructor
-	ED.Doodle.call(this, _drawing, _parameterJSON);
-}
-
-/**
- * Sets superclass and constructor
- */
-ED.PeripheralVascularisation.prototype = new ED.Doodle;
-ED.PeripheralVascularisation.prototype.constructor = ED.PeripheralVascularisation;
-ED.PeripheralVascularisation.superclass = ED.Doodle.prototype;
-
-/**
- * Sets handle attributes
- */
-ED.PeripheralVascularisation.prototype.setHandles = function() {
-	this.handleArray[1] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
-	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
-	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
-}
-
-/**
- * Sets default properties
- */
-ED.PeripheralVascularisation.prototype.setPropertyDefaults = function() {
-	this.isMoveable = false;
-	this.isFilled = false;
-
-	this.parameterValidationArray['ghostVessels'] = {
-		kind: 'derived',
-		type: 'bool',
-		display: false
-	};
-	
-	// Update component of validation array for simple parameters
-	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
-	this.parameterValidationArray['apexY']['range'].setMinAndMax(-420, -220);
-	this.parameterValidationArray['arc']['range'].setMinAndMax(5 * Math.PI / 180, 2*Math.PI);
-}
-
-/**
- * Sets default parameters (Only called for new doodles)
- * Use the setParameter function for derived parameters, as this will also update dependent variables
- */
-ED.PeripheralVascularisation.prototype.setParameterDefaults = function() {
-	this.arc = 5 * Math.PI / 180;
-	this.apexY = -380;
-	this.setRotationWithDisplacements(0, 120);
-}
-
-/**
- * Draws doodle or performs a hit test if a Point parameter is passed
- *
- * @param {Point} _point Optional point in canvas plane, passed if performing hit test
- */
-ED.PeripheralVascularisation.prototype.draw = function(_point) {
-	// Get context
-	var ctx = this.drawing.context;
-
-	// Call draw method in superclass
-	ED.PeripheralVascularisation.superclass.draw.call(this, _point);
-
-	// Radius of outer boundary
-	var rOuter = 952 / 2;
-	var rInner = Math.abs(this.apexY);
-	
-	// Calculate parameters for arcs
-	var theta = this.arc / 2;
-	var arcStart = -Math.PI / 2 + theta;
-	var arcEnd = -Math.PI / 2 - theta;
-
-	// Coordinates of corners of outer arc
-	var topRightX = rOuter * Math.sin(theta);
-	var topRightY = -rOuter * Math.cos(theta);
-	var topLeftX = -rOuter * Math.sin(theta);
-	var topLeftY = topRightY;
-
-	// Boundary path
-	ctx.beginPath();
-
-	ctx.arc(0, 0, rOuter, arcStart, arcEnd, true);
-	ctx.arc(0, 0, rInner, arcEnd, arcStart, false);
-	ctx.lineTo(topRightX,topRightY);
-
-	// Set line attributes
-	ctx.lineWidth = 4;
-	ctx.strokeStyle = "rgba(255,255,255,0)";
-
-	// Draw boundary path (also hit testing)
-	this.drawBoundary(_point);
-
-	
-	// Non boundary drawing
-	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
-		var rad_to_deg = 180.0 / Math.PI;
-		var deg_to_rad = Math.PI / 180.0;
-
-		var angle = arcStart * rad_to_deg - 180;
-		var depth = Math.abs(Math.round(1400 / this.apexY));
-		var angle1 = 20 / Math.abs((600 / this.apexY));
-
-		var x1 = topRightX;
-		var y1 = topRightY;
-		
-		// calculate number of trees to fill arc
-		var treeDeg = 11; // space occupied by single tree in degrees
-		var n = this.arc / (treeDeg * deg_to_rad);
-		
-		ctx.strokeStyle = (this.ghostVessels) ? "gray" : "red";
-		ctx.beginPath();
-		
-		// draw tree
-		for (var i=0; i<n; i++) {
-			var angle2 = angle;
-			this.calculateTree(x1, y1, depth, angle1, angle2);
-			angle -= treeDeg;
-
-			// calculate coordinate point at new angle in outer arc for next tree
-			x1 = -rOuter * Math.cos(angle * deg_to_rad);
-			y1 = -rOuter * Math.sin(angle * deg_to_rad);
-		}
-		
-		ctx.closePath();
-		ctx.stroke();
-	}
-
-	// Coordinates of handles (in canvas plane)
-	this.handleArray[1].location = this.transform.transformPoint(new ED.Point(topLeftX, topLeftY));
-	this.handleArray[2].location = this.transform.transformPoint(new ED.Point(topRightX, topRightY));
-	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
-
-	// Draw handles if selected
-	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
-
-	// Return value indicating successful hittest
-	return this.isClicked;
-}
-
-
-ED.PeripheralVascularisation.prototype.calculateTree = function(x1, y1, depth, angle1, angle) {
-	var ctx = this.drawing.context;
-	var doodle = this;
-// 	var lastPoint = new ED.Point(0, 0);
-
-	function drawLine(x1, y1, x2, y2, _lastLine, angle){
-		// 
-		ctx.moveTo(x1, y1);
-		if (!_lastLine) ctx.lineTo(x2, y2);
-		else {
-			var r = Math.abs(doodle.apexY);
-			var l = Math.sqrt(x2*x2 + y2*y2)
-			var x = x2 / l * r;
-			var y = y2 / l * r;
-			
-			ctx.lineTo(x,y);
-		}
-	}
-	function drawTree(x1, y1, angle, depth, angle1, initialAngle){
-		if (depth != 0){
-			var lastLine = (depth==1) ? true : false;
-			var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * 15);
-			var y2 = y1 + (Math.sin(angle * deg_to_rad) * depth * 15);
-			drawLine(x1, y1, x2, y2,lastLine, initialAngle);
-			drawTree(x2, y2, angle - angle1*0.2, depth - 1,angle1, initialAngle);
-			drawTree(x2, y2, angle + angle1*1.5, depth - 1,angle1, initialAngle);
-		}
-	}
-
-	var deg_to_rad = Math.PI / 180.0;
-	
-	if (depth != 0){
-		var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * 6);
-		var y2 = y1 + (Math.sin(angle * deg_to_rad) * depth * 6);
-		var l=false;
-		drawLine(x1, y1, x2, y2,false, angle);
-		drawTree(x2, y2, angle - angle1, depth - 1,angle1*2, angle);
-		drawTree(x2, y2, angle + angle1, depth - 1,angle1, angle);
- 	}
- 	
-//  	return lastPoint;
-}
-
-/**
- * OpenEyes
- *
- * Copyright (C) OpenEyes Foundation, 2011-2017
- * This file is part of OpenEyes.
- * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
- *
- * @package OpenEyes
- * @link http://www.openeyes.org.uk
- * @author OpenEyes <info@openeyes.org.uk>
- * @copyright Copyright 2011-2017, OpenEyes Foundation
- * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
  */
 
+
+
 /**
+
  * PhakoIncision
+
  *
+
  * @class PhakoIncision
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.PhakoIncision = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "PhakoIncision";
 
+
+
 	// Private parameters
+
 	this.defaultRadius = 330;
+
 	this.sutureSeparation = 1.5;
+
 	//this.apexYDelta = _radius + _apexY;
 
+
+
 	// Derived parameters
+
 	//this.incisionLength = (_arc * Math.PI / 180) * (6 * _radius) / this.defaultRadius;
+
 	this.incisionSite = 'Corneal';
+
 	this.incisionType = 'Pocket';
+
 	this.incisionMeridian = 0;
 
+
+
 	// Saved parameters
+
 	this.savedParameterArray = ['apexY', 'arc', 'rotation', 'radius'];
 
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
 
+
+
 	this.apexYDelta = this.radius + this.apexY;
+
 };
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.PhakoIncision.prototype = new ED.Doodle;
+
 ED.PhakoIncision.prototype.constructor = ED.PhakoIncision;
+
 ED.PhakoIncision.superclass = ED.Doodle.prototype;
 
-/**
- * Sets handle attributes
- */
-ED.PhakoIncision.prototype.setHandles = function() {
-	this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
-	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
-};
+
 
 /**
- * Sets default properties
+
+ * Sets handle attributes
+
  */
+
+ED.PhakoIncision.prototype.setHandles = function() {
+
+	this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+};
+
+
+
+/**
+
+ * Sets default properties
+
+ */
+
 ED.PhakoIncision.prototype.setPropertyDefaults = function() {
+
 	this.isScaleable = false;
+
 	this.isMoveable = false;
+
 	this.isRotatable = true;
+
 	this.isArcSymmetrical = true;
 
+
+
 	// Update validation array for simple parameters
+
 	this.parameterValidationArray['radius']['range'].setMinAndMax(250, 450);
+
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
 
+
+
 	// Add complete validation arrays for derived parameters
+
 	this.parameterValidationArray['incisionMeridian'] = {
+
 		kind: 'derived',
+
 		type: 'mod',
+
 		range: new ED.Range(0, 360),
+
 		clock: 'bottom',
+
 		animate: true
+
 	};
+
 	this.parameterValidationArray['incisionLength'] = {
+
 		kind: 'derived',
+
 		type: 'float',
+
 		range: new ED.Range(1, 9.9),
+
 		precision: 1,
+
 		animate: true
+
 	};
+
 	this.parameterValidationArray['incisionSite'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['Corneal', 'Limbal', 'Scleral'],
+
 		animate: true
+
 	};
+
 	this.parameterValidationArray['incisionType'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['Pocket', 'Section'],
+
 		animate: false
+
 	};
+
 };
 
+
+
 /**
+
  * Sets default parameters (only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.PhakoIncision.prototype.setParameterDefaults = function() {
+
 	this.setParameterFromString('incisionSite', 'Corneal');
+
 	this.setParameterFromString('incisionLength', '3.5');
+
 	this.setParameterFromString('incisionType', 'Pocket');
 
+
+
 	// Default is temporal side, or 90 degrees to the last one
+
 	this.setRotationWithDisplacements(90, -90);
+
 };
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if their 'animate' property is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @param {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.PhakoIncision.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = {};
 
+
+
 	switch (_parameter) {
+
 		case 'rotation':
+
 			var angle = (((Math.PI * 2 - _value + Math.PI / 2) * 180 / Math.PI) + 360) % 360;
+
 			if (angle == 360) {
+
 				angle = 0;
+
 			}
+
 			returnArray['incisionMeridian'] = angle;
+
 			//  returnArray['arc'] = _value/2;
+
 			break;
+
+
 
 		case 'arc':
+
 			returnArray['incisionLength'] = _value * (6 * this.radius) / this.defaultRadius;
+
 			break;
+
+
 
 		case 'radius':
+
 			if (_value >= 428) {
+
 			  returnArray['incisionSite'] = 'Scleral';
-      } else if (_value >= 344) {
-			  returnArray['incisionSite'] = 'Limbal';
-      } else {
-			  returnArray['incisionSite'] = 'Corneal';
-      }
+
+			  } else if (_value >= 344) {
+
+					  returnArray['incisionSite'] = 'Limbal';
+
+			  } else {
+
+					  returnArray['incisionSite'] = 'Corneal';
+
+			  }
+
+
 
 			// Incision length should remain constant despite changes in radius
+
 			returnArray['arc'] = this.incisionLength * this.defaultRadius / (6 * _value);
+
 			this.updateArcRange();
+
+
 
 			// Move apexY as radius changes and adjust range
+
 			returnArray['apexY'] = this.apexYDelta - _value;
+
 			this.parameterValidationArray['apexY']['range'].setMinAndMax(-_value, -_value + 34);
+
 			break;
+
+
 
 		case 'apexY':
+
 			returnArray['apexYDelta'] = this.radius + _value;
+
 			returnArray['incisionType'] = this.radius + _value > 0 ? 'Section' : 'Pocket';
+
 			break;
+
+
 
 			// Incision Meridian (CND 5.15)
+
 		case 'incisionMeridian':
+
 			returnArray['rotation'] = (((90 - _value) + 360) % 360) * Math.PI / 180;
+
 			// Example of animating two simple parameters simultaneously
+
 			//returnArray['arc'] = (1 + _value/90) * Math.PI/12;
+
 			break;
+
+
 
 			// Incision length (CND 5.14)
+
 		case 'incisionLength':
+
 			returnArray['arc'] = _value * this.defaultRadius / (6 * this.radius);
+
 			this.updateArcRange();
+
 			break;
+
+
 
 			// Incision site (CND 5.13)
+
 		case 'incisionSite':
+
 			switch (_value) {
+
 				case 'Scleral':
+
 					returnArray['radius'] = +428;
+
 					break;
+
 				case 'Limbal':
+
 					returnArray['radius'] = +376;
+
 					break;
+
 				case 'Corneal':
+
 					returnArray['radius'] = +330;
+
 					break;
+
 			}
+
 			break;
 
+
+
 		case 'incisionType':
+
 			switch (_value) {
+
 				case 'Pocket':
+
 					returnArray['apexYDelta'] = +0;
+
 					returnArray['apexY'] = -this.radius;
+
 					break;
+
 				case 'Section':
+
 					returnArray['apexYDelta'] = +34;
+
 					returnArray['apexY'] = +34 - this.radius;
+
 					break;
+
 			}
+
 	}
+
+
 
 	return returnArray;
+
 };
 
+
+
 /**
+
  * Private method to update range of arc parameter to account for values changing with radius and incisionSite
+
  */
+
 ED.PhakoIncision.prototype.updateArcRange = function() {
+
 	if (this.radius > 0) {
+
 		this.parameterValidationArray['arc']['range'].min = this.parameterValidationArray['incisionLength']['range'].min * this.defaultRadius / (6 * this.radius);
+
 		this.parameterValidationArray['arc']['range'].max = this.parameterValidationArray['incisionLength']['range'].max * this.defaultRadius / (6 * this.radius);
+
 	} else {
+
 		ED.errorHandler('ED.PhakoIncision', 'updateArcRange', 'Attempt to calculate a range of arc using an illegal value of radius: ' + this.radius);
+
 	}
+
 };
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.PhakoIncision.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.PhakoIncision.superclass.draw.call(this, _point);
 
+
+
 	// Radii
+
 	var r = this.radius;
+
 	var d = 40;
+
 	var ro = r + d;
+
 	var ri = r - d;
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Half angle of arc
+
 	var theta = this.arc / 2;
 
+
+
 	// Arc across
+
 	ctx.arc(0, 0, ro, -Math.PI / 2 + theta, -Math.PI / 2 - theta, true);
 
+
+
 	// Arc back to mirror image point on the other side
+
 	ctx.arc(0, 0, ri, -Math.PI / 2 - theta, -Math.PI / 2 + theta, false);
 
+
+
 	// Close path
+
 	ctx.closePath();
 
+
+
 	// Pocket
+
 	if (this.apexYDelta == 0) {
+
 		// Colour of fill
+
 		ctx.fillStyle = "rgba(200,200,200,0.75)";
 
+
+
 		// Set line attributes
+
 		ctx.lineWidth = 4;
 
+
+
 		// Colour of outer line is dark gray
+
 		ctx.strokeStyle = "rgba(120,120,120,0.75)";
+
 	}
+
 	// Section with sutures
+
 	else {
+
 		// Colour of fill
+
 		ctx.fillStyle = "rgba(200,200,200,0)";
 
+
+
 		// Set line attributes
+
 		ctx.lineWidth = 4;
 
+
+
 		// Colour of outer line is dark gray
+
 		ctx.strokeStyle = "rgba(120,120,120,0)";
+
 	}
+
+
 
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary drawing here
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
 		// Section with sutures
+
 		if (this.apexYDelta != 0) {
+
 			// New path
+
 			ctx.beginPath();
 
+
+
 			// Arc across
+
 			ctx.arc(0, 0, r, -Math.PI / 2 + theta, -Math.PI / 2 - theta, true);
 
+
+
 			// Sutures
+
 			var sutureSeparationAngle = this.sutureSeparation * this.defaultRadius / (6 * this.radius);
+
 			var p = new ED.Point(0, 0);
+
 			var phi = theta - sutureSeparationAngle / 2;
 
+
+
 			do {
+
 				p.setWithPolars(r - d, phi);
+
 				ctx.moveTo(p.x, p.y);
+
 				p.setWithPolars(r + d, phi);
+
 				ctx.lineTo(p.x, p.y);
 
+
+
 				phi = phi - sutureSeparationAngle;
+
 			} while (phi > -theta);
 
+
+
 			// Set line attributes
+
 			ctx.lineWidth = 4;
 
+
+
 			// Colour of outer line is dark gray
+
 			ctx.strokeStyle = "rgba(120,120,120,0.75)";
 
+
+
 			// Draw incision
+
 			ctx.stroke();
+
 		}
 
+
+
 	}
+
+
 
 	// Coordinates of handles (in canvas plane)
+
 	var point = new ED.Point(0, 0);
+
 	point.setWithPolars(r, theta);
+
 	this.handleArray[3].location = this.transform.transformPoint(point);
+
 	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 };
+
+
 
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.PhakoIncision.prototype.description = function() {
+
 	var returnString = "";
 
+
+
 	// Incision site
+
 	if (this.radius > 428) {
+
 		returnString = 'Scleral ';
+
 	} else if (this.radius > 344) {
+
 		returnString = 'Limbal ';
+
 	} else {
+
 		returnString = 'Corneal ';
+
 	}
+
+
 
 	// Incision type
+
 	if(this.incisionType){
+
 		returnString += this.incisionType.toLowerCase() + " ";
+
 	} else {
+
 		returnString += this.apexY + this.radius == 0 ? "pocket " : "section ";
+
 	}
 
+
+
 	returnString += "incision at ";
+
 	returnString += this.clockHour() + " o'clock";
 
+
+
 	return returnString;
+
 };
+
 
 /**
  * OpenEyes
@@ -43163,207 +53660,413 @@ ED.PosteriorCapsularOpacity.prototype.description = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * PosteriorCapsule
+
  *
+
  * @class PosteriorCapsule
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.PosteriorCapsule = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "PosteriorCapsule";
 
+
+
 	// Derived parameters
+
 	this.opacity = '1';
+
 	this.capsulotomy = 'None';
 
+
+
 	// Saved parameters
+
 	this.savedParameterArray = ['originX', 'originY', 'opacity', 'capsulotomy'];
 
+
+
 	// Parameters in doodle control bar (parameter name: parameter label)
+
 	this.controlParameterArray = {
+
 		'opacity':'Opacity',
+
 		'capsulotomy':'Capsulotomy',
+
 		};
 
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.PosteriorCapsule.prototype = new ED.Doodle;
+
 ED.PosteriorCapsule.prototype.constructor = ED.PosteriorCapsule;
+
 ED.PosteriorCapsule.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets default dragging attributes
+
  */
+
 ED.PosteriorCapsule.prototype.setPropertyDefaults = function() {
+
 	this.isUnique = true;
+
 	this.addAtBack = true;
 
+
+
 	// Update component of validation array for simple parameters
+
 	this.parameterValidationArray['originX']['range'].setMinAndMax(-500, +500);
+
 	this.parameterValidationArray['originY']['range'].setMinAndMax(-500, +500);
 
+
+
 	this.parameterValidationArray['opacity'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['1', '2', '3', '4'],
+
 		animate: false
+
 	};
+
 	this.parameterValidationArray['capsulotomy'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['None', 'Diamond', 'Circle'],
+
 		animate: false
+
 	};
+
 }
 
+
+
 /**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.PosteriorCapsule.prototype.setParameterDefaults = function() {}
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.PosteriorCapsule.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.PosteriorCapsule.superclass.draw.call(this, _point);
 
+
+
 	// Height of cross section (half value of ro in AntSeg doodle)
+
 	var ro = 240;
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Do a 360 arc
+
 	ctx.arc(0, 0, ro, 0, 2 * Math.PI, true);
 
+
+
 	// Set line attributes
+
 	ctx.lineWidth = 4;
+
 	ctx.fillStyle = "rgba(255, 255, 255, 0)";
+
+
 
 	ctx.strokeStyle = "gray";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary drawing
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
 
+
+
 		// Capsulotomy
+
 		if (this.capsulotomy != '1') {
+
 			ctx.beginPath();
+
 			ctx.arc(0, 0, ro, 0, 2 * Math.PI, true);
+
 			var ri = 140;
+
 			ctx.moveTo(ri, 0);
 
+
+
 			switch (this.capsulotomy) {
+
 				case 'Diamond':
+
 					ctx.lineTo(0, ri);
+
 					ctx.lineTo(-ri, 0);
+
 					ctx.lineTo(0, -ri);
+
 					ctx.lineTo(ri, 0);
+
 					ctx.closePath();
+
 					break;
+
 				case 'Circle':
+
 					ctx.arc(0, 0, ri, 0, 2 * Math.PI, false);
+
 					break;
+
 			}
+
 		}
+
+
+
+		// Pattern
+
+
+
+		var ptrn = ctx.createPattern(this.drawing.imageArray['PSCPattern'], 'repeat');
+
+		
+
+		if (this.opacity > 1) {ctx.fillStyle = ptrn;}
+
+		ctx.fill();
+
+
 
 		// Opacity
-		if (this.opacity != '1') {
-			// Pattern
 
-			var ptrn = ctx.createPattern(this.drawing.imageArray['PSCPattern'], 'repeat');
-			ctx.fillStyle = ptrn;
-			ctx.fill();
+		switch (this.opacity) {
 
-			// Opacity
-			switch (this.opacity) {
-				case '2':
-					ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-					break;
-				case '3':
-					ctx.fillStyle = "rgba(200, 200, 200, 0.5)";
-					break;
-				case '4':
-					ctx.fillStyle = "rgba(150, 150, 150, 0.5)";
-					break;
-			}
-			ctx.fill();
-			ctx.stroke();
+			case '1':
+
+				ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+
+				break;
+
+			case '2':
+
+				ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+
+				break;
+
+			case '3':
+
+				ctx.fillStyle = "rgba(200, 200, 200, 0.5)";
+
+				break;
+
+			case '4':
+
+				ctx.fillStyle = "rgba(150, 150, 150, 0.5)";
+
+				break;
+
+			default:
+
+				ctx.fillStyle = "rgba(255, 150, 100, 0.1)";
+
+				break;
+
 		}
 
+		ctx.fill();
+
+		ctx.stroke();
 
 	}
+
+
 
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
+
+
 
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.PosteriorCapsule.prototype.description = function() {
+
 	var returnValue = "";
 
+
+
 	if (this.opacity != '1') {
+
 		returnValue += this.opacity + " posterior capsular opacity";
+
 	}
+
+
 
 	switch (this.opacity) {
+
 				case '2':
+
 					returnValue = "Mild PCO reducing the red reflex, Elschnig pearls to the IOL edge";
+
 					break;
+
 				case '3':
+
 					returnValue = "Moderate fibrosis or Elschnig pearls inside IOL edge, but with a clear visual axis";
+
 					break;
+
 				case '4':
+
 					returnValue = "Severe fibrosis or Elschnig pearls covering the visual axis and severely reducing the red reflex";
+
 					break;
+
 	}
+
+
 
 	if (this.capsulotomy != 'None') {
+
 		var shape = this.capsulotomy.toLowerCase();
+
 		returnValue += " with " + shape + " shaped capsulotomy";
+
 	}
 
+
+
 	return returnValue;
+
 }
+
 
 /**
  * OpenEyes
@@ -43867,259 +54570,525 @@ ED.PosteriorSynechia.prototype.description = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * PostPole template with disc and arcades
+
  *
+
  * @class PostPole
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.PostPole = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "PostPole";
 
+
+
 	// Private parameters
+
 	this.discRadius = 84;
 
+
+
 	// Derived parameters
+
 	this.cdRatio = '0';
 
+
+
 	// Saved parameters
+
 	this.savedParameterArray = ['apexX', 'apexY'];
 
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.PostPole.prototype = new ED.Doodle;
+
 ED.PostPole.prototype.constructor = ED.PostPole;
+
 ED.PostPole.superclass = ED.Doodle.prototype;
 
-/**
- * Sets handle attributes
- */
-ED.PostPole.prototype.setHandles = function() {
-	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
-}
+
 
 /**
- * Set default properties
+
+ * Sets handle attributes
+
  */
+
+ED.PostPole.prototype.setHandles = function() {
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+}
+
+
+
+/**
+
+ * Set default properties
+
+ */
+
 ED.PostPole.prototype.setPropertyDefaults = function() {
+
 	this.isDeletable = false;
+
 	this.isScaleable = false;
+
 	this.isMoveable = false;
+
 	this.isRotatable = false;
+
 	this.isUnique = true;
 
+    this.willReport = true;
+
+
+
 	// Update component of validation array for simple parameterss
+
 	var apexX = this.drawing.eye == ED.eye.Right ? 300 : -300;
+
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(apexX, apexX);
+
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-80, -8);
 
+
+
 	// Add complete validation arrays for derived parameters
+
 	this.parameterValidationArray['cdRatio'] = {
+
 		kind: 'derived',
+
 		type: 'float',
+
 		range: new ED.Range(0, 1),
+
 		precision: 1,
+
 		animate: false
+
 	};
 
+
+
 	// Slow down ApexY animation for this doodle (small scope)
+
 	this.parameterValidationArray['apexY']['delta'] = 5;
+
 }
 
+
+
 /**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.PostPole.prototype.setParameterDefaults = function() {
+
 	this.setParameterFromString('cdRatio', '0.5');
+
 	this.apexX = this.drawing.eye == ED.eye.Right ? 300 : -300;
+
 }
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if their 'animate' property is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @value {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.PostPole.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = new Array();
 
+
+
 	switch (_parameter) {
+
 		case 'apexY':
+
 			returnArray['cdRatio'] = -_value / 80;
+
 			break;
+
+
 
 		case 'cdRatio':
+
 			returnArray['apexY'] = -(+_value * 80);
+
 			break;
+
 	}
+
+
 
 	return returnArray;
+
 }
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.PostPole.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.PostPole.superclass.draw.call(this, _point);
 
+
+
 	// Disc location
+
 	var x = this.drawing.eye == ED.eye.Right ? 300 : -300;
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Optic disc
+
 	ctx.arc(x, 0, this.discRadius, 0, 2 * Math.PI, true);
 
+
+
 	// Set attributes
+
 	ctx.lineWidth = 4;
+
 	ctx.strokeStyle = "rgba(249,187,76,1)";
+
 	ctx.fillStyle = "rgba(249,187,76,1)";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary drawing here
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
 		// Optic cup
+
 		ctx.beginPath();
+
 		ctx.arc(x, 0, -this.apexY, 2 * Math.PI, 0, false);
+
 		ctx.fillStyle = "white";
+
 		var ptrn = ctx.createPattern(this.drawing.imageArray['CribriformPatternSmall'], 'repeat');
+
 		ctx.fillStyle = ptrn;
+
 		ctx.lineWidth = 4;
+
 		ctx.fill();
+
 		ctx.stroke();
+
+
 
 		// Arcades
+
 		ctx.beginPath();
+
+
 
 		// Coordinates
+
 		var sign = this.drawing.eye == ED.eye.Right ? 1 : -1;
+
 		var startX = -300 * sign;
+
 		var midX1 = -50 * sign;
+
 		var midX2 = 300 * sign;
+
 		var midX3 = 300 * sign;
+
 		var endX1 = 300 * sign;
+
 		var endX2 = 350 * sign;
+
 		var endX3 = 400 * sign;
+
 		var foveaX = 0;
 
+
+
 		// Superior arcades
+
 		ctx.moveTo(startX, -100);
+
 		ctx.bezierCurveTo(midX1, -500, midX2, -200, midX3, -24);
+
 		ctx.bezierCurveTo(endX1, -80, endX2, -140, endX3, -160);
 
+
+
 		// Inferior arcades
+
 		ctx.moveTo(endX3, 160);
+
 		ctx.bezierCurveTo(endX2, 140, endX1, 80, midX3, 24);
+
 		ctx.bezierCurveTo(midX2, 200, midX1, 500, startX, 100);
 
+
+
 		// Small cross marking fovea
+
 		var crossLength = 10;
+
 		ctx.moveTo(foveaX, -crossLength);
+
 		ctx.lineTo(foveaX, crossLength);
+
 		ctx.moveTo(foveaX - crossLength, 0);
+
 		ctx.lineTo(foveaX + crossLength, 0);
 
+
+
 		// Draw arcades
+
 		ctx.lineWidth = 8;
+
 		ctx.lineCap = "round";
+
 		ctx.strokeStyle = "red";
+
 		ctx.stroke();
+
+
 
 		// One disc diameter
+
 		ctx.beginPath();
+
 		ctx.arc(0, 0, 2 * this.discRadius, 2 * Math.PI, 0, false);
+
 		ctx.lineWidth = 1;
+
 		ctx.strokeStyle = "gray";
+
 		ctx.stroke();
+
 	}
 
+
+
 	// Coordinates of handles (in canvas plane)
+
 	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
 
+
+
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.PostPole.prototype.description = function() {
-	return this.drawing.doodleArray.length == 1 ? "No abnormality" : "";
+
+    var returnValue = "";
+
+
+
+    if (returnValue.length === 0 && this.drawing.doodleArray.length === 1) {
+
+        returnValue = "No abnormality";
+
+	}
+
+	return returnValue;
+
 }
 
+
+
 /**
+
  * Tests whether passed doodle is within a number of disc diameters of fovea
+
  *
+
  * @param {Doodle} _doodle The doodle to test
+
  * @param {Int} _diameters The number of disc diameters to test
+
  * @returns {Bool} True if doodle is within the passed number of disc diameters of fovea
+
  */
+
 ED.PostPole.prototype.isWithinDiscDiametersOfFovea = function(_doodle, _diameters) {
+
 	return (_doodle.originX * _doodle.originX + _doodle.originY * _doodle.originY) < _diameters * 4 * this.discRadius * this.discRadius;
+
 }
 
+
+
 /**
+
  * Tests whether passed doodle is within a the confines of the optic disc
+
  *
+
  * @param {Doodle} _doodle The doodle to test
+
  * @returns {Bool} True if doodle is within the confines of the optic disc
+
  */
+
 ED.PostPole.prototype.isWithinDisc = function(_doodle) {
+
 	// Disc location
+
 	var x = _doodle.originX - (this.drawing.eye == ED.eye.Right ? 300 : -300);
 
+
+
 	return (x * x + _doodle.originY * _doodle.originY) < this.discRadius * this.discRadius;
+
 }
 
+
+
 /**
+
  * Tests whether passed doodle is within a the vascular arcades
+
  *
+
  * @param {Doodle} _doodle The doodle to test
+
  * @returns {Bool} True if doodle is within the vascular arcades
+
  */
+
 ED.PostPole.prototype.isWithinArcades = function(_doodle) {
+
 	return (_doodle.originX * _doodle.originX + _doodle.originY * _doodle.originY) < (300 * 300);
+
 }
+
 
 /**
  * OpenEyes
@@ -47403,111 +58372,323 @@ ED.RoundHole.prototype.diagnosticHierarchy = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * Blot Haemorrhage
+
  *
+
  * @class RPEAtrophy
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.RPEAtrophy = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "RPEAtrophy";
+
 	
+
 	// Saved parameters
-	this.savedParameterArray = ['originX', 'originY', 'scaleX', 'scaleY'];
+
+	this.savedParameterArray = ['originX', 'originY', 'scaleX', 'scaleY', 'apexX', 'apexY'];
+
 	
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.RPEAtrophy.prototype = new ED.Doodle;
+
 ED.RPEAtrophy.prototype.constructor = ED.RPEAtrophy;
+
 ED.RPEAtrophy.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets handle attributes
+
  */
+
 ED.RPEAtrophy.prototype.setHandles = function() {
+
 	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Scale, false);
+
+    this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
 }
 
+
+
 /**
+
+ * Sets default dragging attributes
+
+ */
+
+ED.RPEAtrophy.prototype.setPropertyDefaults = function() {
+
+    this.isRotatable = false;
+
+
+
+    // Update component of validation array for simple parameters
+
+    this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +80);
+
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-160, +0);
+
+
+
+    this.parameterValidationArray['originX']['range'].setMinAndMax(-260-30, 150+30);
+
+    this.parameterValidationArray['originY']['range'].setMinAndMax(-220-30, 220+30);
+
+};
+
+
+
+/**
+
  * Sets default parameters (Only called for new doodles)
+
  * Use the setParameter function for derived parameters, as this will also update dependent variables
+
  */
+
 ED.RPEAtrophy.prototype.setParameterDefaults = function() {
+
 	this.setOriginWithDisplacements(0, -60);
+
+    this.apexX = 40;
+
 }
 
+
+
+ED.RPEAtrophy.prototype.dependentParameterValues = function(_parameter, _value) {
+
+    var returnArray = new Array();
+
+
+
+    switch (_parameter) {
+
+        case 'scaleY':
+
+            var r = 72;
+
+
+
+            this.parameterValidationArray['originX']['range'].setMinAndMax(-260-30+r*_value-72, 150+30-r*_value+72);
+
+            this.parameterValidationArray['originY']['range'].setMinAndMax(-220-30+r*_value-72, 220+30-r*_value+72);
+
+
+
+            var newOriginY = this.parameterValidationArray['originY']['range'].constrain(this.originY);
+
+            var newOriginX = this.parameterValidationArray['originX']['range'].constrain(this.originX);
+
+
+
+            this.setSimpleParameter('originX', newOriginX);
+
+            this.setSimpleParameter('originY', newOriginY);
+
+
+
+			break;
+
+    }
+
+    return returnArray;
+
+}
+
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.RPEAtrophy.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.RPEAtrophy.superclass.draw.call(this, _point);
 
+
+
 	// Radius
-	var r = 120;
+
+	var r = 72;
+
+
 
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Haemorrhage
+
 	ctx.arc(0, 0, r, 0, 2 * Math.PI, true);
 
+
+
 	// Set attributes
+
 	ctx.lineWidth = 1;
-	ctx.fillStyle = "rgba(253, 238, 173, 0.75)";
+
+	ctx.fillStyle = "rgba(255, 255, 255, 0)";
+
 	ctx.strokeStyle = ctx.fillStyle;
+
 	
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
+    // Non boundary paths
+
+    if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+        // Colours
+
+        var fill = "rgba(111, 82, 76, " + (0.2+(this.apexX/100)) +")";
+
+
+
+        var dr = 10 / this.scaleX;
+
+
+
+        var p = new ED.Point(0, 0);
+
+        var n = 40 + Math.abs(Math.floor(this.apexY / 2));
+
+        for (var i = 0; i < n; i++) {
+
+            p.setWithPolars(r * ED.randomArray[i], 2 * Math.PI * ED.randomArray[i + 100]);
+
+            this.drawSpot(ctx, p.x, p.y, dr, fill);
+
+        }
+
+    }
+
+
+
 	// Coordinates of handles (in canvas plane)
+
 	var point = new ED.Point(0, 0);
+
 	point.setWithPolars(r, Math.PI / 4);
+
 	this.handleArray[2].location = this.transform.transformPoint(point);
 
+    this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
 
+
+
 /**
+
  * Returns a String which, if not empty, determines the root descriptions of multiple instances of the doodle
+
  *
+
  * @returns {String} Group description
+
  */
+
 ED.RPEAtrophy.prototype.groupDescription = function() {
+
 	return "RPE atrophy";
+
 }
+
 
 /**
  * OpenEyes
@@ -47685,7 +58866,18 @@ ED.RPEDetachment.prototype.draw = function(_point) {
  */
 ED.RPEDetachment.prototype.description = function() {
 	return 'Retinal pigment epithelial detachment';
-}
+};
+
+/**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {number} SnoMed code of entity represented by doodle
+ */
+ED.RPEDetachment.prototype.snomedCode = function() {
+    'use strict';
+
+    return 232067008; // retinal pigment epithelial detachment
+};
 
 /**
  * OpenEyes
@@ -52915,258 +64107,1136 @@ ED.Telangiectasis.prototype.draw = function(_point) {
  */
 ED.Telangiectasis.prototype.description = function() {
 	return "Parafoveal telangiectasia";
-}
+};
 
 /**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {number} SnoMed code of entity representated by doodle
+ */
+ED.CNV.prototype.snomedCode = function() {
+    return 232024000;
+};
+
+/**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * Toric Posterior chamber IOL
+
  *
+
  * @class ToricPCIOL
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.ToricPCIOL = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "ToricPCIOL";
+
 	
+
 	// Derived parameters
+
 	this.axis = 0;
+
 	
+
 	// Other parameters
+
 	this.model = 'Type 1';
 
+	this.fixation = 'In-the-bag';
+
+	this.fx = 1;
+
+    this.csOriginX = 0;
+
+
+
 	// Saved parameters
-	this.savedParameterArray = ['originX', 'originY', 'rotation', 'model'];
+
+	this.savedParameterArray = ['fixation', 'fx', 'originX', 'originY', 'rotation', 'csOriginX', 'model'];
+
 	
+
 	// Parameters in doodle control bar (parameter name: parameter label)
+
 	this.controlParameterArray = {'model':'Model'};
 
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+
+
+    this.scaleX = 0.75;
+
+    this.scaleY = 0.75;
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.ToricPCIOL.prototype = new ED.Doodle;
+
 ED.ToricPCIOL.prototype.constructor = ED.ToricPCIOL;
+
 ED.ToricPCIOL.superclass = ED.Doodle.prototype;
 
+
+
 /**
+
  * Sets handle attributes
+
  */
+
 ED.ToricPCIOL.prototype.setHandles = function() {
+
 	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Rotate, false);
+
 }
 
+
+
 /**
+
  * Sets default dragging attributes
+
  */
+
 ED.ToricPCIOL.prototype.setPropertyDefaults = function() {
+
 	this.addAtBack = true;
+
 	this.isOrientated = false;
+
 	this.isScaleable = false;
+
 	this.isUnique = true;
+
 	
+
 	// Add complete validation arrays for derived parameters
-	this.parameterValidationArray['axis'] = {
+
+	this.parameterValidationArray['fixation'] = {
+
 		kind: 'derived',
-		type: 'mod',
-		range: new ED.Range(0, 180),
-		clock: 'bottom',
-		animate: true
-	};
-	
-	this.parameterValidationArray['model'] = {
-		kind: 'derived',
+
 		type: 'string',
-		list: ['AcrySof T3 (+1.50 D)', 'AcrySof T4 (+2.25 D)', 'AcrySof T5 (+3.00 D)', 'AA4203-TF (+2.00 D)', 'AA4203-TL (+3.50 D)'],
+
+		list: ['In-the-bag', 'Ciliary sulcus'],
+
+		animate: true
+
+	};
+
+	this.parameterValidationArray['fx'] = {
+
+		kind: 'other',
+
+		type: 'int',
+
+		range: [1, 2],
+
 		animate: false
+
+	};	
+
+
+
+    this.parameterValidationArray['axis'] = {
+
+		kind: 'derived',
+
+		type: 'mod',
+
+		range: new ED.Range(0, 180),
+
+		clock: 'bottom',
+
+		animate: true
+
+	};
+
+	
+
+	this.parameterValidationArray['model'] = {
+
+		kind: 'derived',
+
+		type: 'string',
+
+		list: ['AcrySof T3 (+1.50 D)', 'AcrySof T4 (+2.25 D)', 'AcrySof T5 (+3.00 D)', 'AA4203-TF (+2.00 D)', 'AA4203-TL (+3.50 D)'],
+
+		animate: false
+
 	}
+
+
+
+	// Update component of validation array for simple parameters
+
+	this.parameterValidationArray['originX']['range'].setMinAndMax(-200, +200);
+
+	this.parameterValidationArray['originY']['range'].setMinAndMax(-200, +200);
+
 }
 
+
+
 /**
+
  * Sets default parameters
+
  */
+
 ED.ToricPCIOL.prototype.setParameterDefaults = function() {
+
 	this.scaleX = 0.75;
+
 	this.scaleY = 0.75;
+
 	this.setParameterFromString('axis', '0');
+
 	this.setParameterFromString('model', 'AcrySof T3 (+1.50 D)');
+
 }
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if their 'animate' property is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @value {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.ToricPCIOL.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = new Array();
 
+
+
 	// Similar to TrialLens but with correction to line up haptics correctly
+
 	switch (_parameter) {
-		case 'rotation':
-			returnArray['axis'] = (-120 + 720 - 180 * _value / Math.PI) % 180;
+
+	    case 'fx':
+
+			if (_value === 2) returnArray['fixation'] = 'Ciliary sulcus';
+
+			else returnArray['fixation'] = 'In-the-bag';
+
 			break;
+
+
+
+		case 'fixation':
+
+			switch (_value) {
+
+				case 'In-the-bag':
+
+					returnArray['fx'] = 1;
+
+					break;
+
+				case 'Ciliary sulcus':
+
+					returnArray['fx'] = 2;
+
+					break;
+
+			}
+
+			break;
+
+		case 'rotation':
+
+			returnArray['axis'] = (-120 + 720 - 180 * _value / Math.PI) % 180;
+
+			break;
+
+
 
 		case 'axis':
+
 			returnArray['rotation'] = (60 + 180 - _value) * Math.PI / 180;
+
 			break;
+
 	}
+
+
 
 	return returnArray;
+
 }
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.ToricPCIOL.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.ToricPCIOL.superclass.draw.call(this, _point);
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Radius of IOL optic
+
 	var r = 240;
 
+
+
 	// Draw optic
+
 	ctx.arc(0, 0, r, 0, Math.PI * 2, false);
 
+
+
 	// Draw upper haptic
+
 	ctx.moveTo(150, -190);
+
 	ctx.bezierCurveTo(160, -200, 190, -350, 160, -380);
+
 	ctx.bezierCurveTo(90, -440, -150, -410, -220, -370);
+
 	ctx.bezierCurveTo(-250, -350, -260, -400, -200, -430);
+
 	ctx.bezierCurveTo(-110, -480, 130, -470, 200, -430);
+
 	ctx.bezierCurveTo(270, -390, 220, -140, 220, -100);
 
+
+
 	// Draw lower haptic
+
 	ctx.moveTo(-150, 190);
+
 	ctx.bezierCurveTo(-160, 200, -190, 350, -160, 380);
+
 	ctx.bezierCurveTo(-90, 440, 150, 410, 220, 370);
+
 	ctx.bezierCurveTo(250, 350, 260, 400, 200, 430);
+
 	ctx.bezierCurveTo(110, 480, -130, 470, -200, 430);
+
 	ctx.bezierCurveTo(-270, 390, -220, 140, -220, 100);
 
+
+
 	// Colour of fill is white but with transparency
+
 	ctx.fillStyle = "rgba(255,255,255,0.75)";
 
+
+
 	// Set line attributes
+
 	ctx.lineWidth = 4;
 
+
+
 	// Colour of outer line is dark gray
+
 	ctx.strokeStyle = "darkgray";
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary paths
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
 		// Lines for toric IOL
+
 		ctx.beginPath();
 
+
+
 		// Create points
+
 		var phi = 0.7 * Math.PI / 4;
+
 		var theta = phi + Math.PI;
-		var p1 = new ED.Point(0, 0)
+
+		var p1 = new ED.Point(0, 0);
+
 		p1.setWithPolars(r - 20, phi);
+
 		var p2 = new ED.Point(0, 0);
+
 		p2.setWithPolars(r - 100, phi);
-		var p3 = new ED.Point(0, 0)
+
+		var p3 = new ED.Point(0, 0);
+
 		p3.setWithPolars(r - 20, theta);
+
 		var p4 = new ED.Point(0, 0);
+
 		p4.setWithPolars(r - 100, theta);
 
+
+
 		// Create lines
+
 		ctx.moveTo(p1.x, p1.y);
+
 		ctx.lineTo(p2.x, p2.y);
+
 		ctx.moveTo(p3.x, p3.y);
+
 		ctx.lineTo(p4.x, p4.y);
 
+
+
 		// Set line attributes
+
 		ctx.lineWidth = 24;
+
 		ctx.lineCap = "round";
+
 		ctx.strokeStyle = "darkgray";
 
+
+
 		// Draw lines
+
 		ctx.stroke();
+
 	}
+
+
 
 	// Coordinates of handles (in canvas plane)
-	var point = new ED.Point(0, 0)
+
+	var point = new ED.Point(0, 0);
+
 	point.setWithPolars(r, 4 * Math.PI / 4);
+
 	this.handleArray[2].location = this.transform.transformPoint(point);
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
 
+
+
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.ToricPCIOL.prototype.description = function() {
+
 	var returnValue = "Toric posterior chamber IOL " + this.model + " ";
 
+
+
 	// Displacement limit
+
 	var limit = 40;
 
+
+
 	// ***TODO*** ensure description takes account of side of eye
+
 	var displacementValue = "";
 
+
+
 	if (this.originY < -limit) {
+
 		if (displacementValue.length > 0) displacementValue += " and";
+
 		displacementValue += " superiorly";
-	}
-	if (this.originY > limit) {
-		if (displacementValue.length > 0) displacementValue += " and";
-		displacementValue += " inferiorly";
-	}
-	if (this.originX < -limit) {
-		if (displacementValue.length > 0) displacementValue += " and";
-		displacementValue += " temporally";
-	}
-	if (this.originX > limit) {
-		if (displacementValue.length > 0) displacementValue += " and";
-		displacementValue += " nasally";
+
 	}
 
+	if (this.originY > limit) {
+
+		if (displacementValue.length > 0) displacementValue += " and";
+
+		displacementValue += " inferiorly";
+
+	}
+
+	if (this.originX < -limit) {
+
+		if (displacementValue.length > 0) displacementValue += " and";
+
+		displacementValue += " temporally";
+
+	}
+
+	if (this.originX > limit) {
+
+		if (displacementValue.length > 0) displacementValue += " and";
+
+		displacementValue += " nasally";
+
+	}
+
+
+
 	// Add displacement description
+
 	if (displacementValue.length > 0) returnValue += " displaced" + displacementValue;
+
+
 
 	returnValue += ' @ ' + this.axis.toFixed(0) + '\xB0';
 
+
+
 	return returnValue;
+
 }
+
+
+/**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * PCIOL Cross Section ***TODO***
+
+ *
+
+ * @class PCIOLCrossSection
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.ToricPCIOLCrossSection = function(_drawing, _parameterJSON) {
+
+  // Set classname
+
+  this.className = "ToricPCIOLCrossSection";
+
+
+
+  // Other parameters
+
+  this.fixation = 'In-the-bag';
+
+  this.fx = 1;
+
+
+
+  // Saved parameters
+
+  this.savedParameterArray = ['fixation', 'fx', 'originX', 'originY'];
+
+
+
+  // Parameters in doodle control bar
+
+  this.controlParameterArray = {'fixation':'Fixation'};
+
+
+
+
+
+  // Call superclass constructor
+
+  ED.Doodle.call(this, _drawing, _parameterJSON);
+
+
+
+  this.linkedDoodleParameters = {
+
+    'ToricPCIOL': {
+
+      source: ['fixation', 'fx', 'originY'],
+
+      store: [['originX', 'csOriginX']]
+
+    }
+
+  };
+
+}
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.ToricPCIOLCrossSection.prototype = new ED.Doodle;
+
+ED.ToricPCIOLCrossSection.prototype.constructor = ED.ToricPCIOLCrossSection;
+
+ED.ToricPCIOLCrossSection.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets default dragging attributes
+
+ */
+
+ED.ToricPCIOLCrossSection.prototype.setPropertyDefaults = function() {
+
+  this.isUnique = true;
+
+  this.inFrontOfClassArray = ["HypopyonCrossSection", "HyphaemaCrossSection" ];
+
+  this.addAtBack = true;
+
+
+
+  // Validation arrays for other parameters
+
+  this.parameterValidationArray['fixation'] = {
+
+    kind: 'derived',
+
+    type: 'string',
+
+    list: ['In-the-bag', 'Ciliary sulcus'],
+
+    animate: true
+
+  };
+
+  this.parameterValidationArray['fx'] = {
+
+    kind: 'other',
+
+    type: 'int',
+
+    range: [1, 2],
+
+    animate: false
+
+  };
+
+
+
+  // Update component of validation array for simple parameters
+
+  this.parameterValidationArray['originX']['range'].setMinAndMax(-150, +44);
+
+  this.parameterValidationArray['originY']['range'].setMinAndMax(-140, +140);
+
+}
+
+
+
+/**
+
+ * Sets default parameters (Only called for new doodles)
+
+ * Use the setParameter function for derived parameters, as this will also update dependent variables
+
+ */
+
+ED.ToricPCIOLCrossSection.prototype.setParameterDefaults = function() {
+
+  this.originX = 44;
+
+}
+
+
+
+/**
+
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
+ * The returned parameters are animated if their 'animate' property is set to true
+
+ *
+
+ * @param {String} _parameter Name of parameter that has changed
+
+ * @value {Undefined} _value Value of parameter to calculate
+
+ * @returns {Array} Associative array of values of dependent parameters
+
+ */
+
+ED.ToricPCIOLCrossSection.prototype.dependentParameterValues = function(_parameter, _value) {
+
+  var returnArray = new Array();
+
+
+
+  switch (_parameter) {
+
+    case 'fx':
+
+      if (_value === 2) returnArray['fixation'] = 'Ciliary sulcus';
+
+      else returnArray['fixation'] = 'In-the-bag';
+
+      break;
+
+
+
+    case 'fixation':
+
+      switch (_value) {
+
+        case 'In-the-bag':
+
+          returnArray['fx'] = 1;
+
+          break;
+
+        case 'Ciliary sulcus':
+
+          returnArray['fx'] = 2;
+
+          break;
+
+      }
+
+      break;
+
+
+
+    case 'originX':
+
+      var iris = this.drawing.lastDoodleOfClass('AntSegCrossSection');
+
+      if (iris) {
+
+        var minApexX = iris.parameterValidationArray['apexX']['range'].min;
+
+        var maxApexX = 32 - (72 / 220) * (iris.apexY + 280) + this.originX;
+
+        if (maxApexX < minApexX) maxApexX = minApexX;
+
+        iris.parameterValidationArray['apexX']['range'].setMinAndMax(-40 - (140 / 220) * (iris.apexY + 280), maxApexX);
+
+
+
+        // If being synced, make sensible decision about x
+
+        if (!this.drawing.isActive) {
+
+          var newOriginX = iris.parameterValidationArray['apexX']['range'].max;
+
+        } else {
+
+          var newOriginX = iris.parameterValidationArray['apexX']['range'].constrain(iris.apexX);
+
+        }
+
+        iris.setSimpleParameter('apexX', newOriginX);
+
+      }
+
+      break;
+
+  }
+
+
+
+  return returnArray;
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.ToricPCIOLCrossSection.prototype.draw = function(_point) {
+
+  // Get context
+
+  var ctx = this.drawing.context;
+
+
+
+  // Call draw method in superclass
+
+  ED.ToricPCIOLCrossSection.superclass.draw.call(this, _point);
+
+
+
+  // Height of cross section (half value of ro in AntSeg doodle)
+
+  var h = 240;
+
+
+
+  // Arbitrary radius of curvature
+
+  var r = 450;
+
+
+
+  // Displacement of lens from centre
+
+  var ld = 100;
+
+
+
+  // Angle of arc
+
+  var theta = Math.asin(h / r);
+
+
+
+  // X coordinate of centre of circle
+
+  var x = r * Math.cos(theta);
+
+
+
+  // Measurements of nucleus
+
+  var rn = r - 60;
+
+
+
+  // Calculate nucleus angles
+
+  var phi = Math.acos(x / rn);
+
+
+
+  // Draw lens
+
+  ctx.beginPath();
+
+
+
+  if (this.fixation == 'In-the-bag') {
+
+    ctx.ellipse(100, 0, 160, 20, 0.5 * Math.PI, 0, 2 * Math.PI);
+
+  }
+
+  else {
+
+    ctx.ellipse(50, 0, 160, 25, 0.5 * Math.PI, 0, 2 * Math.PI);
+
+  }
+
+
+
+
+
+  // Set line attributes
+
+  ctx.lineWidth = 5;
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+
+  ctx.strokeStyle = "#898989";
+
+
+
+  // Draw boundary path (also hit testing)
+
+  this.drawBoundary(_point);
+
+
+
+  // Non boundary drawing
+
+  if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+
+
+    var xShift = (this.fixation == 'In-the-bag') ? 0 : this.originX - 44;
+
+
+
+    // Lens bag
+
+    ctx.beginPath();
+
+    ctx.arc(ld - x - xShift, 0 - this.originY, r, theta, -theta, true);
+
+    ctx.arc(ld + x - xShift, 0 - this.originY, r, Math.PI + theta, Math.PI + 0.75*theta, true);
+
+    ctx.moveTo(ld - xShift, 240 - this.originY);
+
+    ctx.arc(ld + x - xShift, 0 - this.originY, r, Math.PI - theta, Math.PI - 0.75*theta, false);
+
+    ctx.strokeStyle = "gray";
+
+    ctx.lineWidth = 3;
+
+    ctx.stroke();
+
+
+
+    // Loops
+
+    ctx.beginPath();
+
+    if (this.fixation == 'In-the-bag') {
+
+      /*
+
+            ctx.arc(30 + 115 - this.originX, -210 - this.originY, 10, 2.2*Math.PI, 1*Math.PI, true);
+
+            ctx.lineTo(85,-125);
+
+            ctx.moveTo(120 - this.originX, 210 - this.originY);
+
+            ctx.arc(25 + 115 - this.originX, 210 - this.originY, 13, 0, 1*Math.PI, false);
+
+            ctx.moveTo(100 - this.originX, 210 - this.originY);
+
+            ctx.lineTo(44 + 65,125);
+
+      */
+
+      ctx.ellipse(144 - 44, 0 - this.originY, 227, 20, 0.5 * Math.PI, 0.5 * Math.PI, 1.2 * Math.PI);
+
+      ctx.moveTo(164 - 44,0 - this.originY);
+
+      ctx.ellipse(144 - 44, 0 - this.originY, 227, 20, 0.5 * Math.PI, 1.5 * Math.PI, 0.2 * Math.PI);
+
+    }
+
+    else {
+
+      ctx.arc(115 - this.originX, -350 - this.originY, 15, 0*Math.PI, 1*Math.PI, true);
+
+      ctx.lineTo(35,-125);
+
+      ctx.moveTo(120 - this.originX, 350 - this.originY);
+
+      ctx.arc(115 - this.originX, 350 - this.originY, 15, 0, 1*Math.PI, false);
+
+      ctx.moveTo(100 - this.originX, 350 - this.originY);
+
+      ctx.lineTo(65,125);
+
+    }
+
+    ctx.strokeStyle = "#898989";
+
+    ctx.lineWidth = 5;
+
+    ctx.stroke();
+
+
+
+
+
+    // Zonules
+
+    ctx.beginPath();
+
+
+
+    // Top zonules
+
+    ctx.moveTo(44 - this.originX + 80, - this.originY - 349);
+
+    ctx.lineTo(80 - xShift, -207 - this.originY);
+
+    ctx.moveTo(44 - this.originX + 80, - this.originY - 349);
+
+    ctx.lineTo(120 - xShift, -207 - this.originY);
+
+    ctx.moveTo(44  - this.originX + 120, - this.originY - 349);
+
+    ctx.lineTo(80 - xShift, -207 - this.originY);
+
+    ctx.moveTo(44 - this.originX + 120, - this.originY - 349);
+
+    ctx.lineTo(120 - xShift, -207 - this.originY);
+
+
+
+    // Bottom zonules
+
+    ctx.moveTo(44 - this.originX + 80, -this.originY + 349);
+
+    ctx.lineTo(80 - xShift, 207 - this.originY);
+
+    ctx.moveTo(44 - this.originX + 80, -this.originY + 349);
+
+    ctx.lineTo(120 - xShift, 207 - this.originY);
+
+    ctx.moveTo(44 - this.originX + 120, -this.originY + 349);
+
+    ctx.lineTo(80 - xShift, 207 - this.originY);
+
+    ctx.moveTo(44 - this.originX + 120, -this.originY + 349);
+
+    ctx.lineTo(120 - xShift, 207 - this.originY);
+
+
+
+    ctx.lineWidth = 2;
+
+    ctx.strokeStyle = "gray";
+
+    ctx.stroke();
+
+  }
+
+
+
+  // Draw handles if selected
+
+  if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+  // Return value indicating successful hittest
+
+  return this.isClicked;
+
+}
+
 
 /**
  * OpenEyes
@@ -53510,304 +65580,601 @@ ED.TrabyConjIncision.prototype.description = function() {
 }
 
 /**
+
  * OpenEyes
+
  *
+
  * Copyright (C) OpenEyes Foundation, 2011-2017
+
  * This file is part of OpenEyes.
+
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
  * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
  *
+
  * @package OpenEyes
+
  * @link http://www.openeyes.org.uk
+
  * @author OpenEyes <info@openeyes.org.uk>
+
  * @copyright Copyright 2011-2017, OpenEyes Foundation
+
  * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
  */
 
+
+
 /**
+
  * TrabyFlap
+
  *
+
  * @class TrabyFlap
+
  * @property {String} className Name of doodle subclass
+
  * @param {Drawing} _drawing
+
  * @param {Object} _parameterJSON
+
  */
+
 ED.TrabyFlap = function(_drawing, _parameterJSON) {
+
 	// Set classname
+
 	this.className = "TrabyFlap";
 
+
+
 	// Derived parameters
+
 	this.site = 'Superior';
+
 	this.size = '4x3';
+
 	this.sclerostomy = 'Punch';
+
 	this.height = -580;
+
+
 
 	// Doodle specific parameters
+
 	this.r = 380;
+
 	this.right = new ED.Point(0, 0);
+
 	this.left = new ED.Point(0, 0);
 
+
+
 	// Saved parameters
+
 	this.savedParameterArray = ['apexX', 'apexY', 'arc', 'rotation'];
 
+
+
 	// Call superclass constructor
+
 	ED.Doodle.call(this, _drawing, _parameterJSON);
+
 }
 
+
+
 /**
+
  * Sets superclass and constructor
+
  */
+
 ED.TrabyFlap.prototype = new ED.Doodle;
+
 ED.TrabyFlap.prototype.constructor = ED.TrabyFlap;
+
 ED.TrabyFlap.superclass = ED.Doodle.prototype;
 
-/**
- * Sets handle attributes
- */
-ED.TrabyFlap.prototype.setHandles = function() {
-	this.handleArray[0] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
-	this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
-	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
-}
+
 
 /**
- * Sets default properties
+
+ * Sets handle attributes
+
  */
+
+ED.TrabyFlap.prototype.setHandles = function() {
+
+	this.handleArray[0] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+	this.handleArray[3] = new ED.Doodle.Handle(null, true, ED.Mode.Arc, false);
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+}
+
+
+
+/**
+
+ * Sets default properties
+
+ */
+
 ED.TrabyFlap.prototype.setPropertyDefaults = function() {
+
 	this.isScaleable = false;
+
 	this.isMoveable = false;
+
 	this.isArcSymmetrical = true;
+
 	this.snapToArc = true;
-	this.isDeletable = false;
+
+
 
 	// Update component of validation array for simple parameters
+
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-50, +50);
+
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-440, -440);
+
 	this.parameterValidationArray['rotation']['delta'] = 0.1;
 
+
+
 	// Add complete validation arrays for derived parameters
+
 	this.parameterValidationArray['site'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['Superior', 'Superonasal', 'Superotemporal'],
+
 		animate: false
+
 	};
+
 	this.parameterValidationArray['size'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['4x3', '5x2'],
+
 		animate: false
+
 	};
+
 	this.parameterValidationArray['sclerostomy'] = {
+
 		kind: 'derived',
+
 		type: 'string',
+
 		list: ['Punch', 'Block', 'Ex-Press shunt'],
+
 		animate: false
+
 	};
+
+
 
 	// Array of arcs to snap to
+
 	this.arcArray = [0.9, 1.13];
+
 }
 
+
+
 /**
+
  * Sets default parameters
+
  */
+
 ED.TrabyFlap.prototype.setParameterDefaults = function() {
+
 	this.apexY = -440;
+
 	this.height = -580;
+
 	this.setParameterFromString('size', 'Superior');
+
 	this.setParameterFromString('size', '4x3');
+
 	this.setParameterFromString('sclerostomy', 'Punch');
+
 }
 
+
+
 /**
+
  * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
  * The returned parameters are animated if their 'animate' property is set to true
+
  *
+
  * @param {String} _parameter Name of parameter that has changed
+
  * @value {Undefined} _value Value of parameter to calculate
+
  * @returns {Array} Associative array of values of dependent parameters
+
  */
+
 ED.TrabyFlap.prototype.dependentParameterValues = function(_parameter, _value) {
+
 	var returnArray = new Array();
+
+
 
 	switch (_parameter) {
 
+
+
 		case 'apexX':
+
 			if (_value < -15) returnArray['sclerostomy'] = 'Punch';
+
 			else if (_value > + 15) returnArray['sclerostomy'] = 'Ex-Press shunt';
+
 			else returnArray['sclerostomy'] = 'Block';
+
 			break;
+
+
 
 		case 'arc':
+
 			if (_value < 1.0) {
+
 				returnArray['size'] = '4x3';
+
 				returnArray['height'] = -580;
+
 			} else {
+
 				returnArray['size'] = '5x2';
+
 				returnArray['height'] = -510;
+
 			}
+
 			break;
+
+
 
 		case 'rotation':
+
 			if (_value > Math.PI / 16 && _value < Math.PI) returnArray['site'] = this.drawing.eye == ED.eye.Right ? 'Superonasal' : 'Superotemporal';
+
 			else if (_value >= Math.PI && _value < 31 * Math.PI / 16) returnArray['site'] = this.drawing.eye == ED.eye.Right ? 'Superotemporal' : 'Superonasal';
+
 			else returnArray['site'] = 'Superior';
+
 			break;
+
+
 
 		case 'site':
+
 			switch (_value) {
+
 				case 'Superior':
+
 					returnArray['rotation'] = 0;
+
 					break;
+
 				case 'Superonasal':
+
 					returnArray['rotation'] = this.drawing.eye == ED.eye.Right ? Math.PI / 4 : (7 * Math.PI / 4);
+
 					break;
+
 				case 'Superotemporal':
+
 					returnArray['rotation'] = this.drawing.eye == ED.eye.Right ? (7 * Math.PI / 4) : Math.PI / 4;
+
 					break;
+
 			}
+
 			break;
+
+
 
 		case 'size':
+
 			switch (_value) {
+
 				case '4x3':
+
 					returnArray['arc'] = 0.9;
+
 					returnArray['height'] = -580;
+
 					this.right.setCoordinates(this.r * Math.sin(this.arc / 2), -this.r * Math.cos(this.arc / 2));
+
 					break;
+
 				case '5x2':
+
 					returnArray['arc'] = 1.13;
+
 					returnArray['height'] = -510;
+
 					this.right.setCoordinates(this.r * Math.sin(this.arc / 2), -this.r * Math.cos(this.arc / 2));
+
 					break;
+
 			}
+
 			break;
+
+
 
 		case 'sclerostomy':
+
 			switch (_value) {
+
 				case 'Punch':
+
 					returnArray['apexX'] = -50;
+
 					break;
+
 				case 'Block':
+
 					returnArray['apexX'] = +0;
+
 					break;
+
 				case 'Ex-Press shunt':
+
 					returnArray['apexX'] = +50;
+
 					break;
+
 			}
+
 			break;
+
 	}
+
+
 
 	return returnArray;
+
 }
 
+
+
 /**
+
  * Draws doodle or performs a hit test if a Point parameter is passed
+
  *
+
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
  */
+
 ED.TrabyFlap.prototype.draw = function(_point) {
+
 	// Get context
+
 	var ctx = this.drawing.context;
 
+
+
 	// Call draw method in superclass
+
 	ED.TrabyFlap.superclass.draw.call(this, _point);
 
+
+
 	// Calculate parameters for arcs
+
 	var theta = this.arc / 2;
+
 	var arcStart = -Math.PI / 2 + theta;
+
 	var arcEnd = -Math.PI / 2 - theta;
 
+
+
 	// Offset angle for control points
+
 	var phi = this.arc / 6;
 
+
+
 	// Apex point
+
 	var apex = new ED.Point(0, this.height);
 
+
+
 	this.right.x = this.r * Math.sin(theta);
+
 	this.right.y = -this.r * Math.cos(theta);
+
 	this.left.x = -this.r * Math.sin(theta);
+
 	this.left.y = -this.r * Math.cos(theta);
 
+
+
 	// Boundary path
+
 	ctx.beginPath();
 
+
+
 	// Arc across to mirror image point on the other side
+
 	ctx.arc(0, 0, this.r, arcStart, arcEnd, true);
 
+
+
 	// Rectangular flap
+
 	ctx.lineTo(this.left.x, this.height);
+
 	ctx.lineTo(this.right.x, this.height);
+
 	ctx.closePath();
 
+
+
 	// Colour of fill
+
 	ctx.fillStyle = "rgba(220,220,150,0.5)";
 
+
+
 	// Set line attributes
+
 	ctx.lineWidth = 4;
 
+
+
 	// Colour of outer line is dark gray
+
 	ctx.strokeStyle = "rgba(120,120,120,0.75)";;
 
+
+
 	// Draw boundary path (also hit testing)
+
 	this.drawBoundary(_point);
 
+
+
 	// Non boundary paths
+
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
 		ctx.beginPath();
 
+
+
 		switch (this.sclerostomy) {
+
 			case 'Punch':
+
 				ctx.arc(0, this.apexY, 50, 0, 2 * Math.PI, true);
+
 				break;
+
 			case 'Block':
+
 				// Draw block at half width and height
+
 				var angle = theta / 2;
+
 				arcStart = -Math.PI / 2 + angle;
+
 				arcEnd = -Math.PI / 2 - angle;
+
 				var top = new ED.Point(0, -this.r + (this.height + this.r) / 2);
 
+
+
 				ctx.arc(0, 0, this.r, arcStart, arcEnd, true);
+
 				ctx.lineTo(-this.r * Math.sin(angle), top.y);
+
 				ctx.lineTo(this.r * Math.sin(angle), top.y);
+
 				ctx.closePath();
+
 				break;
+
 			case 'Ex-Press shunt':
+
 				ctx.arc(0, this.apexY, 40, 0, 2 * Math.PI, true);
+
 				ctx.moveTo(- 20, -420);
+
 				ctx.lineTo(-20, -300);
+
 				ctx.lineTo(20, -300);
+
 				ctx.lineTo(20, -420);
+
 				break;
+
 		}
 
+
+
 		// Colour of fill
+
 		ctx.fillStyle = "gray";
+
 		ctx.fill();
+
 	}
 
+
+
 	// Coordinates of handles (in canvas plane)
+
 	this.handleArray[0].location = this.transform.transformPoint(this.left);
+
 	this.handleArray[3].location = this.transform.transformPoint(this.right);
+
 	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
 
+
+
 	// Draw handles if selected
+
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 
+
+
 	// Return value indicating successful hittest
+
 	return this.isClicked;
+
 }
 
+
+
 /**
+
  * Returns a string containing a text description of the doodle
+
  *
+
  * @returns {String} Description of doodle
+
  */
+
 ED.TrabyFlap.prototype.description = function() {
+
 	return "Trabeculectomy flap at " + this.clockHour() + " o'clock with " + ED.firstLetterToLowerCase(this.sclerostomy) + " sclerostomy";
+
 }
+
 
 /**
  * OpenEyes

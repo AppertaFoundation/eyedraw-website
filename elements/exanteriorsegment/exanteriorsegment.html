@@ -88,7 +88,8 @@
 						Hyphaema:{HyphaemaCrossSection:{parameters:['apexX','apexY']}},
 						Hypopyon:{HypopyonCrossSection:{parameters:['apexY']}},
 						CornealGraft:{CornealGraftCrossSection:{parameters:['originY','apexY','d']}},
-						
+						CornealGraftRejection:{CornealGraftRejectionCrossSection:{parameters:['apexY','apexX','i']}},
+						EndothelialKeratoplasty:{EndothelialKeratoplastyCrossSection:{parameters:['originY','apexY','typeSimple']}}						
                     };
 
                     syncArray['RPS'] = {
@@ -111,7 +112,9 @@
                         NuclearCataractCrossSection:{NuclearCataract:{parameters:['apexY']}},
                         CorticalCataractCrossSection:{CorticalCataract:{parameters:['apexY']}},
                         CornealOpacityCrossSection:{CornealOpacity:{parameters:[]}},
-                        CornealGraftCrossSection:{CornealGraft:{parameters:[]}}
+                        CornealGraftCrossSection:{CornealGraft:{parameters:[]}},
+                        CornealGraftRejectionCrossSection:{CornealGraftRejection:{parameters:[]}},
+                        EndothelialKeratoplastyCrossSection:{EndothelialKeratoplasty:{parameters:[]}}
                     };
                     
                     syncArray['LPS'] = {
@@ -143,7 +146,9 @@
                         CornealOedema: 'CornealOedemaCrossSection',
                         Hyphaema: 'HyphaemaCrossSection',
                         Hypopyon: 'HypopyonCrossSection',
-                        CornealGraft: 'CornealGraftCrossSection'
+                        CornealGraft: 'CornealGraftCrossSection',
+                        EndothelialKeratoplasty:'EndothelialKeratoplastyCrossSection',
+                        CornealGraftRejection:'CornealGraftRejectionCrossSection'
                     };
 //                 }
                                 
@@ -464,11 +469,14 @@
 		                
 		                <!-- Doodle selection toolbar -->
 		                 <button class="imgbutton" id="CornealGraftRPS" title="Corneal Graft" onclick="drawingEdit1.addDoodle('CornealGraft'); return false;" ><img src="../../graphics/CornealGraft.png" /></button>
+<!-- 		                 <button class="imgbutton" id="EndothelialKeratoplastyRPS" title="Endothelial Keratoplasty" onclick="drawingEdit1.addDoodle('EndothelialKeratoplasty'); return false;" ><img src="../../graphics/CornealGraft.png" /></button> -->
 		                 <button class="imgbutton" id="CornealSutureRPS" title="Corneal Suture" onclick="drawingEdit1.addDoodle('CornealSuture'); return false;" ><img src="../../graphics/CornealSuture.gif" /></button>
 		                 <button class="imgbutton" id="ContinuousCornealSutureRPS" title="Continuous Corneal Suture" onclick="drawingEdit1.addDoodle('ContinuousCornealSuture'); return false;" ><img src="../../graphics/ContinuousCornealSuture.gif" /></button>
+		                 <button class="imgbutton" id="CornealOedemaRPS" title="Corneal Oedema" onclick="drawingEdit1.addDoodle('CornealOedema'); return false;" ><img src="../../graphics/CornealOedema.gif" /></button>
+		                 <button class="imgbutton" id="CornealGraftRejectionRPS" title="Corneal Graft Rejection" onclick="drawingEdit1.addDoodle('CornealGraftRejection'); return false;" ><img src="../../graphics/CornealGraftRejection.png" /></button>
 
 						 <BR>
-		                 <button class="imgbutton" id="PeripheralVascularisationRPS" title="Peripheral vascularisation" onclick="drawingEdit1.addDoodle('PeripheralVascularisation'); return false;" >Peripheral vascularisation<!-- <img src="../../graphics/ContinuousCornealSuture.gif" /> --></button>
+<!-- 		                 <button class="imgbutton" id="PeripheralVascularisationRPS" title="Peripheral vascularisation" onclick="drawingEdit1.addDoodle('PeripheralVascularisation'); return false;" >Peripheral vascularisation --><!-- <img src="../../graphics/ContinuousCornealSuture.gif" /> --><!-- </button> -->
 
 		                <br /> 		                
 		            </div>
