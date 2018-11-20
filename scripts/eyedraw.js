@@ -35670,7 +35670,7 @@ ED.EndothelialKeratoplasty.prototype.setPropertyDefaults = function() {
 	this.parameterValidationArray['type'] = {
 		kind: 'derived',
 		type: 'string',
-		list: ['DMEK', 'DSEAK'],
+		list: ['DMEK', 'DSAEK'],
 		animate: false
 	};
 	this.parameterValidationArray['typeSimple'] = {
@@ -35961,9 +35961,11 @@ ED.EndothelialKeratoplastyCrossSection.superclass = ED.Doodle.prototype;
  */
 ED.EndothelialKeratoplastyCrossSection.prototype.setHandles = function() {
 	// create 3 handles
+/*
 	for (var i = 0; i < 3; i++) {
 		this.handleArray[i] = new ED.Doodle.Handle(null, true, ED.Mode.Handles, false);
 	}
+*/
 }
 
 /**
@@ -36003,6 +36005,7 @@ ED.EndothelialKeratoplastyCrossSection.prototype.setPropertyDefaults = function(
 	
 	// Create ranges to constrain handles
 		// within dimension of graft, and within anterior chamber
+/*
 	this.handleCoordinateRangeArray = new Array();
 	this.handleCoordinateRangeArray[0] = {
 		x: new ED.Range(-500,+500), 
@@ -36016,6 +36019,7 @@ ED.EndothelialKeratoplastyCrossSection.prototype.setPropertyDefaults = function(
 		x: new ED.Range(-500,+500), 
 		y: new ED.Range(4.5 * this.pixelsPerMillimetre, 4.5 * this.pixelsPerMillimetre)
 	}
+*/
 }
 
 /**
@@ -36061,20 +36065,24 @@ ED.EndothelialKeratoplastyCrossSection.prototype.dependentParameterValues = func
 				this.squiggleArray[0].pointsArray[2].y = new ED.Point(inf,-_value);
 				
 				// update handle range
+/*
 				this.handleCoordinateRangeArray[0] = {
 					x: new ED.Range(sup,+200), 
 					y: new ED.Range(_value, _value)
 				}
+*/
 /*
 				this.handleCoordinateRangeArray[1] = {
 					x: new ED.Range(220+crrctr,220+crrctr), 
 					y: new ED.Range(_value, -_value)
 				}
 */
+/*
 				this.handleCoordinateRangeArray[2] = {
 					x: new ED.Range(inf,+200), 
 					y: new ED.Range(-_value, -_value)
 				}
+*/
 			}
 			this.handle1Y = _value;
 			this.handle3Y = -_value;
@@ -36203,10 +36211,10 @@ ED.EndothelialKeratoplastyCrossSection.prototype.draw = function(_point) {
 			superiorBezier.CP2 = new ED.Point(-320 + 100, -160 - this.originY);
 			superiorBezier.EP = new ED.Point(-320 + 100, 0 - this.originY);
 			
-			superiorBezierBack.SP = new ED.Point(this.handle1X, this.handle1Y);
+			superiorBezierBack.SP = new ED.Point(-120 + 120 + crrctr1, -380 - this.originY);
 			superiorBezierBack.CP1 = new ED.Point(-240 + 160 + crrctr2, -260 - this.originY);
 			superiorBezierBack.CP2 = new ED.Point(-320 + 100 + crrctr3, -160 - this.originY);
-			superiorBezierBack.EP = new ED.Point(-220,0);
+			superiorBezierBack.EP = new ED.Point(-320 + 100 + crrctr4,0 - this.originY);
 		}
 		
 			
@@ -36344,10 +36352,10 @@ ED.EndothelialKeratoplastyCrossSection.prototype.draw = function(_point) {
 			inferiorBezier.CP2 = new ED.Point(-240 + 160, 260 - this.originY);
 			inferiorBezier.EP = new ED.Point(-120 + 120, 380 - this.originY);
 			
-			inferiorBezierBack.SP = new ED.Point(-220, 0);
+			inferiorBezierBack.SP = new ED.Point(-320 + 100 + crrctr4, -0 - this.originY);
 			inferiorBezierBack.CP1 = new ED.Point(-320 + 100 + crrctr3, 160 - this.originY);
 			inferiorBezierBack.CP2 = new ED.Point(-240 + 160 + crrctr2, 260 - this.originY);
-			inferiorBezierBack.EP = new ED.Point(this.handle3X, this.handle3Y);
+			inferiorBezierBack.EP = new ED.Point(-120 + 120 + crrctr1, 380 - this.originY);
 		}			
 		
 		
@@ -36495,9 +36503,11 @@ ED.EndothelialKeratoplastyCrossSection.prototype.draw = function(_point) {
 	}
 	
 	// define handle positions
+/*
 	this.handleArray[0].location=this.transform.transformPoint(this.squiggleArray[0].pointsArray[0]);
 	this.handleArray[1].location=this.transform.transformPoint(this.squiggleArray[0].pointsArray[1]);
 	this.handleArray[2].location=this.transform.transformPoint(this.squiggleArray[0].pointsArray[2]);
+*/
 	
 	// Draw handles if selected
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
