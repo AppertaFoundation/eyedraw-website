@@ -28316,8 +28316,10 @@ ED.CornealGraftRejection.prototype.computeDoodleHeight = function() {
 	for (var i=0;i<this.numberOfHandles;i++) {
 		var yPrime = this.squiggleArray[0].pointsArray[i].y * Math.cos(this.rotation) + this.squiggleArray[0].pointsArray[i].x * Math.sin(this.rotation);
 		
-		if (yPrime<minY) minY = yPrime;
-		if (yPrime>maxY) maxY = yPrime;
+		if (i==0 || i==this.numberOfHandles-1) {
+			if (yPrime<minY) minY = yPrime;
+			if (yPrime>maxY) maxY = yPrime;
+		}
 	}
    
 /*
