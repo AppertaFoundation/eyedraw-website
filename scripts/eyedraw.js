@@ -27103,7 +27103,7 @@ ED.CornealGraft.prototype.dependentParameterValues = function(_parameter, _value
 			
 			// update rejection, if present
 			var rejectionDoodle = this.drawing.lastDoodleOfClass("CornealGraftRejection");
-			if (rejectionDoodle) {
+			if (rejectionDoodle && rejectionDoodle.cornealGraft == this) {
 				rejectionDoodle.setSimpleParameter('originX', _value);
 				rejectionDoodle.computeDoodleHeight();
 			}
@@ -27139,7 +27139,10 @@ ED.CornealGraft.prototype.dependentParameterValues = function(_parameter, _value
 			
 			// update rejection, if present
 			var rejectionDoodle = this.drawing.lastDoodleOfClass("CornealGraftRejection");
-			if (rejectionDoodle) rejectionDoodle.setSimpleParameter('originY', _value);
+			if (rejectionDoodle && rejectionDoodle.cornealGraft == this) {
+				rejectionDoodle.setSimpleParameter('originY', _value);
+				rejectionDoodle.computeDoodleHeight();
+			}
 			break;
 			
 		case 'depth':
@@ -27926,7 +27929,7 @@ ED.CornealGraftRejection.prototype.setHandles = function() {
 ED.CornealGraftRejection.prototype.setPropertyDefaults = function() {
 	this.isRotatable = true;
 	this.isMoveable = false;
-	this.isUnique = true;
+// 	this.isUnique = true;
 	
 	// Add complete validation arrays for derived parameters
 	this.parameterValidationArray['oedemaIntensity'] = {
@@ -27999,6 +28002,7 @@ ED.CornealGraftRejection.prototype.setParameterDefaults = function() {
 	
 	// if corneal graft, set properties to match
 	this.cornealGraft = this.drawing.lastDoodleOfClass("CornealGraft");
+	if (!this.cornealGraft) this.cornealGraft = this.drawing.lastDoodleOfClass("EndothelialKeratoplasty");
 	if (this.cornealGraft) {
 		this.boundaryMin = -this.cornealGraft.diameter * this.pixelsPerMillimetre/2;	
 		this.boundaryWidth = this.cornealGraft.diameter * this.pixelsPerMillimetre;
@@ -28484,7 +28488,7 @@ ED.CornealGraftRejectionCrossSection.prototype.setHandles = function() {
  */
 ED.CornealGraftRejectionCrossSection.prototype.setPropertyDefaults = function() {
 	this.isSelectable = false;
-	this.isUnique = true;
+// 	this.isUnique = true;
 		
 	// Update component of validation array for simple parameters
 	this.parameterValidationArray['originX']['range'].setMinAndMax(+50, +50);
@@ -35764,8 +35768,11 @@ ED.EndothelialKeratoplasty.prototype.dependentParameterValues = function(_parame
 			this.setSimpleParameter('originY', newY);
 			
 			// update rejection, if present
-			var rejectionDoodle = this.drawing.lastDoodleOfClass("EndothelialKeratoplastyRejection");
-			if (rejectionDoodle) rejectionDoodle.setSimpleParameter('originX', _value);
+			var rejectionDoodle = this.drawing.lastDoodleOfClass("CornealGraftRejection");
+			if (rejectionDoodle && rejectionDoodle.cornealGraft == this) {
+				rejectionDoodle.setSimpleParameter('originX', _value);
+				rejectionDoodle.computeDoodleHeight();
+			}
 			break;
 		
 		case 'originY':
@@ -35783,8 +35790,11 @@ ED.EndothelialKeratoplasty.prototype.dependentParameterValues = function(_parame
 			this.setSimpleParameter('originX', newX);
 			
 			// update rejection, if present
-			var rejectionDoodle = this.drawing.lastDoodleOfClass("EndothelialKeratoplastyRejection");
-			if (rejectionDoodle) rejectionDoodle.setSimpleParameter('originY', _value);
+			var rejectionDoodle = this.drawing.lastDoodleOfClass("CornealGraftRejection");
+			if (rejectionDoodle && rejectionDoodle.cornealGraft == this) {
+				rejectionDoodle.setSimpleParameter('originY', _value);
+				rejectionDoodle.computeDoodleHeight();
+			}
 			break;
 			
 		case 'depth':
