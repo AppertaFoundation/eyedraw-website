@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+<head>
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+	
+	<title>didiO | PD</title>
+
+	<!-- The eyedraw stylesheet -->
+	<link rel="stylesheet" type="text/css" href="css/oe-eyedraw.css" />
+	<!-- Custom stylesheet - overrides some OE eyedraw stylings -->
+	<link rel="stylesheet" type="text/css" href="css/MC.css" />
+	<link rel="stylesheet" type="text/css" href="css/print.css" />
+
+	<!-- Other dependent scripts -->
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/mustache.js"></script>
+	<script type="text/javascript" src="js/eventemitter2.js"></script>
+
+	<!-- Eyedraw -->
+	<script type="text/javascript" src="js/eyedraw.js"></script>
+	<script type="text/javascript" src="js/oe-eyedraw.js"></script>
+
+	<!-- Lists of scripts -->
+	<script src="js/pd.js"></script>
+	<script src="js/hx.js"></script>
+	
+	
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-116577288-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+	
+	  gtag('config', 'UA-116577288-1');
+	</script>
+	
+
+</head>
+<body onload="eyeDrawController()">
+
+<div style="width: 100%; position: relative;">
+	<div class="ed-widget" id="eyedrawwidget_example" style="float: left;">
+		
+		<div id="editorED" class="ed-editor">
+			
+			<div class="ed-drawing-controls">
+				<ul class="ed-toolbar-panel ed-drawing-toolbar" style="float: right;">
+					<li>
+						<div class="PD-nav">
+							<img id="canvasMoveUp" class="PD-canvasNav-button arrow" src="img/moveIcon.png" >
+							<img id="canvasZoomIn" class="PD-canvasNav-button" src="img/zoomInIcons.png">
+							<img id="canvasCentre" class="PD-canvasNav-button" src="img/centreIcon.png">
+							<img id="canvasZoomOut" class="PD-canvasNav-button" src="img/zoomOutIcon.png">
+							<img id="canvasMoveDown" class="PD-canvasNav-button arrow" src="img/moveIcon.png">
+						</div>
+						<div class="PD-nav sideways">
+							<img id="canvasMoveLeft" src="img/moveIcon.png">
+							<img id="canvasMoveRight" src="img/moveIcon.png">
+						</div>
+					</li>
+						
+<!-- 					<li> -->
+						<img id="addText" height="40px" width="40px" onclick="defineLabel()" title="Add legends" src="img/legendIcon.png">
+<!-- 					</li> -->
+
+<!--
+					<li>
+						<a class="ed-button inactive pd-toggle-activity-doodleSelected" href="#" data-function="deleteSelectedNode">
+							<span class="icon-ed-delete"></span>
+							<span class="label" style="color: black;">Delete member</span>
+						</a>
+					</li>
+-->
+				</ul>
+			</div>
+			
+			<div class="ed-doodle-popup closed" id="doodlePop">
+			</div>
+			
+			<div id='pd-blanket' style="display:none">
+				<div class="blanket">
+				</div>
+				
+				<div class="popupBox" id="defineLabel" style="display: none;">
+					<div class="popup-header">
+						&nbsp&nbspSelect legend content:
+					</div>
+					<div id="selector" style="text-align:center;line-height: 12px;"><br>
+						<select multiple id="labelOptions">
+<!-- 							<option value="1" selected>Nothing</option> -->
+							<option value="aa_pdId">Pedigree ID</option>
+							<option value="personName">Names</option>
+							<option value="age">Age</option>
+							<option value="disorders">Disorders</option>
+							<option value="comments">Comments</option>
+						</select>
+<!--
+						<BR>
+						<a>Clear all</a>
+-->
+					</div>
+					<div style="float: right; padding-right: 8px; padding-top: 4px;">
+						<button onclick="setLabel(); hideBlanket();">Ok</button>
+					</div>
+				</div>
+				
+				<div class="popupBox" id="defineRelations">
+					<div class="popup-header">
+						&nbsp;&nbsp;Relationship type:
+					</div>
+					<div id="selector" style="text-align:center;line-height: 12px;"><br>
+						<select id="rType" style="font-size: 28px; outline:none;">
+			            	<option value="auto" disabled selected> - - - - - - - select - - - - - - - </option>
+			                <option value="mate">Mating</option>
+			                <option value="mateConsang">Mating, consanguineous</option>
+			                <option value="mateSep">Mating, separated</option>
+			                <option value="sib">Siblings</option>
+			                <option value="sibDZ">Siblings, multiple birth (DZ)</option>
+			                <option value="sibMZ">Siblings, multiple birth (MZ)</option>
+			                <option value="parentChild">Parent-child</option>
+						</select>
+					</div>
+					<div style="float: right; padding-right: 8px; padding-top: 4px;">
+						<button onclick="setRship()">Ok</button>
+						<button onclick="hideBlanket()">Cancel</button>
+					</div>
+				</div>
+				
+			</div>
+
+			<div>
+				<canvas
+				id="canvasRE"
+				class="ed-canvas-edit"
+				width="800"
+				height="500"
+				tabindex="1"
+				>
+				</canvas>
+			</div>
+																
+			<input type="hidden" id="ed_example_data" value='' />
+			
+			<!-- Timebar -->
+<!--
+			<div id="timebarContainer" class="PD-timebar-container">
+
+				<div id="timebar" class="PD-timebar">
+					<div class="PD-timebar-axis"></div>
+					
+					<div id="bookendL" class="PD-timebar-bookend">
+						<div class="PD-timebar-bookend-pointer" id="pointerL"></div>
+						<div class="PD-timebar-bookend-tick">|</div>
+						<div class="PD-timebar-bookend-date">XXXX</div>
+					</div>
+					
+					<div id="bookendR" class="PD-timebar-bookend">
+						<div class="PD-timebar-bookend-pointer" id="pointerR"></div>
+						<div class="PD-timebar-bookend-tick">|</div>
+						<div class="PD-timebar-bookend-date">XXXX</div>
+					</div>
+					
+					<div id="timebarSlider" class="PD-timebar-slider"></div>
+
+				</div>
+			</div>
+-->
+
+		</div>
+		
+	</div>
+	
+	<div class="PD-sidebar" id="sidebar">
+		<BR>
+		
+		<div class="PD-sidebar-container" id="pdKey">
+			<div class="PD-sidebar-header">
+				<span class="PD-sidebar-title">Pedigree: </span> <!-- (<span id="nAffactedMembers"></span> affected)</span> -->
+			</div>
+			<div id="conditionSidebarContents" class="PD-sidebar-content">
+<!-- 				<div class="PD-condition-row show" id="pdShowAllKey" onclick="toggleShowAllMembers(this)" style="color: gray"><span class='PD-condition-key'></span><i>Show all members (N = </i><span id='nPedigreeMembers'></span><i>)</i></div> -->
+				<div id="PD-condition-list">
+				</div>
+				<div id="newCondition" class="PD-add-new-condition"><span class="PD-add-new-condition-text" onclick="defineNewCondition()">Add new disorder</span></div>
+			</div>
+		</div>
+
+		<BR>
+		<BR>
+		
+		<div class="PD-sidebar-container" id="peddigreeMembersBox">
+			<div class="PD-sidebar-header membersHead">
+<!-- 				<span class="PD-sidebar-title">Pedigree member(s):</span><i>N</i> = <span id='nActiveMembers'></span> -->
+				<span class="PD-sidebar-title">Pedigree member(s):</span>
+
+			</div>
+			
+			<div id="pedigreeMemberList">			
+			</div>
+				
+		</div>
+		
+		<BR>
+		<BR>
+		
+		<div class="PD-sidebar-container" id="pd-completed-btns">
+<!-- 			<div class="PD-sidebar-btn" id="saveBtn" style="border-right: 2px solid black;">Save as Image</div> -->
+			<div class="PD-sidebar-btn" style="border-right: 2px solid black;" ><a id="downloadLnk">Create image</a></div>
+			<div class="PD-sidebar-btn" onclick="printPedigree()">Print</div>
+		</div>
+		
+		
+<!-- 		<div id='data_export' onclick="logData()">Log_pedigree_data</div> -->
+				
+	</div>
+</div>
+
+
+	<script>
+	
+	(function() {
+         
+        ED.init({
+			drawingName: "drawingEdit",
+			canvasId: "canvasRE",
+			eye: 0,
+			scale: 1,
+			idSuffix: "Hx",
+			isEditable: true,
+			focus: false,
+			graphicsPath: "img",
+			inputId: "ed_example_data",
+			onReadyCommandArray: [
+			],
+			onDoodlesLoadedCommandArray: [],
+			bindingArray: {},
+			syncArray: {},
+			listenerArray: [],
+			offsetX: 0,
+			offsetY: 0,
+			toImage: false
+		}); 
+    
+	}.call(this));
+	</script>
+
+</body>
+</html>
