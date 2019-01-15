@@ -622,7 +622,7 @@ ED.Drawing = function(_canvas, _eye, _idSuffix, _isEditable, _options) {
 
 	this.imageArray['TranslucentPattern'] = new Image();
 
-	this.imageArray['TraumaPattern'] = new Image();
+// 	this.imageArray['TraumaPattern'] = new Image();
 
 
 
@@ -44873,7 +44873,7 @@ ED.IrisTrauma.prototype.draw = function(_point) {
 
 ED.IrisTrauma.prototype.description = function() {
 
-	var returnString = "Iris trauma at " + this.rotation * 180 / Math.PI + " Deg";
+	var returnString = "Iris trauma at " + parseInt(this.rotation * 180 / Math.PI) + " Deg";
 
 
 
