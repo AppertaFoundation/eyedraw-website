@@ -33125,6 +33125,20 @@ ED.CornealThinning.prototype.description = function() {
 }
 
 /**
+ * Returns the SnoMed code of the doodle
+ *
+ * @returns {Int} SnoMed code of entity representated by doodle
+ */
+ED.CornealThinning.prototype.snomedCode = function() {
+	var code = 246938006; // Corneal Dellen (disorder) TODO: check appropriate for keratitis thinning
+
+	if (this.descemetacoele) code = 83110007; // Descemetacoele
+
+	else if (this.perforation) code = 74895004; // Corneal perforation
+	
+	return code;
+}
+/**
  * OpenEyes
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
@@ -39140,9 +39154,14 @@ ED.Exophthalmometry.prototype.defineGridLinePath = function(_ctx,_intercept,_dir
 ED.Eyeball = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "Eyeball";
+	
+	// derived parameters
+	this.hirschbergTest = false;
 
 	// Saved parameters
-// 	this.savedParameterArray = [];
+	this.savedParameterArray = ['hirschbergTest','apexX','apexY','originX','originY'];
+	
+	this.controlParameterArray = {'hirschbergTest':'Hirschberg test'}
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -39159,25 +39178,62 @@ ED.Eyeball.superclass = ED.Doodle.prototype;
  * Sets handle attributes
  */
 ED.Eyeball.prototype.setHandles = function() {
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
 }
 
 /**
  * Sets default dragging attributes
  */
 ED.Eyeball.prototype.setPropertyDefaults = function() {
-	this.isSelectable = false;
 	this.isFilled = false;
+	this.isMoveable = false;
+	this.isRotatable = false;
+	this.isDeletable = false;
+	this.isShowHighlight = false;
+	
+	// Update validation array for simple parameters
+		// N.B. corneal diameter = 12mm == 240 pixels
+
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(-240, +240);
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-40, +40);
+	
+	// Add complete validation arrays for derived parameters
+	this.parameterValidationArray.hirschbergTest = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
+	};
 }
 
 /**
  * Sets default parameters
  */
 ED.Eyeball.prototype.setParameterDefaults = function() {
-  this.isDeletable = false;
-  this.isMoveable = false;
-  this.isScalable = false;
-  this.isRotatable= false;
-  this.isShowHighlight = false;
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @param {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.Eyeball.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = {};
+
+	switch (_parameter) {
+		case 'apexY':
+			returnArray.originY = _value;
+   			break;
+   		
+   		case 'apexX':
+			returnArray.originX = _value;
+   			break;
+
+	}
+
+	return returnArray;
 }
 
 /**
@@ -39203,7 +39259,7 @@ ED.Eyeball.prototype.draw = function(_point) {
 	ctx.beginPath();
 
 	// Main eyeball
-	ctx.arc(0, 0, r, 0, 2*Math.PI, true);
+	ctx.arc(-this.originX, -this.originY, r, 0, 2*Math.PI, true);
 
 	// Close path
 	ctx.closePath();
@@ -39238,11 +39294,83 @@ ED.Eyeball.prototype.draw = function(_point) {
 		ctx.fill();
 		ctx.closePath();
 		
+		// light reflection for hirschberg test
+		if (this.hirschbergTest) {
+			var rH = 30;
+			ctx.beginPath();
+			ctx.moveTo(rH-this.originX, -this.originY);
+			ctx.arc(-this.originX,-this.originY,rH, 0, 2*Math.PI);
+			ctx.fillStyle = "white";
+			ctx.strokeStyle = "rgba(200,200,200,0.8)";
+			ctx.stroke();
+			ctx.fill();
+			ctx.closePath();
+		}
+		
 	}
 
+	// Coordinates of handles (in canvas plane)
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(0, 0));
+
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing && this.hirschbergTest) {
+		this.drawHandles(_point);
+	}
+	
 	// Return value indicating successful hittest
 	return this.isClicked;
 }
+
+// convert pixels to prims diopters
+ED.Eyeball.prototype.pxToPD = function(_px) {
+	// 1mm = 20px = 15pd
+	// 1px = 15/20pd
+    var pd = Math.round(_px * 15 / 20);
+    return pd;
+};
+// convert pixels to degrees
+ED.Eyeball.prototype.pxToDeg = function(_px) {
+	// 1mm = 20px = 7deg
+	// 1px = 7/20deg
+	var deg = Math.round(_px * 7 / 20);
+    return deg;
+};
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.Eyeball.prototype.description = function() {
+	// N.B. corneal diameter = 12mm == 240 pixels
+	var dir = +1;
+	if (this.drawing.eye != ED.eye.Right) dir = -1;
+	
+	var returnStr = "";
+	
+	if (this.hirschbergTest) {
+		returnStr += "Hirschberg test - ";
+		if (this.originX * dir < 0) returnStr += "horizontal deviation: exotropia " + this.pxToDeg(Math.abs(this.originX)) + "&deg; / " + this.pxToPD(Math.abs(this.originX)) + "&Delta;, "; // exotropia: outward deviation
+		else if (this.originX * dir > 0) returnStr += "horizontal deviation: esotropia " + this.pxToDeg(Math.abs(this.originX)) + "&deg; / " + this.pxToPD(Math.abs(this.originX)) + "&Delta;, "; // esotropia: inward deviation
+		
+		if (this.originY < 0) returnStr += "vertical deviation: hypertropia " + this.pxToDeg(Math.abs(this.originY)) + "&deg; / " + this.pxToPD(Math.abs(this.originY)) + "&Delta;, "; // Hypertropia: upward
+		else if (this.originY > 0) returnStr += "vertical deviation: hypotropia " + this.pxToDeg(Math.abs(this.originY)) + "&deg; / " + this.pxToPD(Math.abs(this.originY)) + "&Delta;, ";// Hypotropia: downward
+	}
+	
+	if (returnStr.length==18) returnStr += "no abnormality";
+	
+	// remove last comma from string
+	returnStr.replace(/, +$/, '');
+	return returnStr;
+}
+
+ED.Eyeball.prototype.snomedCodes = function() {
+    snomedCodes = [];
+    if (this.pxe) {
+        snomedCodes.push([44219007, 3]);
+    }
+    return snomedCodes;
+};
 
 /**
  * OpenEyes
