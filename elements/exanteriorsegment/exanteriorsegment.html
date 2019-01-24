@@ -261,6 +261,25 @@
                                     }
                                 }
                             }
+                            // ensure corneal thinning doodle at top of stack
+                            if (newDoodle.drawing.hasDoodleOfClass('CornealThinningCrossSection')) {
+	                            // get all thinning doodles
+	                            var thins = newDoodle.drawing.allDoodlesOfClass('CornealThinningCrossSection');
+	                            
+	                            // add to front of canvas
+	                            for (var ii=0; ii<thins.length; ii++) {
+		                            newDoodle.drawing.selectedDoodle=thins[ii];
+									newDoodle.drawing.moveToFront();
+	                            }
+	                            
+	                            // add ant seg to front of canvas
+	                            var antSeg = newDoodle.drawing.lastDoodleOfClass('AntSegCrossSection');
+	                            newDoodle.drawing.selectedDoodle=antSeg;
+	                            newDoodle.drawing.moveToFront();
+	                            
+	                            // reselect new doodle
+	                            newDoodle.drawing.selectedDoodle = newDoodle;
+                            }
                             addToReport();
                             break;
 
@@ -568,6 +587,7 @@
 		}
 		
 	}
+	
 	
 </script>
 <!--
