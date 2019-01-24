@@ -32685,7 +32685,7 @@ ED.CornealThinning = function(_drawing, _parameterJSON) {
 	this.perforation = false;
 	
 	// Saved parameters
-	this.savedParameterArray = ['originX', 'originY', 'rotation', 'height', 'width','h','w','minY','maxY','type','descemetacoele','perforation'];
+	this.savedParameterArray = ['originX', 'originY', 'rotation', 'height', 'width','h','w','minY','maxY','type','depth','descemetacoele','perforation'];
 	
 	// Parameters in doodle control bar
 	this.controlParameterArray = {'type':'Type'};
@@ -33437,6 +33437,7 @@ ED.CornealThinningCrossSection.prototype.dependentParameterValues = function(_pa
 				// TODO - this is a workaround to hide white line over entire cornea endothelium if perforation
 				//      - should change so white line only over appropriate area of cornea
 				//      - this approach assumes nothing should ever be behind cornea in stack
+/*
 				if (this.order !== 1) {
 					var cornea = this.drawing.lastDoodleOfClass('CorneaCrossSection');
 					if (cornea) {
@@ -33447,6 +33448,7 @@ ED.CornealThinningCrossSection.prototype.dependentParameterValues = function(_pa
 						this.drawing.selectDoodle(this);
 					}
 				}
+*/
 				
 			}
 			var valueStr = (_value==true) ? 1 : 0;
@@ -33503,29 +33505,6 @@ ED.CornealThinningCrossSection.prototype.getAnglePerpendicularToCornea = functio
 	return perpAngle;
 }
 
-/**
- * Returns the angle of a perpendicular line to a point on the cornea at a certain time point, in radians
- *
- * @param {Float} _time 0-1 value for point in time along bezier curve
- */
-ED.CornealThinningCrossSection.prototype.isConcaveUpward = function(_p1,_p2,_p3,_r) {
-	
-	// rotate point about origin so apexX = 0
-	var rotation = _p2.direction();
-	var p2 = new ED.Point(Math.cos(-rotation) * _p2.x - Math.sin(-rotation) * _p2.y,-Math.sin(-rotation) * _p2.x + Math.cos(-rotation) * _p2.y);
-
-	// get point of neighbour 2 degrees away from p2
-	var p1 = new ED.Point(_r*Math.cos(-rotation+1*Math.PI/180),_r*Math.sin(-rotation+1*Math.PI/180))
-	
-	var dydx1 = (p2.y-p1.y)/(p2.x-p1.x);
-		
-	var concaveUp = false;
-	if (dydx1<=0) concaveUp = true;
-	else if (this.originY<0 && dydx1>=0) concaveUp = true;
-// 	else if ((this.apexY-this.originY)<10 && dydx1<=0) concaveUp = true;
-	
-	return concaveUp;
-}
 
 /**
  * Returns the (x,y) coordinates of a point on the cornea at a certain point in time
@@ -33809,16 +33788,18 @@ ED.CornealThinningCrossSection.prototype.draw = function(_point) {
 	var dir1 = p1trans.direction()-0.5*Math.PI; // offset by 90deg as ctx.arc() starts at east point of circle
 	var dir3 = p3trans.direction()-0.5*Math.PI;
 
-	var concaveUp = this.isConcaveUpward(p1trans,p2trans,p3trans,r);
-		
+	var concaveUp = (this.apexX<x) ? false : true;
+			
 	// define boundary path				
 	if (inferiorBezier) {
 		ctx.moveTo(inferiorBezier.SP.x-5, inferiorBezier.SP.y);
 		ctx.bezierCurveTo(inferiorBezier.CP1.x-5, inferiorBezier.CP1.y, inferiorBezier.CP2.x-5, inferiorBezier.CP2.y, inferiorBezier.EP.x-5, inferiorBezier.EP.y);
 	}
 	
+/*
 	if (p2.x>p1.x && p2.x>p3.x) ctx.arc(x,y,r,dir1,dir3,true);
-	else if (!concaveUp || (p2.x<=p1.x && p2.x<=p3.x)) ctx.arc(x,y,r,dir1,dir3,false);
+	else
+*/ if (!concaveUp/*  || (p2.x<=p1.x && p2.x<=p3.x) */) ctx.arc(x,y,r,dir1,dir3,false);
 	else ctx.arc(x,y,r,dir1,dir3,true);
 	
 	if (superiorBezier) {
@@ -33844,11 +33825,13 @@ ED.CornealThinningCrossSection.prototype.draw = function(_point) {
 		// draw corneal barrier
 		ctx.beginPath();
 		
+/*
 		if (p2.x>=p1.x && p2.x>=p3.x) {
 // 			ctx.moveTo(p3.x,p3.y);
 			ctx.arc(x,y,r,dir1,dir3,true);
 		}
-		else if (!concaveUp || (p2.x<=p1.x && p2.x<=p3.x)) {
+		else
+*/ if (!concaveUp/*  || (p2.x<=p1.x && p2.x<=p3.x) */) {
 			// concave arc
 			ctx.moveTo(p1.x,p1.y);
 			ctx.arc(x,y,r,dir1,dir3,false);
