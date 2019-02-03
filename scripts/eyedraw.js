@@ -39357,6 +39357,387 @@ ED.Eyeball.prototype.snomedCodes = function() {
 };
 
 /**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * Eyelash template with disc and arcades
+
+ *
+
+ * @class Eyelash
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.Eyelash = function(_drawing, _parameterJSON) {
+
+	// Set classname
+
+	this.className = "Eyelash";
+
+
+
+	// Saved parameters
+
+	this.savedParameterArray = ['originX', 'originY','apexX','apexY'];
+
+
+
+	// Call superclass constructor
+
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+}
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.Eyelash.prototype = new ED.Doodle;
+
+ED.Eyelash.prototype.constructor = ED.Eyelash;
+
+ED.Eyelash.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets handle attributes
+
+ */
+
+ED.Eyelash.prototype.setHandles = function() {
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+}
+
+
+
+/**
+
+ * Set default properties
+
+ */
+
+ED.Eyelash.prototype.setPropertyDefaults = function() {
+
+	this.isScaleable = false;
+
+	this.isRotatable = false;
+
+	this.isFilled = false;
+
+
+
+	// Update component of validation array for simple parameterss
+
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(-100, +100);
+
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-100, +100);
+
+}
+
+
+
+/**
+
+ * Sets default parameters (Only called for new doodles)
+
+ * Use the setParameter function for derived parameters, as this will also update dependent variables
+
+ */
+
+ED.Eyelash.prototype.setParameterDefaults = function() {
+
+	this.apexY = -80;
+
+}
+
+
+
+/**
+
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
+ * The returned parameters are animated if their 'animate' property is set to true
+
+ *
+
+ * @param {String} _parameter Name of parameter that has changed
+
+ * @value {Undefined} _value Value of parameter to calculate
+
+ * @returns {Array} Associative array of values of dependent parameters
+
+ */
+
+ED.Eyelash.prototype.dependentParameterValues = function(_parameter, _value) {
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.Eyelash.prototype.draw = function(_point) {
+
+	// Get context
+
+	var ctx = this.drawing.context;
+
+
+
+	// Call draw method in superclass
+
+	ED.Eyelash.superclass.draw.call(this, _point);
+
+
+
+	// Boundary path
+
+	ctx.beginPath();
+
+
+
+	// Draw bounding box around eyelash
+
+	var w = Math.abs(this.apexX) + 5; // maximum possible width, at worse it's 5px out...
+
+	var h = Math.abs(this.apexY);
+
+	if (w<10) w = 10;
+
+	if (h<10) h = 10;
+
+	
+
+	var sx = (this.apexX>-5) ? -5 : this.apexX;
+
+	var sy = (this.apexY<0) ? this.apexY : 0;
+
+	
+
+	ctx.rect(sx,sy,w,h);
+
+
+
+	// Set attributes
+
+	ctx.lineWidth = 3;
+
+	if (this.isSelected) ctx.strokeStyle = "blue"; // blue if selected
+
+	else ctx.strokeStyle = "rgba(0,0,0,0)"; // invisible boundary if doodle not selected
+
+
+
+	// Draw boundary path (also hit testing)
+
+	this.drawBoundary(_point);
+
+
+
+	// Non boundary drawing
+
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+		var p1 = new ED.Point(-5,0); // lash base centre point
+
+		var p2 = new ED.Point(+5,0); // lash base centre point
+
+
+
+		var ep = new ED.Point(this.apexX, this.apexY);
+
+		
+
+		ctx.beginPath();
+
+		ctx.lineWidth = 5;
+
+		ctx.strokeStyle = "red";
+
+		
+
+		// draw single eyelash
+
+		ctx.moveTo(p1.x,p1.y);
+
+		ctx.bezierCurveTo(ep.x, p1.y+0.75*this.apexY, ep.x, ep.y, ep.x, ep.y);
+
+		ctx.bezierCurveTo(ep.x, ep.y, ep.x, p2.y+0.75*this.apexY, p2.x, p2.y);
+
+		ctx.lineTo(p1.x,p1.y);
+
+		
+
+		ctx.stroke();
+
+
+
+	}
+
+
+
+	// Coordinates of handles (in canvas plane)
+
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+
+
+
+	// Draw handles if selected
+
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+	// Return value indicating successful hittest
+
+	return this.isClicked;
+
+}
+
+
+
+/**
+
+ * Returns a string containing a text description of the doodle
+
+ *
+
+ * @returns {String} Description of doodle
+
+ */
+
+ED.Eyelash.prototype.description = function() {
+
+    var returnValue = "";
+
+
+
+	return returnValue;
+
+}
+
+
+
+/**
+
+ * Tests whether passed doodle is within a number of disc diameters of fovea
+
+ *
+
+ * @param {Doodle} _doodle The doodle to test
+
+ * @param {Int} _diameters The number of disc diameters to test
+
+ * @returns {Bool} True if doodle is within the passed number of disc diameters of fovea
+
+ */
+
+ED.Eyelash.prototype.isWithinDiscDiametersOfFovea = function(_doodle, _diameters) {
+
+	return (_doodle.originX * _doodle.originX + _doodle.originY * _doodle.originY) < _diameters * 4 * this.discRadius * this.discRadius;
+
+}
+
+
+
+/**
+
+ * Tests whether passed doodle is within a the confines of the optic disc
+
+ *
+
+ * @param {Doodle} _doodle The doodle to test
+
+ * @returns {Bool} True if doodle is within the confines of the optic disc
+
+ */
+
+ED.Eyelash.prototype.isWithinDisc = function(_doodle) {
+
+	// Disc location
+
+	var x = _doodle.originX - (this.drawing.eye == ED.eye.Right ? 300 : -300);
+
+
+
+	return (x * x + _doodle.originY * _doodle.originY) < this.discRadius * this.discRadius;
+
+}
+
+
+
+/**
+
+ * Tests whether passed doodle is within a the vascular arcades
+
+ *
+
+ * @param {Doodle} _doodle The doodle to test
+
+ * @returns {Bool} True if doodle is within the vascular arcades
+
+ */
+
+ED.Eyelash.prototype.isWithinArcades = function(_doodle) {
+
+	return (_doodle.originX * _doodle.originX + _doodle.originY * _doodle.originY) < (300 * 300);
+
+}
+
+
+/**
  * OpenEyes
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
@@ -46048,6 +46429,507 @@ ED.LaserSpot.prototype.groupDescription = function() {
 }
 
 /**
+
+ * OpenEyes
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * LashLoss template with disc and arcades
+
+ *
+
+ * @class LashLoss
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.LashLoss = function(_drawing, _parameterJSON) {
+
+	// Set classname
+
+	this.className = "LashLoss";
+
+
+
+	// Saved parameters
+
+	this.savedParameterArray = ['originX', 'originY'];
+
+
+
+	// Call superclass constructor
+
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+}
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.LashLoss.prototype = new ED.Doodle;
+
+ED.LashLoss.prototype.constructor = ED.LashLoss;
+
+ED.LashLoss.superclass = ED.Doodle.prototype;
+
+
+
+/**
+
+ * Sets handle attributes
+
+ */
+
+ED.LashLoss.prototype.setHandles = function() {
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+}
+
+
+
+/**
+
+ * Set default properties
+
+ */
+
+ED.LashLoss.prototype.setPropertyDefaults = function() {
+
+	this.isScaleable = false;
+
+	this.isRotatable = false;
+
+
+
+	// Update component of validation array for simple parameterss
+
+	var apexX = this.drawing.eye == ED.eye.Right ? 300 : -300;
+
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(apexX, apexX);
+
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-80, -8);
+
+
+
+	// Add complete validation arrays for derived parameters
+
+	this.parameterValidationArray['cdRatio'] = {
+
+		kind: 'derived',
+
+		type: 'float',
+
+		range: new ED.Range(0, 1),
+
+		precision: 1,
+
+		animate: false
+
+	};
+
+
+
+	// Slow down ApexY animation for this doodle (small scope)
+
+	this.parameterValidationArray['apexY']['delta'] = 5;
+
+}
+
+
+
+/**
+
+ * Sets default parameters (Only called for new doodles)
+
+ * Use the setParameter function for derived parameters, as this will also update dependent variables
+
+ */
+
+ED.LashLoss.prototype.setParameterDefaults = function() {
+
+	this.setParameterFromString('cdRatio', '0.5');
+
+	this.apexX = this.drawing.eye == ED.eye.Right ? 300 : -300;
+
+}
+
+
+
+/**
+
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
+ * The returned parameters are animated if their 'animate' property is set to true
+
+ *
+
+ * @param {String} _parameter Name of parameter that has changed
+
+ * @value {Undefined} _value Value of parameter to calculate
+
+ * @returns {Array} Associative array of values of dependent parameters
+
+ */
+
+ED.LashLoss.prototype.dependentParameterValues = function(_parameter, _value) {
+
+	var returnArray = new Array();
+
+
+
+	switch (_parameter) {
+
+		case 'apexY':
+
+			returnArray['cdRatio'] = -_value / 80;
+
+			break;
+
+
+
+		case 'cdRatio':
+
+			returnArray['apexY'] = -(+_value * 80);
+
+			break;
+
+	}
+
+
+
+	return returnArray;
+
+}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.LashLoss.prototype.draw = function(_point) {
+
+	// Get context
+
+	var ctx = this.drawing.context;
+
+
+
+	// Call draw method in superclass
+
+	ED.LashLoss.superclass.draw.call(this, _point);
+
+
+
+	// Disc location
+
+	var x = this.drawing.eye == ED.eye.Right ? 300 : -300;
+
+
+
+	// Boundary path
+
+	ctx.beginPath();
+
+
+
+	// Optic disc
+
+	ctx.arc(x, 0, this.discRadius, 0, 2 * Math.PI, true);
+
+
+
+	// Set attributes
+
+	ctx.lineWidth = 4;
+
+	ctx.strokeStyle = "rgba(249,187,76,1)";
+
+	ctx.fillStyle = "rgba(249,187,76,1)";
+
+
+
+	// Draw boundary path (also hit testing)
+
+	this.drawBoundary(_point);
+
+
+
+	// Non boundary drawing here
+
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+
+		// Optic cup
+
+		ctx.beginPath();
+
+		ctx.arc(x, 0, -this.apexY, 2 * Math.PI, 0, false);
+
+		ctx.fillStyle = "white";
+
+		var ptrn = ctx.createPattern(this.drawing.imageArray['CribriformPatternSmall'], 'repeat');
+
+		ctx.fillStyle = ptrn;
+
+		ctx.lineWidth = 4;
+
+		ctx.fill();
+
+		ctx.stroke();
+
+
+
+		// Arcades
+
+		ctx.beginPath();
+
+
+
+		// Coordinates
+
+		var sign = this.drawing.eye == ED.eye.Right ? 1 : -1;
+
+		var startX = -300 * sign;
+
+		var midX1 = -50 * sign;
+
+		var midX2 = 300 * sign;
+
+		var midX3 = 300 * sign;
+
+		var endX1 = 300 * sign;
+
+		var endX2 = 350 * sign;
+
+		var endX3 = 400 * sign;
+
+		var foveaX = 0;
+
+
+
+		// Superior arcades
+
+		ctx.moveTo(startX, -100);
+
+		ctx.bezierCurveTo(midX1, -500, midX2, -200, midX3, -24);
+
+		ctx.bezierCurveTo(endX1, -80, endX2, -140, endX3, -160);
+
+
+
+		// Inferior arcades
+
+		ctx.moveTo(endX3, 160);
+
+		ctx.bezierCurveTo(endX2, 140, endX1, 80, midX3, 24);
+
+		ctx.bezierCurveTo(midX2, 200, midX1, 500, startX, 100);
+
+
+
+		// Small cross marking fovea
+
+		var crossLength = 10;
+
+		ctx.moveTo(foveaX, -crossLength);
+
+		ctx.lineTo(foveaX, crossLength);
+
+		ctx.moveTo(foveaX - crossLength, 0);
+
+		ctx.lineTo(foveaX + crossLength, 0);
+
+
+
+		// Draw arcades
+
+		ctx.lineWidth = 8;
+
+		ctx.lineCap = "round";
+
+		ctx.strokeStyle = "red";
+
+		ctx.stroke();
+
+
+
+		// One disc diameter
+
+		ctx.beginPath();
+
+		ctx.arc(0, 0, 2 * this.discRadius, 2 * Math.PI, 0, false);
+
+		ctx.lineWidth = 1;
+
+		ctx.strokeStyle = "gray";
+
+		ctx.stroke();
+
+	}
+
+
+
+	// Coordinates of handles (in canvas plane)
+
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+
+
+
+	// Draw handles if selected
+
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+	// Return value indicating successful hittest
+
+	return this.isClicked;
+
+}
+
+
+
+/**
+
+ * Returns a string containing a text description of the doodle
+
+ *
+
+ * @returns {String} Description of doodle
+
+ */
+
+ED.LashLoss.prototype.description = function() {
+
+    var returnValue = "";
+
+
+
+    if (returnValue.length === 0 && this.drawing.doodleArray.length === 1) {
+
+        returnValue = "No abnormality";
+
+	}
+
+	return returnValue;
+
+}
+
+
+
+/**
+
+ * Tests whether passed doodle is within a number of disc diameters of fovea
+
+ *
+
+ * @param {Doodle} _doodle The doodle to test
+
+ * @param {Int} _diameters The number of disc diameters to test
+
+ * @returns {Bool} True if doodle is within the passed number of disc diameters of fovea
+
+ */
+
+ED.LashLoss.prototype.isWithinDiscDiametersOfFovea = function(_doodle, _diameters) {
+
+	return (_doodle.originX * _doodle.originX + _doodle.originY * _doodle.originY) < _diameters * 4 * this.discRadius * this.discRadius;
+
+}
+
+
+
+/**
+
+ * Tests whether passed doodle is within a the confines of the optic disc
+
+ *
+
+ * @param {Doodle} _doodle The doodle to test
+
+ * @returns {Bool} True if doodle is within the confines of the optic disc
+
+ */
+
+ED.LashLoss.prototype.isWithinDisc = function(_doodle) {
+
+	// Disc location
+
+	var x = _doodle.originX - (this.drawing.eye == ED.eye.Right ? 300 : -300);
+
+
+
+	return (x * x + _doodle.originY * _doodle.originY) < this.discRadius * this.discRadius;
+
+}
+
+
+
+/**
+
+ * Tests whether passed doodle is within a the vascular arcades
+
+ *
+
+ * @param {Doodle} _doodle The doodle to test
+
+ * @returns {Bool} True if doodle is within the vascular arcades
+
+ */
+
+ED.LashLoss.prototype.isWithinArcades = function(_doodle) {
+
+	return (_doodle.originX * _doodle.originX + _doodle.originY * _doodle.originY) < (300 * 300);
+
+}
+
+
+/**
  * OpenEyes
  *
  * Copyright (C) OpenEyes Foundation, 2011-2017
@@ -47971,8 +48853,19 @@ ED.Lids = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "Lids";
 
+	// Derived parameters
+	this.lashes = false;
+	this.lacrimal = false;
+	
+	this.mrd1 = "";
+	this.mrd2 = "";
+
+
 	// Saved parameters
-	this.savedParameterArray = ['apexX', 'apexY', 'dir'];
+	this.savedParameterArray = ['apexX', 'apexY', 'dir', 'lashes', 'lacrimal','mrd1','mrd2'];	
+	
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {'lashes':'Lashes', 'lacrimal':'Lacrimal apparatus'/* , 'mrd1':'MRD1', 'mrd2':'MRD2' */};
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -48012,8 +48905,20 @@ ED.Lids.prototype.setPropertyDefaults = function() {
 	};
 	this.handleCoordinateRangeArray[1] = {
 		// upper lid
-		x: new ED.Range(-0, +0),
-		y: new ED.Range(-120, +110)
+		x: new ED.Range(-260, +260),
+		y: new ED.Range(-300, +110)
+	};
+
+	// Add complete validation arrays for derived parameters
+	this.parameterValidationArray.lashes = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
+	};	
+	this.parameterValidationArray.lacrimal = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
 	};
 }
 
@@ -48044,6 +48949,27 @@ ED.Lids.prototype.setParameterDefaults = function() {
 	
 	var point2 = new ED.Point(0, -90);
 	this.squiggleArray[0].pointsArray.push(point2);	
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if their 'animate' property is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.Lids.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = new Array();
+
+	switch (_parameter) {
+		case 'handles':
+			this.setParameterWithAnimation('originX',0); // run to set parameter changed flag, calls report update
+			break;
+
+	}
+
+	return returnArray;
 }
 
 /**
@@ -48087,8 +49013,8 @@ ED.Lids.prototype.draw = function(_point) {
 	var tMP = this.squiggleArray[0].pointsArray[1];
 	var tEnd = new ED.Point(d * this.dir, 0 + (tMP.y/5+19));
 
-	var tCP1 = new ED.Point(-85 * this.dir, tMP.y * 1.3);
-	var tCP2 = new ED.Point(85 * this.dir, tMP.y * 1.35);
+	var tCP1 = new ED.Point(tMP.x + -85 * this.dir, tMP.y * 1.3);
+	var tCP2 = new ED.Point(tMP.x + 85 * this.dir, tMP.y * 1.35);
 	
 	// Boundary path
 	ctx.beginPath();
@@ -48104,11 +49030,10 @@ ED.Lids.prototype.draw = function(_point) {
 	ctx.moveTo(bEnd.x, bEnd.y);
 	
 	// Top lid
-// 	ctx.bezierCurveTo(-rP * 0.85 * this.dir, -h, rP * 1.05 * this.dir, -h, tEnd.x, tEnd.y);
 	ctx.bezierCurveTo(tCP1.x, tCP1.y, tCP2.x, tCP2.y, tEnd.x, tEnd.y);
 	
 	// Punctum
-		ctx.bezierCurveTo(d * 1.25 * this.dir, p*0.9, d * 1.2 * this.dir, p, bStart.x, bStart.y);
+	ctx.bezierCurveTo(d * 1.25 * this.dir, p*0.9, d * 1.2 * this.dir, p, bStart.x, bStart.y);
 	  
 	// Bottom lid
 	ctx.bezierCurveTo(bCP1.x, bCP1.y, bCP2.x, bCP2.y, bEnd.x, bEnd.y);
@@ -48161,18 +49086,100 @@ ED.Lids.prototype.draw = function(_point) {
 		ctx.closePath();
 		
 		// top eye crease
-		ctx.beginPath();
-		ctx.moveTo(-d * this.dir - p * 0.9 * this.dir, p * 0.1);
-		ctx.bezierCurveTo(-rP*1.3 * this.dir,-h*1.2,rP * this.dir,-h*1.2, d*this.dir + p*this.dir, 0);
-		// 	ctx.strokeStyle = "gray";
-		ctx.lineWidth = 3;
-		ctx.shadowBlur = 7;
-		ctx.shadowColor = "black";
-		ctx.stroke();
-		ctx.closePath();
+		if (this.squiggleArray[0].pointsArray[1].y>-140) {
+			ctx.beginPath();
+			ctx.moveTo(-d * this.dir - p * 0.9 * this.dir, p * 0.1);
+			ctx.bezierCurveTo(-rP*1.3 * this.dir,-h*1.2,rP * this.dir,-h*1.2, d*this.dir + p*this.dir, 0);
+			// 	ctx.strokeStyle = "gray";
+			ctx.lineWidth = 3;
+			ctx.shadowBlur = 7;
+			ctx.shadowColor = "black";
+			ctx.stroke();
+			ctx.closePath();
+		}
 		
-		// bottom crease
+		// lashes
+		if (this.lashes) {
+			ctx.beginPath();
 			
+			// set styles
+			ctx.lineWidth = 7;
+			ctx.strokeStyle = "rgba(0,0,0,0.6)";
+			ctx.shadowBlur = 0;
+			ctx.shadowColor = "rgba(0,0,0,0)";
+
+			
+			var n = 15; // number of lashes per lid
+			var maxLashLengthTop = 70;
+			
+			// top lid
+			var xDisplace = -70 * this.dir;
+			var yDisplace = 50;
+			
+			for (var ii=0; ii<n; ii++) {
+				
+				var t = ii/(n);
+				// get bezier coordinate on lid
+				var p1 = bEnd.bezierPointAtParameter(t-0.007, tCP1, tCP2, tEnd); // lash base centre point
+				var p2 = bEnd.bezierPointAtParameter(t+0.007, tCP1, tCP2, tEnd); // lash base centre point
+
+				var ep = new ED.Point(p2.x + xDisplace + ED.randomArray[ii] * 10 * this.dir, p2.y - maxLashLengthTop + ED.randomArray[ii+1] * 10 + yDisplace);
+				var yDif = ep.y-p1.y;
+				
+				ctx.moveTo(p1.x,p1.y-3);
+				ctx.bezierCurveTo(p1.x,p1.y,ep.x,p1.y+0.75*yDif*(-ii/(n)),ep.x,ep.y);
+				ctx.bezierCurveTo(ep.x,p2.y+0.75*yDif*(-ii/(n-1)/2),p2.x,p2.y,p2.x,p2.y-3);
+				
+				xDisplace += 8 * this.dir;
+				if (xDisplace*this.dir <= 0) yDisplace -= 5;
+				else yDisplace += 5;
+			}
+			ctx.stroke();
+			
+			//// bottom lashes
+			ctx.beginPath();
+			ctx.lineWidth = 5;
+			
+			n = 11; // number of lashes per lid
+			var maxLashLengthBottom = 40;			
+			xDisplace = 20 * this.dir;
+			yDisplace = 10;
+			
+			for (var ii=1; ii<n; ii++) {
+				
+				var t = ii/(n) + ED.randomArray[ii]/32;
+	
+				// get bezier coordinate on lid
+				var s = new ED.Point(-d * this.dir,0)
+				var p1 = bStart.bezierPointAtParameter(t-0.007, bRidgeCP2, bRidgeCP1, s); // lash base centre point
+				var p2 = bStart.bezierPointAtParameter(t+0.006, bRidgeCP2, bRidgeCP1, s); // lash base centre point
+
+				var ep = new ED.Point(p2.x + xDisplace + ED.randomArray[ii] * 8 * this.dir, p2.y + maxLashLengthBottom + ED.randomArray[ii+1] * 10 - yDisplace);
+				var yDif = ep.y-p1.y;
+				
+				ctx.moveTo(p1.x,p1.y);
+				ctx.bezierCurveTo(ep.x, p1.y+0.75*yDif, ep.x, ep.y, ep.x, ep.y);
+				ctx.bezierCurveTo(ep.x, ep.y, ep.x, p2.y+0.75*yDif, p2.x, p2.y);
+				
+				xDisplace -= 7 * this.dir;
+				if (xDisplace*this.dir >= 0) yDisplace -= 2;
+				else yDisplace += 1;
+			}
+
+			ctx.stroke();
+		}
+		
+		// lacrimal apparatus
+		if (this.lacrimal) {
+			//tEnd - top, bStart - bottom
+			ctx.beginPath();
+			
+			ctx.lineWidth = 6;
+			ctx.strokeStyle = "blue";
+			
+			ctx.moveTo(tEnd.x,tEnd.y);
+		}
+		
 	}
 
 	// Coordinates of handles (in canvas plane)
@@ -48202,7 +49209,6 @@ ED.Lids.prototype.description = function() {
 	else if (tMP.y>=-38 && tMP.y<-19) ptosis = "Moderate ptosis";
 	else if (tMP.y>=-19) ptosis = "Severe ptosis";
 	
-	// TODO: change to an arc tangent to define ectropion?
 	var ectropion = "";
 	if (bMP.y>132 && bMP.x*this.dir > 90) ectropion = "Medial ectropion";
 	else if (bMP.y>132 && bMP.x*this.dir < -90) ectropion = "Lateral ectropion";
@@ -56004,6 +57010,22 @@ ED.PigmentEpitheliumDetachment.prototype.description = function() {
 	return returnStr;
 }
 
+ED.PigmentEpitheliumDetachment.prototype.snomedCodes = function() {
+	
+    snomedCodes = [];
+    
+    if (this.type==='Drusenoid') snomedCodes.push([342581000119102, 3]);
+    else snomedCodes.push([52002008, 3]);
+    
+    if (this.type==='Type 1 neovascularisation' || this.type==='Type 3 neovascularisation RAP') {
+        snomedCodes.push([75971007, 3]);
+    }
+    else if (this.type==='PCV') {
+        snomedCodes.push([313001006, 3]);
+    }
+    
+    return snomedCodes;
+}
 /**
  * OpenEyes
  *
@@ -71705,6 +72727,295 @@ ED.VisualFieldChart.prototype.draw = function(_point) {
 	return this.isClicked;
 }
 
+/**
+
+ * OpenEyes
+
+ *
+
+ *
+
+ * Copyright (C) OpenEyes Foundation, 2011-2017
+
+ * This file is part of OpenEyes.
+
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+
+ *
+
+ * @package OpenEyes
+
+ * @link http://www.openeyes.org.uk
+
+ * @author OpenEyes <info@openeyes.org.uk>
+
+ * @copyright Copyright 2011-2017, OpenEyes Foundation
+
+ * @license http://www.gnu.org/licenses/agpl-3.0.html The GNU Affero General Public License V3.0
+
+ */
+
+
+
+/**
+
+ * Vitelliform Macular Lesion
+
+ *
+
+ * @class VitelliformMacularLesion
+
+ * @property {String} className Name of doodle subclass
+
+ * @param {Drawing} _drawing
+
+ * @param {Object} _parameterJSON
+
+ */
+
+ED.VitelliformMacularLesion = function(_drawing, _parameterJSON) {
+
+	
+
+	// Set classname
+
+	this.className = "VitelliformMacularLesion";
+
+	
+
+	// Saved parameters
+
+	this.savedParameterArray = ['originX', 'originY', 'apexX', 'apexY'];
+
+
+
+	// Call superclass constructor
+
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+
+}
+
+
+
+/**
+
+ * Sets superclass and constructor
+
+ */
+
+ED.VitelliformMacularLesion.prototype = new ED.Doodle;
+
+ED.VitelliformMacularLesion.prototype.constructor = ED.VitelliformMacularLesion;
+
+ED.VitelliformMacularLesion.superclass = ED.Doodle.prototype;
+
+
+
+/**=
+
+ * Sets handle attributes
+
+ */
+
+ED.VitelliformMacularLesion.prototype.setHandles = function() {
+
+	this.handleArray[4] = new ED.Doodle.Handle(null, true, ED.Mode.Apex, false);
+
+}
+
+
+
+/**
+
+ * Sets default properties
+
+ */
+
+ED.VitelliformMacularLesion.prototype.setPropertyDefaults = function() {
+
+	
+
+	this.isRotatable = false;
+
+	this.isUnique = true;
+
+	
+
+	this.parameterValidationArray['apexX']['range'].setMinAndMax(+10, +400);
+
+	this.parameterValidationArray['apexY']['range'].setMinAndMax(-0, +0);
+
+	this.parameterValidationArray['originX']['range'].setMinAndMax(-250, +250);
+
+	this.parameterValidationArray['originY']['range'].setMinAndMax(-250, +250);
+
+
+
+}
+
+
+
+/**
+
+ * Sets default parameters
+
+ */
+
+ED.VitelliformMacularLesion.prototype.setParameterDefaults = function() {
+
+	this.apexX = 100;
+
+}
+
+
+
+/**
+
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+
+ * The returned parameters are animated if their 'animate' property is set to true
+
+ *
+
+ * @param {String} _parameter Name of parameter that has changed
+
+ * @value {Undefined} _value Value of parameter to calculate
+
+ * @returns {Array} Associative array of values of dependent parameters
+
+ */
+
+ED.VitelliformMacularLesion.prototype.dependentParameterValues = function(_parameter, _value) {}
+
+
+
+/**
+
+ * Draws doodle or performs a hit test if a Point parameter is passed
+
+ *
+
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+
+ */
+
+ED.VitelliformMacularLesion.prototype.draw = function(_point) {
+
+	// Get context
+
+	var ctx = this.drawing.context;
+
+
+
+	// Call draw method in superclass
+
+	ED.VitelliformMacularLesion.superclass.draw.call(this, _point);
+
+
+
+	// Boundary path
+
+	ctx.beginPath();
+
+
+
+	// Basic shape for serous PED
+
+	var r = this.apexX;
+
+	ctx.arc(0, 0, r, 0, Math.PI * 2, true);
+
+
+
+	// Set attributes
+
+	var grd = ctx.createRadialGradient(0, 0, r*0.5, 0, 0, r);
+
+	grd.addColorStop(0, "rgba(255,190,0,1)");
+
+	grd.addColorStop(1, "rgba(205,135,140,1)");
+
+
+
+	ctx.lineWidth = 4;
+
+	
+
+	ctx.fillStyle = grd;
+
+	ctx.strokeStyle = ctx.fillStyle;
+
+
+
+	// Draw boundary path (also hit testing)
+
+	this.drawBoundary(_point);
+
+	
+
+	// Non boundary paths
+
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {}
+
+
+
+	// Coordinates of handles (in canvas plane)
+
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+
+
+
+	// Draw handles if selected
+
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+
+
+	// Return value indicating successful hittest
+
+	return this.isClicked;
+
+}
+
+
+
+/**
+
+ * Returns a string containing a text description of the doodle
+
+ *
+
+ * @returns {String} Description of doodle
+
+ */
+
+ED.VitelliformMacularLesion.prototype.description = function() {
+
+	return "Vitelliform macular lesions";
+
+}
+
+
+
+/**
+
+ * Returns the SnoMed code of the doodle
+
+ *
+
+ * @returns {Int} SnoMed code of entity representated by doodle
+
+ */
+
+ED.VitelliformMacularLesion.prototype.snomedCode = function() {
+
+	return 247155003;
+
+}
 /**
  * OpenEyes
  *

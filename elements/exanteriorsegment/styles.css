@@ -130,7 +130,7 @@ button.actbutton:active {
 
 button img {
 	/* Margin required to centre button img - not sure why */
-	margin-left: -5px;
+	margin-left: 0px;
 	margin-top: -1px;
 	padding: 0;
 	border: none;
